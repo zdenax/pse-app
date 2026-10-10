@@ -3,9 +3,10 @@ import SwiftUI
 import NetSketchCore
 import NetSketchCanvas
 
-/// Entry point. Two developer switches run without the GUI or drive it by themselves:
-/// `--catalog-info` prints where the bundled catalog was found (used by scripts/make-app.sh)
-/// and `--selftest` runs the built-in smoke test (see SelfTest.swift).
+/// Entry point. Developer switches run without the GUI or drive it by themselves:
+/// `--catalog-info` prints where the bundled catalog was found (used by scripts/make-app.sh),
+/// `--selftest` runs the built-in smoke test (see SelfTest.swift) and `--screenshots=DIR` saves
+/// pictures of the windows (see ScreenshotTour.swift).
 @main
 enum NetSketchMain {
     @MainActor
@@ -60,6 +61,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
         AppModel.shared.applicationDidFinishLaunching()
         SelfTest.runIfRequested()
+        ScreenshotTour.runIfRequested()
     }
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {

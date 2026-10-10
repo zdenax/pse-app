@@ -165,7 +165,7 @@ struct DeviceInspector: View {
                     }
                 }
             }
-            Text("Tabulka se upravuje příkazy v konzoli. Je to jen zápis, VLAN se nesimulují.")
+            Text("Tabulka se upravuje příkazy v konzoli. Ping v konzoli respektuje VLAN na portech a trunky.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -683,6 +683,9 @@ struct ProjectInspector: View {
         "Zařízení přetáhněte z palety na plátno, nebo na něj v paletě dvakrát klikněte.",
         "Kabel vznikne kliknutím na jeden port a potom na druhý. Typ kabelu se volí na liště.",
         "Výběrem zařízení nebo kabelu se tady zobrazí jeho vlastnosti.",
-        "Aplikace jen kreslí zapojení. Protokoly (STP, LACP, VLAN) se nesimulují.",
+        "Vybrané zařízení nastavíte v konzoli (Cmd+T): IP adresy, VLAN, trasy. Ping a traceroute "
+            + "projdou podle kabelů, VLAN a tras.",
+        "Hotová cvičení jsou ve složce examples (Soubor > Otevřít).",
+        "Nesimuluje se STP, LACP, OSPF ani DHCP.",
     ]
 }
