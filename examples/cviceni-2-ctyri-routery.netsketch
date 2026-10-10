@@ -1,0 +1,685 @@
+{
+  "annotations" : [
+    {
+      "id" : "00000000-0000-4000-8000-000000000001",
+      "position" : {
+        "x" : 120,
+        "y" : 40
+      },
+      "text" : "Cvičení 2: čtyři routery (Cisco, MikroTik, Ubiquiti, Cisco) a statické směrování.\nLAN1 192.168.1.0/24 – R1 – 10.0.12.0/30 – R2 – 10.0.23.0/30 – R3 – 10.0.34.0/30 – R4 – LAN2 192.168.4.0/24.\nR1 a R4 mají výchozí trasu, R2 a R3 statické trasy do obou LAN.\nOvěření: konzole PC1 -> ping 192.168.4.10, tracert 192.168.4.10; konzole R1 -> show ip route."
+    }
+  ],
+  "bundles" : [
+
+  ],
+  "devices" : [
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.1.1/24",
+          "interface" : "port:00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "address" : "10.0.12.1/30",
+          "interface" : "port:00000000-0000-4000-8000-000000000003"
+        }
+      ],
+      "category" : "router",
+      "hostname" : "R1-CISCO",
+      "id" : "00000000-0000-4000-8000-000000000004",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ],
+            "label" : "NIM",
+            "placeholderWidth" : 4
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ]
+          }
+        ]
+      },
+      "model" : "ISR 4321",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "LAN PC1",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000002",
+          "name" : "Gi0/0/0",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "R2-MIKROTIK",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000003",
+          "name" : "Gi0/0/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "console",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "00000000-0000-4000-8000-000000000005",
+          "name" : "Console",
+          "speed" : "",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 300,
+        "y" : 300
+      },
+      "staticRoutes" : [
+        {
+          "destination" : "0.0.0.0/0",
+          "nextHop" : "10.0.12.2"
+        }
+      ],
+      "templateID" : "cisco-isr-4321",
+      "vendor" : "Cisco",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "10.0.12.2/30",
+          "interface" : "port:00000000-0000-4000-8000-000000000006"
+        },
+        {
+          "address" : "10.0.23.1/30",
+          "interface" : "port:00000000-0000-4000-8000-000000000007"
+        }
+      ],
+      "category" : "router",
+      "hostname" : "R2-MIKROTIK",
+      "id" : "00000000-0000-4000-8000-000000000008",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ]
+          }
+        ]
+      },
+      "model" : "hAP lite (RB941-2nD)",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000006",
+          "name" : "ether1",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000007",
+          "name" : "ether2",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000009",
+          "name" : "ether3",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-00000000000A",
+          "name" : "ether4",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "wireless",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "00000000-0000-4000-8000-00000000000B",
+          "name" : "wlan1",
+          "speed" : "Wi-Fi",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 760,
+        "y" : 300
+      },
+      "staticRoutes" : [
+        {
+          "destination" : "192.168.1.0/24",
+          "nextHop" : "10.0.12.1"
+        },
+        {
+          "destination" : "192.168.4.0/24",
+          "nextHop" : "10.0.23.2"
+        },
+        {
+          "destination" : "10.0.34.0/30",
+          "nextHop" : "10.0.23.2"
+        }
+      ],
+      "templateID" : "mikrotik-hap-lite",
+      "vendor" : "MikroTik",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "10.0.23.2/30",
+          "interface" : "port:00000000-0000-4000-8000-00000000000C"
+        },
+        {
+          "address" : "10.0.34.1/30",
+          "interface" : "port:00000000-0000-4000-8000-00000000000D"
+        }
+      ],
+      "category" : "router",
+      "hostname" : "R3-UBIQUITI",
+      "id" : "00000000-0000-4000-8000-00000000000E",
+      "layout" : {
+        "rows" : 2,
+        "sections" : [
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "groups" : [
+              0
+            ],
+            "label" : "LAN"
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ],
+            "label" : "WAN"
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2,
+              3
+            ],
+            "label" : "SFP+"
+          }
+        ]
+      },
+      "model" : "UDM Pro",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-00000000000C",
+          "name" : "LAN 1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-00000000000D",
+          "name" : "LAN 2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-00000000000F",
+          "name" : "LAN 3",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000010",
+          "name" : "LAN 4",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000011",
+          "name" : "LAN 5",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000012",
+          "name" : "LAN 6",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000013",
+          "name" : "LAN 7",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000014",
+          "name" : "LAN 8",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "00000000-0000-4000-8000-000000000015",
+          "name" : "WAN",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "SFP+",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "00000000-0000-4000-8000-000000000016",
+          "name" : "WAN SFP+",
+          "speed" : "10G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "SFP+",
+          "description" : "",
+          "groupIndex" : 3,
+          "id" : "00000000-0000-4000-8000-000000000017",
+          "name" : "LAN SFP+",
+          "speed" : "10G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 1260,
+        "y" : 300
+      },
+      "staticRoutes" : [
+        {
+          "destination" : "192.168.4.0/24",
+          "nextHop" : "10.0.34.2"
+        },
+        {
+          "destination" : "192.168.1.0/24",
+          "nextHop" : "10.0.23.1"
+        },
+        {
+          "destination" : "10.0.12.0/30",
+          "nextHop" : "10.0.23.1"
+        }
+      ],
+      "templateID" : "ubiquiti-udm-pro",
+      "vendor" : "Ubiquiti",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.4.1/24",
+          "interface" : "port:00000000-0000-4000-8000-000000000018"
+        },
+        {
+          "address" : "10.0.34.2/30",
+          "interface" : "port:00000000-0000-4000-8000-000000000019"
+        }
+      ],
+      "category" : "router",
+      "hostname" : "R4-CISCO",
+      "id" : "00000000-0000-4000-8000-00000000001A",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ],
+            "label" : "NIM",
+            "placeholderWidth" : 4
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ]
+          }
+        ]
+      },
+      "model" : "ISR 4321",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "LAN PC2",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000018",
+          "name" : "Gi0/0/0",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "R3-UBIQUITI",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-000000000019",
+          "name" : "Gi0/0/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "console",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "00000000-0000-4000-8000-00000000001B",
+          "name" : "Console",
+          "speed" : "",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 1800,
+        "y" : 300
+      },
+      "staticRoutes" : [
+        {
+          "destination" : "0.0.0.0/0",
+          "nextHop" : "10.0.34.1"
+        }
+      ],
+      "templateID" : "cisco-isr-4321",
+      "vendor" : "Cisco",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.1.10/24",
+          "interface" : "port:00000000-0000-4000-8000-00000000001C"
+        }
+      ],
+      "category" : "PC",
+      "defaultGateway" : "192.168.1.1",
+      "hostname" : "PC1",
+      "id" : "00000000-0000-4000-8000-00000000001D",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          }
+        ]
+      },
+      "model" : "PC",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-00000000001C",
+          "name" : "eth0",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 300,
+        "y" : 640
+      },
+      "templateID" : "generic-pc",
+      "vendor" : "Generic",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.4.10/24",
+          "interface" : "port:00000000-0000-4000-8000-00000000001E"
+        }
+      ],
+      "category" : "PC",
+      "defaultGateway" : "192.168.4.1",
+      "hostname" : "PC2",
+      "id" : "00000000-0000-4000-8000-00000000001F",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          }
+        ]
+      },
+      "model" : "PC",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "00000000-0000-4000-8000-00000000001E",
+          "name" : "eth0",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 1800,
+        "y" : 640
+      },
+      "templateID" : "generic-pc",
+      "vendor" : "Generic",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    }
+  ],
+  "formatVersion" : 1,
+  "links" : [
+    {
+      "a" : {
+        "deviceID" : "00000000-0000-4000-8000-00000000001D",
+        "portID" : "00000000-0000-4000-8000-00000000001C"
+      },
+      "b" : {
+        "deviceID" : "00000000-0000-4000-8000-000000000004",
+        "portID" : "00000000-0000-4000-8000-000000000002"
+      },
+      "cableType" : "straight",
+      "id" : "00000000-0000-4000-8000-000000000020",
+      "note" : "",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "00000000-0000-4000-8000-000000000004",
+        "portID" : "00000000-0000-4000-8000-000000000003"
+      },
+      "b" : {
+        "deviceID" : "00000000-0000-4000-8000-000000000008",
+        "portID" : "00000000-0000-4000-8000-000000000006"
+      },
+      "cableType" : "crossover",
+      "id" : "00000000-0000-4000-8000-000000000021",
+      "note" : "",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "00000000-0000-4000-8000-000000000008",
+        "portID" : "00000000-0000-4000-8000-000000000007"
+      },
+      "b" : {
+        "deviceID" : "00000000-0000-4000-8000-00000000000E",
+        "portID" : "00000000-0000-4000-8000-00000000000C"
+      },
+      "cableType" : "crossover",
+      "id" : "00000000-0000-4000-8000-000000000022",
+      "note" : "",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "00000000-0000-4000-8000-00000000000E",
+        "portID" : "00000000-0000-4000-8000-00000000000D"
+      },
+      "b" : {
+        "deviceID" : "00000000-0000-4000-8000-00000000001A",
+        "portID" : "00000000-0000-4000-8000-000000000019"
+      },
+      "cableType" : "crossover",
+      "id" : "00000000-0000-4000-8000-000000000023",
+      "note" : "",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "00000000-0000-4000-8000-00000000001A",
+        "portID" : "00000000-0000-4000-8000-000000000018"
+      },
+      "b" : {
+        "deviceID" : "00000000-0000-4000-8000-00000000001F",
+        "portID" : "00000000-0000-4000-8000-00000000001E"
+      },
+      "cableType" : "straight",
+      "id" : "00000000-0000-4000-8000-000000000024",
+      "note" : "",
+      "statusA" : "none",
+      "statusB" : "none"
+    }
+  ],
+  "name" : "Cvičení 2 – čtyři routery",
+  "viewMode" : "physical"
+}
