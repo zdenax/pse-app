@@ -1,11 +1,31 @@
 # pse-app (NetSketch)
 
-Nativní macOS aplikace (Swift + SwiftUI, macOS 14+, Swift Package): vizuální editor síťové topologie
-ve stylu Cisco Packet Tracer pro KI/PSE (UJEP). Zařízení se kreslí a propojují na plátně, konfigurují
+Vizuální editor síťové topologie ve stylu Cisco Packet Tracer pro KI/PSE (UJEP), ve dvou verzích:
+nativní macOS aplikace (Swift + SwiftUI, macOS 14+) a webová verze pro libovolný OS (složka
+[`web/`](web/), TypeScript + React, běží v prohlížeči). Zařízení se kreslí a propojují na plátně, konfigurují
 v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` /
 `traceroute` mezi nimi opravdu prochází podle kabeláže, VLAN, IP adres a statických tras.
 
 ![NetSketch s otevřeným cvičením 2: paleta zařízení, plátno s panely routerů a kabely, inspector](docs/screenshots/aplikace-cviceni-2.png)
+
+## Rychlé spuštění
+
+**Webová verze (Windows, Linux, macOS):** potřebuje jen [Node.js](https://nodejs.org) 20 nebo novější.
+
+```sh
+cd web
+npm install
+npm start          # otevře aplikaci v prohlížeči (http://localhost:5173)
+```
+
+Se zvoleným cvičením: http://localhost:5173/#cviceni-1 nebo http://localhost:5173/#cviceni-2.
+Podrobnosti v [web/README.md](web/README.md).
+
+**macOS aplikace:** potřebuje Command Line Tools (`xcode-select --install`).
+
+```sh
+swift run NetSketch
+```
 
 ## Stav (2026-10-10)
 
@@ -15,6 +35,7 @@ v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazov�
 | `NetSketchCLI` (konzole Cisco IOS / Dell OS9 / MikroTik RouterOS / PC, simulace sítě, cvičení) | sestaví se na macOS i Linuxu; testy v `Tests/NetSketchCLITests` procházejí v CI |
 | `NetSketchCanvas` (plátno, panely, kabely, export PNG/PDF) | jen macOS; sestaví se a běží |
 | `NetSketch` (aplikace: paleta, inspector, konzole, menu) | jen macOS; sestaví se a běží, konzole i ping ověřené na Macu |
+| `web/` (webová verze: jádro, konzole, simulace, plátno, UI) | všechny OS; testy a build v CI, výstupy konzolí a soubory cvičení shodné se Swift verzí |
 
 CI (GitHub Actions, `.github/workflows/ci.yml`):
 
