@@ -1,0 +1,240 @@
+{
+  "formatVersion": 1,
+  "templates": [
+    {
+      "id": "cisco-catalyst-2960-24",
+      "vendor": "Cisco",
+      "model": "Catalyst 2960-24",
+      "category": "switch",
+      "verified": false,
+      "portGroups": [
+        { "prefix": "Fa0/", "rangeStart": 1, "rangeEnd": 24, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "prefix": "Gi0/", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false, "label": "Uplink" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "cisco-catalyst-2960-48",
+      "vendor": "Cisco",
+      "model": "Catalyst 2960-48",
+      "category": "switch",
+      "verified": false,
+      "portGroups": [
+        { "prefix": "Fa0/", "rangeStart": 1, "rangeEnd": 48, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "prefix": "Gi0/", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false, "label": "Uplink" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "cisco-catalyst-3650-24ps",
+      "vendor": "Cisco",
+      "model": "Catalyst 3650-24PS",
+      "category": "L3 switch",
+      "verified": false,
+      "portGroups": [
+        { "prefix": "Gi1/0/", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false, "label": "PoE+" },
+        { "prefix": "Gi1/1/", "rangeStart": 1, "rangeEnd": 4, "speed": "1G", "connector": "SFP", "verified": false, "label": "Uplink" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false },
+        { "names": ["Gi0/0"], "speed": "1G", "connector": "mgmt", "verified": false, "label": "Mgmt" }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2, 3], "arrangement": "oddTopEvenBottom" }
+        ]
+      }
+    },
+    {
+      "id": "cisco-isr-4321",
+      "vendor": "Cisco",
+      "model": "ISR 4321",
+      "category": "router",
+      "verified": false,
+      "note": "NIM slot je jen prázdná pozice na panelu; rozšiřující moduly nejsou modelovány.",
+      "portGroups": [
+        { "prefix": "Gi0/0/", "rangeStart": 0, "rangeEnd": 1, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "placeholder": true, "label": "NIM", "speed": "", "connector": "RJ45", "verified": false },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow", "placeholderWidth": 4 },
+          { "groups": [2], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "dell-s3048-on",
+      "vendor": "Dell EMC",
+      "model": "S3048-ON",
+      "category": "L3 switch",
+      "verified": false,
+      "note": "Názvy rozhraní podle Dell OS9.",
+      "portGroups": [
+        { "prefix": "GigabitEthernet 1/", "rangeStart": 1, "rangeEnd": 48, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "TenGigabitEthernet 1/", "rangeStart": 49, "rangeEnd": 52, "speed": "10G", "connector": "SFP+", "verified": false },
+        { "prefix": "fortyGigE 1/", "rangeStart": 53, "rangeEnd": 55, "step": 2, "speed": "40G", "connector": "QSFP+", "verified": false },
+        { "names": ["ManagementEthernet 1/1"], "speed": "1G", "connector": "mgmt", "verified": false, "label": "Mgmt" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow" },
+          { "groups": [3, 4], "arrangement": "oddTopEvenBottom" }
+        ]
+      }
+    },
+    {
+      "id": "mikrotik-hap-lite",
+      "vendor": "MikroTik",
+      "model": "hAP lite (RB941-2nD)",
+      "category": "router",
+      "verified": false,
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 4, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "names": ["wlan1"], "speed": "Wi-Fi", "connector": "wireless", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "mikrotik-crs-generic",
+      "vendor": "MikroTik",
+      "model": "CRS (generic 8+2)",
+      "category": "switch",
+      "verified": false,
+      "note": "Obecný model řady CRS: 8x ether + 2x SFP. Skutečné názvy a počty portů se liší podle typu.",
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 8, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "sfp", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "ubiquiti-udm-pro",
+      "vendor": "Ubiquiti",
+      "model": "UDM Pro",
+      "category": "router",
+      "verified": false,
+      "portGroups": [
+        { "prefix": "LAN ", "rangeStart": 1, "rangeEnd": 8, "speed": "1G", "connector": "RJ45", "verified": false, "label": "LAN" },
+        { "names": ["WAN"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "WAN" },
+        { "names": ["WAN SFP+"], "speed": "10G", "connector": "SFP+", "verified": false },
+        { "names": ["LAN SFP+"], "speed": "10G", "connector": "SFP+", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom" },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2, 3], "arrangement": "singleRow", "label": "SFP+" }
+        ]
+      }
+    },
+    {
+      "id": "ubiquiti-unifi-switch-24",
+      "vendor": "Ubiquiti",
+      "model": "UniFi Switch 24 (generic)",
+      "category": "switch",
+      "verified": false,
+      "note": "Obecný UniFi switch: 24x RJ45 + 2x SFP.",
+      "portGroups": [
+        { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "SFP ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom" },
+          { "groups": [1], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "generic-pc",
+      "vendor": "Generic",
+      "model": "PC",
+      "category": "PC",
+      "verified": false,
+      "portGroups": [
+        { "names": ["eth0"], "speed": "1G", "connector": "RJ45", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "generic-server",
+      "vendor": "Generic",
+      "model": "Server",
+      "category": "server",
+      "verified": false,
+      "portGroups": [
+        { "prefix": "eth", "rangeStart": 0, "rangeEnd": 1, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "names": ["mgmt0"], "speed": "1G", "connector": "mgmt", "verified": false, "label": "Mgmt" }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "generic-ap",
+      "vendor": "Generic",
+      "model": "Access Point",
+      "category": "AP",
+      "verified": false,
+      "portGroups": [
+        { "names": ["eth0"], "speed": "1G", "connector": "RJ45", "verified": false },
+        { "names": ["wlan0"], "speed": "Wi-Fi", "connector": "wireless", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" }
+        ]
+      }
+    }
+  ]
+}

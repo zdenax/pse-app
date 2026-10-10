@@ -1,0 +1,1547 @@
+{
+  "annotations" : [
+    {
+      "id" : "FD88DC82-167B-4342-949B-BFFAB5F0EFCD",
+      "position" : {
+        "x" : 300,
+        "y" : 40
+      },
+      "text" : "Trojúhelník SW1-SW2-SW3 a dvojitý svazek SW1-DELL1 (Po1 / bond1)"
+    }
+  ],
+  "bundles" : [
+    {
+      "id" : "A074EA8B-B2DE-4C1E-B204-FB00C6AA23CB",
+      "label" : "Po1 / bond1",
+      "linkIDs" : [
+        "54AFA6BD-BF26-45AA-A7F4-1EF0E59CE2B1",
+        "A61B867D-7730-478B-8803-6860A8453CA3"
+      ]
+    }
+  ],
+  "devices" : [
+    {
+      "category" : "switch",
+      "hostname" : "SW1",
+      "id" : "A7A253A1-A5B1-41BB-B121-B0365C29EBCA",
+      "layout" : {
+        "rows" : 2,
+        "sections" : [
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "blockColumns" : 6,
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ],
+            "label" : "Uplink"
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ],
+            "row" : 0
+          }
+        ]
+      },
+      "model" : "Catalyst 2960-24",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "3965BEDE-B9E2-415A-A622-C4DD852A080A",
+          "name" : "Fa0/1",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "6F663BD0-5414-4E85-9C6E-58932D963188",
+          "name" : "Fa0/2",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "33A24933-A7E6-4D6B-821E-665BB7736C99",
+          "name" : "Fa0/3",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "2C5EFD79-A63B-4D39-943F-B2AF6322F86E",
+          "name" : "Fa0/4",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "6177CB31-2066-4723-BEF9-C10975A8AEE4",
+          "name" : "Fa0/5",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C668579C-AD13-45DD-A8B7-7B2CB69AEBFB",
+          "name" : "Fa0/6",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "CB050BF6-B119-4015-9113-B8AEC54E7312",
+          "name" : "Fa0/7",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "38C14BFE-216E-4F14-A92B-E68EC604FE3D",
+          "name" : "Fa0/8",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "7A706FCD-76E1-4172-894D-62C120871BFC",
+          "name" : "Fa0/9",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "AE36BCF3-03F7-4063-9BDB-224D9A5FA029",
+          "name" : "Fa0/10",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "199242A7-6AD9-401B-892B-21D9C54E72AA",
+          "name" : "Fa0/11",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "9F20F189-2919-4702-BC84-22562A06B097",
+          "name" : "Fa0/12",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "940672E0-07DC-4346-931C-E224AF39BC8D",
+          "name" : "Fa0/13",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "90F08195-ADA4-45F5-AFEA-5246DCC8252B",
+          "name" : "Fa0/14",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "3699DEAA-5F16-462E-8B44-0BDEDF1EF4A7",
+          "name" : "Fa0/15",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "AE841E27-E3A0-45C4-BFC5-C40C87CF6DE2",
+          "name" : "Fa0/16",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "DD9EDD42-967B-46BE-BC83-306E2E4AAD34",
+          "name" : "Fa0/17",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "63D81B5F-424E-4027-8DF2-5D36F2C16151",
+          "name" : "Fa0/18",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8BDED63D-681A-42D3-B6E1-C77022CD193F",
+          "name" : "Fa0/19",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C5CDA8EA-A869-47C5-B2B3-06C73335E1E2",
+          "name" : "Fa0/20",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "4B275AD6-C887-40F8-AE7B-95F7AE336D71",
+          "name" : "Fa0/21",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "BFBAB904-1A5F-4442-9BD2-0C5766DD86A7",
+          "name" : "Fa0/22",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "50633448-26C2-496C-9106-D50C4A31BAE8",
+          "name" : "Fa0/23",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "760A4D7C-0F70-466A-9AB3-40D8902D22AF",
+          "name" : "Fa0/24",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "LAG na DELL1",
+          "groupIndex" : 1,
+          "id" : "B9C7A115-F4A3-423C-B56E-DBDE47013ED1",
+          "name" : "Gi0/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "LAG na DELL1",
+          "groupIndex" : 1,
+          "id" : "C1C9C130-E213-4665-9E93-BB8BB3E4E416",
+          "name" : "Gi0/2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "console",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "6EBCCA8B-B5DC-49CC-8831-E4C90D5D03A5",
+          "name" : "Console",
+          "speed" : "",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 460,
+        "y" : 160
+      },
+      "templateID" : "cisco-catalyst-2960-24",
+      "vendor" : "Cisco",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "category" : "switch",
+      "hostname" : "SW2",
+      "id" : "9F08B488-29E7-45AD-9585-EA929E0EA663",
+      "layout" : {
+        "rows" : 2,
+        "sections" : [
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "blockColumns" : 6,
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ],
+            "label" : "Uplink"
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ],
+            "row" : 0
+          }
+        ]
+      },
+      "model" : "Catalyst 2960-24",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "A585BB25-357F-4872-B126-3E0DA9B4A2A2",
+          "name" : "Fa0/1",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "949B89EF-204B-4027-9BBF-5EE3B54C6D4D",
+          "name" : "Fa0/2",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "39837A29-1CD9-41F6-B454-E35B25E6E8D9",
+          "name" : "Fa0/3",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "EDE63B2F-031A-49CE-815A-F9E88C7EF45B",
+          "name" : "Fa0/4",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "220080DE-546C-4C67-9B79-E36EDFC666E7",
+          "name" : "Fa0/5",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5576D511-F3FF-4DEA-996B-679D697E50C6",
+          "name" : "Fa0/6",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "666FEA4F-F086-49E3-9440-85D5A6814DE7",
+          "name" : "Fa0/7",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "27AB5442-74AE-4FB2-BDE4-52814542F2A8",
+          "name" : "Fa0/8",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "4A6F3C65-5D4F-4601-BC30-02C9F0FBC05B",
+          "name" : "Fa0/9",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "2EEDA06B-9E1B-48CA-8A21-1011AC82AC5D",
+          "name" : "Fa0/10",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "3765254D-FC60-456A-8F13-18C81186EC37",
+          "name" : "Fa0/11",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "B27393EB-CA81-4A8F-8FCB-1999288DAC62",
+          "name" : "Fa0/12",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "88646794-0475-4E6D-B847-4FCFCFF8C6DF",
+          "name" : "Fa0/13",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "2F0C19F6-B259-4F65-A779-6CA0CFB73ADD",
+          "name" : "Fa0/14",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "FE8D95D1-FFD6-4EB7-96BA-23B069400691",
+          "name" : "Fa0/15",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "71A15623-A97B-438F-AF64-4B5751DD898E",
+          "name" : "Fa0/16",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "E9B789AE-FD97-45EE-A0EB-2EFFAEAC4540",
+          "name" : "Fa0/17",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "D7725593-7879-4605-919A-1CF187EEE4D0",
+          "name" : "Fa0/18",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "FB166BA1-028C-4229-8926-85C933E66BF6",
+          "name" : "Fa0/19",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "D77F685E-E32F-4F45-A3B6-AD96830BE28B",
+          "name" : "Fa0/20",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "2F117928-8184-41EC-905F-98D4A3305272",
+          "name" : "Fa0/21",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5518718C-770C-47A1-9E07-0F4500286E94",
+          "name" : "Fa0/22",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "6EC29EDD-B0D8-44DF-BAC2-F25C4DAD4EA3",
+          "name" : "Fa0/23",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "927D1C1D-5D16-4CD2-A24D-4D62505E6877",
+          "name" : "Fa0/24",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "065656C7-BEED-4C78-90B9-6349FB6A57E8",
+          "name" : "Gi0/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "D6BF7665-2C6E-4BDF-9103-2FF56D7A9357",
+          "name" : "Gi0/2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "console",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "B5B3D895-00CE-443D-8617-2884892CB5DB",
+          "name" : "Console",
+          "speed" : "",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 1040,
+        "y" : 160
+      },
+      "templateID" : "cisco-catalyst-2960-24",
+      "vendor" : "Cisco",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "category" : "router",
+      "hostname" : "SW3",
+      "id" : "6794E306-EB29-4C1C-9E91-E9414BC1E336",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ]
+          }
+        ]
+      },
+      "model" : "hAP lite (RB941-2nD)",
+      "note" : "",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "AAF24393-12CE-4806-91E4-14263760B9D6",
+          "name" : "ether1",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "B9291DCE-77CC-4379-8848-FAF70A6D513A",
+          "name" : "ether2",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "1E5ADF75-56D3-4B08-963F-27299F8BCFD1",
+          "name" : "ether3",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "1AC8EB0D-8A61-47E5-B4DB-C5DB5D8D4E3E",
+          "name" : "ether4",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "wireless",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "DAD94A7B-36F4-48FA-92C1-C9CDE116AAE2",
+          "name" : "wlan1",
+          "speed" : "Wi-Fi",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 800,
+        "y" : 520
+      },
+      "templateID" : "mikrotik-hap-lite",
+      "vendor" : "MikroTik",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "category" : "L3 switch",
+      "hostname" : "DELL1",
+      "id" : "018A2B2D-7A67-4ADC-AD4C-A34D258B3373",
+      "layout" : {
+        "rows" : 2,
+        "sections" : [
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "blockColumns" : 6,
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "groups" : [
+              1
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ]
+          },
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "groups" : [
+              3,
+              4
+            ]
+          }
+        ]
+      },
+      "model" : "S3048-ON",
+      "note" : "Dell OS9. Port-channel 1 směrem na SW1 (Gi0/1 + Gi0/2).",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "CF719E09-7410-462C-9800-966EAF8A4A42",
+          "name" : "GigabitEthernet 1/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "FA1338B9-3C76-476A-B531-16DA36262797",
+          "name" : "GigabitEthernet 1/2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "356718F5-07B8-4C2E-99E4-9214CF21D082",
+          "name" : "GigabitEthernet 1/3",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "AF40B908-BDBF-40FA-AB0C-E482DED417BD",
+          "name" : "GigabitEthernet 1/4",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "9E33DBC1-EF83-4E90-9A4E-227F616D34B3",
+          "name" : "GigabitEthernet 1/5",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "F6BFB046-9868-4379-8859-7D92982C193F",
+          "name" : "GigabitEthernet 1/6",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "102380AF-CE13-4253-B95B-652BA30CDDA3",
+          "name" : "GigabitEthernet 1/7",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5E03B9E3-0CF6-46BA-804F-8F8F8EE69303",
+          "name" : "GigabitEthernet 1/8",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8FBC6259-0961-4028-B1D5-EE950AE09667",
+          "name" : "GigabitEthernet 1/9",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "9018E0D7-61A6-469F-94F3-D15C65663FA4",
+          "name" : "GigabitEthernet 1/10",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "A91425BF-253A-446F-9DD9-7E209F9B982E",
+          "name" : "GigabitEthernet 1/11",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "7B0B7ECA-E0F4-47A7-BFC5-CC769F4F8134",
+          "name" : "GigabitEthernet 1/12",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8DBEFEC5-6866-4371-B328-D315A288B392",
+          "name" : "GigabitEthernet 1/13",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "01A738F4-E810-4436-8959-49648FA04755",
+          "name" : "GigabitEthernet 1/14",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "0A2FB862-4B3C-4737-9AEF-B4768814EAAE",
+          "name" : "GigabitEthernet 1/15",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "48FADED3-D122-4BFB-928A-06C0A67E3EC9",
+          "name" : "GigabitEthernet 1/16",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "6B3585F9-EC0F-4D55-BC2E-F3562B29647A",
+          "name" : "GigabitEthernet 1/17",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "36405E2D-152F-4A36-95A7-E4FCED70F3BF",
+          "name" : "GigabitEthernet 1/18",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8D053986-EDD7-4BAE-AD3F-E0964BDCF485",
+          "name" : "GigabitEthernet 1/19",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5E2F8F2D-03E5-4FD6-BC8E-048CD0E621C7",
+          "name" : "GigabitEthernet 1/20",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "CFEA5BF4-DCA2-4CAB-B8BB-32ADBFEDBA92",
+          "name" : "GigabitEthernet 1/21",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C81AFE56-E0A2-4851-80F5-5B62BD0E5EC6",
+          "name" : "GigabitEthernet 1/22",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "0AEC3E7C-8C41-4862-B375-BCFB161A2F10",
+          "name" : "GigabitEthernet 1/23",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5F968300-1B85-4985-ABBE-DB0DF03AF9BA",
+          "name" : "GigabitEthernet 1/24",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "7130178F-7D59-49AE-9AA5-36A04468FE3F",
+          "name" : "GigabitEthernet 1/25",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "520EC2AB-27AA-4B8E-9562-D305CFD85DA8",
+          "name" : "GigabitEthernet 1/26",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "20E0247F-FEF6-4FE9-98E2-B714DBD420F7",
+          "name" : "GigabitEthernet 1/27",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "E7871068-E5EC-4EB2-9B9C-B4D648BA7F6C",
+          "name" : "GigabitEthernet 1/28",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C78F824E-4279-4648-941C-D3402191AF42",
+          "name" : "GigabitEthernet 1/29",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "DDE0C0E2-75C4-49C5-B87F-62B241EF7093",
+          "name" : "GigabitEthernet 1/30",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "AA96CE25-5E4B-4FF3-9D49-5375279F89CF",
+          "name" : "GigabitEthernet 1/31",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "58E775DD-D9C0-433B-8D86-8F26BFCC2FF2",
+          "name" : "GigabitEthernet 1/32",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "AABC4983-66B9-40D0-B084-96F54D0E9BC8",
+          "name" : "GigabitEthernet 1/33",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8779A06E-F8D4-4914-A361-0AEB63ED1602",
+          "name" : "GigabitEthernet 1/34",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C0B3FB3E-8F4F-40C2-9584-C6BF21E5BA70",
+          "name" : "GigabitEthernet 1/35",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "2F63EFCD-70EA-430E-A776-A15594C88F08",
+          "name" : "GigabitEthernet 1/36",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "DB4CB1D1-6E8F-43D3-A623-BEBF1266923D",
+          "name" : "GigabitEthernet 1/37",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "CCDAF2B5-D939-4905-91C8-8E4FF8E4D60D",
+          "name" : "GigabitEthernet 1/38",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "786D14C5-8718-4ECF-847B-9EF682B95FCA",
+          "name" : "GigabitEthernet 1/39",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "213B3E52-7EAE-434A-B2B2-1EB2B98EAD0A",
+          "name" : "GigabitEthernet 1/40",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "9D053FFB-D6F7-48E3-B095-1686AEEA34A7",
+          "name" : "GigabitEthernet 1/41",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5D2E94DD-48AA-49E7-B6A5-2D1E9C7FB62C",
+          "name" : "GigabitEthernet 1/42",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "11F540FA-C8D4-4CF5-8FFC-1C148BD7D2EC",
+          "name" : "GigabitEthernet 1/43",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "56D410C2-6A2A-4E05-8BCC-620F02EE7AEF",
+          "name" : "GigabitEthernet 1/44",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "D048C841-0A2F-47A2-9746-37B482E75871",
+          "name" : "GigabitEthernet 1/45",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "ED48C5CB-CB8C-404E-BB1A-AEE279E32266",
+          "name" : "GigabitEthernet 1/46",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "980D92A4-BA4C-4ECC-A46B-BB2660A017CA",
+          "name" : "GigabitEthernet 1/47",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "9AA2A059-7F39-44DF-B32E-B07EF43718CF",
+          "name" : "GigabitEthernet 1/48",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "SFP+",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "162C3CC0-F152-470E-A6F4-74002146B12B",
+          "name" : "TenGigabitEthernet 1/49",
+          "speed" : "10G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "SFP+",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "7EC1268F-A22A-4761-8668-B6AB28F8019E",
+          "name" : "TenGigabitEthernet 1/50",
+          "speed" : "10G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "SFP+",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "AFDEB55F-E22B-4AA2-98E4-29A69D8F984D",
+          "name" : "TenGigabitEthernet 1/51",
+          "speed" : "10G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "SFP+",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "549B8939-4E21-4805-88C1-28A211BCAFA3",
+          "name" : "TenGigabitEthernet 1/52",
+          "speed" : "10G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "QSFP+",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "86924B8E-1E64-492F-A1F7-7A701FA933AC",
+          "name" : "fortyGigE 1/53",
+          "speed" : "40G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "QSFP+",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "46354AD6-5B68-4245-970E-0F81B8668742",
+          "name" : "fortyGigE 1/55",
+          "speed" : "40G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "mgmt",
+          "description" : "",
+          "groupIndex" : 3,
+          "id" : "29F81FAB-A4D1-4036-8C45-E3C1CC2B74F2",
+          "name" : "ManagementEthernet 1/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "console",
+          "description" : "",
+          "groupIndex" : 4,
+          "id" : "FA0A1F5E-DC9D-4562-BA79-485BB581C00F",
+          "name" : "Console",
+          "speed" : "",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 340,
+        "y" : 520
+      },
+      "templateID" : "dell-s3048-on",
+      "vendor" : "Dell EMC",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    }
+  ],
+  "formatVersion" : 1,
+  "links" : [
+    {
+      "a" : {
+        "deviceID" : "A7A253A1-A5B1-41BB-B121-B0365C29EBCA",
+        "portID" : "3965BEDE-B9E2-415A-A622-C4DD852A080A"
+      },
+      "b" : {
+        "deviceID" : "9F08B488-29E7-45AD-9585-EA929E0EA663",
+        "portID" : "A585BB25-357F-4872-B126-3E0DA9B4A2A2"
+      },
+      "cableType" : "crossover",
+      "id" : "41D7B971-5643-424F-A06C-754ECB3F6A45",
+      "note" : "",
+      "statusA" : "green",
+      "statusB" : "green"
+    },
+    {
+      "a" : {
+        "deviceID" : "A7A253A1-A5B1-41BB-B121-B0365C29EBCA",
+        "portID" : "6F663BD0-5414-4E85-9C6E-58932D963188"
+      },
+      "b" : {
+        "deviceID" : "6794E306-EB29-4C1C-9E91-E9414BC1E336",
+        "portID" : "AAF24393-12CE-4806-91E4-14263760B9D6"
+      },
+      "cableType" : "crossover",
+      "id" : "0389F4E4-84B6-45AF-AC31-6E00B553788C",
+      "note" : "",
+      "statusA" : "green",
+      "statusB" : "green"
+    },
+    {
+      "a" : {
+        "deviceID" : "9F08B488-29E7-45AD-9585-EA929E0EA663",
+        "portID" : "949B89EF-204B-4027-9BBF-5EE3B54C6D4D"
+      },
+      "b" : {
+        "deviceID" : "6794E306-EB29-4C1C-9E91-E9414BC1E336",
+        "portID" : "B9291DCE-77CC-4379-8848-FAF70A6D513A"
+      },
+      "cableType" : "crossover",
+      "id" : "C42D00BD-B122-4694-BDA2-211D5EC92F3B",
+      "note" : "Záložní strana trojúhelníku",
+      "statusA" : "green",
+      "statusB" : "orange"
+    },
+    {
+      "a" : {
+        "deviceID" : "A7A253A1-A5B1-41BB-B121-B0365C29EBCA",
+        "portID" : "B9C7A115-F4A3-423C-B56E-DBDE47013ED1"
+      },
+      "b" : {
+        "deviceID" : "018A2B2D-7A67-4ADC-AD4C-A34D258B3373",
+        "portID" : "CF719E09-7410-462C-9800-966EAF8A4A42"
+      },
+      "bundleID" : "A074EA8B-B2DE-4C1E-B204-FB00C6AA23CB",
+      "cableType" : "crossover",
+      "id" : "54AFA6BD-BF26-45AA-A7F4-1EF0E59CE2B1",
+      "note" : "",
+      "statusA" : "green",
+      "statusB" : "green"
+    },
+    {
+      "a" : {
+        "deviceID" : "A7A253A1-A5B1-41BB-B121-B0365C29EBCA",
+        "portID" : "C1C9C130-E213-4665-9E93-BB8BB3E4E416"
+      },
+      "b" : {
+        "deviceID" : "018A2B2D-7A67-4ADC-AD4C-A34D258B3373",
+        "portID" : "FA1338B9-3C76-476A-B531-16DA36262797"
+      },
+      "bundleID" : "A074EA8B-B2DE-4C1E-B204-FB00C6AA23CB",
+      "cableType" : "crossover",
+      "id" : "A61B867D-7730-478B-8803-6860A8453CA3",
+      "note" : "",
+      "statusA" : "green",
+      "statusB" : "green"
+    }
+  ],
+  "name" : "Trojúhelník",
+  "viewMode" : "physical"
+}
