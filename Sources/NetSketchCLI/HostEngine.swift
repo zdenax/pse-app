@@ -274,8 +274,8 @@ final class HostEngine: ConsoleEngine {
 
     /// "   Media State . . . . . . . . . : value", the dotted layout of Windows ipconfig.
     private static func field(_ name: String, _ value: String) -> String {
-        let dots = String(repeating: " .", count: max(1, (32 - name.count) / 2))
-        return "   " + (name + dots).padded(33) + ": " + value
+        let dotted = String((name + String(repeating: " .", count: 20)).prefix(33)).trimmingTrailingWhitespace()
+        return "   " + dotted.padded(34) + ": " + value
     }
 
     // MARK: Help and completion
