@@ -5,6 +5,8 @@ ve stylu Cisco Packet Tracer pro KI/PSE (UJEP). Zařízení se kreslí a propoju
 v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` /
 `traceroute` mezi nimi opravdu prochází podle kabeláže, VLAN, IP adres a statických tras.
 
+![NetSketch: paleta zařízení, plátno s fyzickými panely a kabely, inspector projektu](docs/screenshots/aplikace.jpg)
+
 ## Stav (2026-10-10)
 
 | Target | Stav |
