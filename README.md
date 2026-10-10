@@ -1,11 +1,63 @@
-# pse-app (NetSketch)
+# NetSketch
 
-Nativní macOS aplikace (Swift + SwiftUI, macOS 14+, Swift Package): vizuální editor síťové topologie
-ve stylu Cisco Packet Tracer pro KI/PSE (UJEP). Zařízení se kreslí a propojují na plátně, konfigurují
-v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` /
-`traceroute` mezi nimi opravdu prochází podle kabeláže, VLAN, IP adres a statických tras.
+**Cvičný editor počítačových sítí ve stylu Cisco Packet Tracer, který běží všude: v prohlížeči na
+Windows, Linuxu i macOS, a na Macu navíc jako nativní aplikace.**
+
+Síť se nakreslí ze zařízení z laboratoře (Cisco, Dell, MikroTik, Ubiquiti, PC), nastaví se v konzolích
+jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` a
+`traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
+
+| Verze | Kde běží | Technologie |
+|---|---|---|
+| **Webová** ([`web/`](web/)) | v prohlížeči na Windows, Linuxu i macOS | TypeScript, React, SVG |
+| **Nativní macOS** | macOS 14 a novější | Swift, SwiftUI, AppKit |
+
+Obě verze otevírají stejné soubory `.netsketch` a chovají se stejně (výstupy konzolí se shodují do
+znaku, ověřují to testy).
 
 ![NetSketch s otevřeným cvičením 2: paleta zařízení, plátno s panely routerů a kabely, inspector](docs/screenshots/aplikace-cviceni-2.png)
+
+> **Nejde o nástroj UJEP.** NetSketch není oficiální aplikace Univerzity J. E. Purkyně v Ústí nad
+> Labem, nevznikl na její zakázku ani s jejím schválením. Je to soukromá cvičná aplikace studenta
+> k procvičování počítačových sítí, inspirovaná vybavením laboratoře a látkou předmětu KI/PSE.
+> Za obsah odpovídá autor.
+
+> **Využití umělé inteligence.** Projekt vznikl s výrazným využitím nástroje generativní AI
+> **Claude Code** (Anthropic). Prohlášení o využití AI v souladu s
+> [pravidly využívání AI (SR-07-26)](https://www.fzp.ujep.cz/wp-content/uploads/2026/06/SR-07-26_Pravidla-AI.pdf):
+>
+> - **K čemu byla AI použita:** návrh a psaní zdrojového kódu (Swift i TypeScript), testů, CI,
+>   dokumentace, katalogu zařízení a ukázkových cvičení, podle zadání a průběžných pokynů autora.
+> - **Co dělal autor:** zadání a rozsah projektu, volba funkcí a technologií, průběžná kontrola
+>   výsledků, spouštění a testování aplikace na Macu, podklady z laboratoře (fotka racku pro katalog
+>   zařízení) a rozhodnutí o přijetí změn.
+> - **Ověření výstupů AI:** automatické testy (Swift i webová verze, včetně vzájemného porovnání
+>   výstupů obou verzí) a ruční vyzkoušení aplikace. Údaje o portech v katalogu zůstávají označené
+>   jako neověřené, dokud nejsou zkontrolované na skutečném hardwaru.
+> - Části vytvořené s AI jsou v historii repozitáře označené (`Co-Authored-By: Claude`).
+>   Za obsah projektu a jeho použití odpovídá autor.
+
+**Návod s obrázky:** [docs/NetSketch-navod.pdf](docs/NetSketch-navod.pdf) (spuštění, kreslení, konzole,
+IP adresy, ping a obě cvičení).
+
+## Rychlé spuštění
+
+**Webová verze (Windows, Linux, macOS):** potřebuje jen [Node.js](https://nodejs.org) 20 nebo novější.
+
+```sh
+cd web
+npm install
+npm start          # otevře aplikaci v prohlížeči (http://localhost:5173)
+```
+
+Se zvoleným cvičením: http://localhost:5173/#cviceni-1 nebo http://localhost:5173/#cviceni-2.
+Podrobnosti v [web/README.md](web/README.md).
+
+**macOS aplikace:** potřebuje Command Line Tools (`xcode-select --install`).
+
+```sh
+swift run NetSketch
+```
 
 ## Stav (2026-10-10)
 
@@ -15,6 +67,7 @@ v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazov�
 | `NetSketchCLI` (konzole Cisco IOS / Dell OS9 / MikroTik RouterOS / PC, simulace sítě, cvičení) | sestaví se na macOS i Linuxu; testy v `Tests/NetSketchCLITests` procházejí v CI |
 | `NetSketchCanvas` (plátno, panely, kabely, export PNG/PDF) | jen macOS; sestaví se a běží |
 | `NetSketch` (aplikace: paleta, inspector, konzole, menu) | jen macOS; sestaví se a běží, konzole i ping ověřené na Macu |
+| `web/` (webová verze: jádro, konzole, simulace, plátno, UI) | všechny OS; testy a build v CI, výstupy konzolí a soubory cvičení shodné se Swift verzí |
 
 CI (GitHub Actions, `.github/workflows/ci.yml`):
 
@@ -119,3 +172,9 @@ VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 ## Mimo rozsah
 
 Simulace STP/RSTP/MSTP, LACP, dynamického směrování (OSPF, RIP), DHCP, ACL a NAT, emulace firmware.
+
+## Licence
+
+Kód je pod licencí [MIT](LICENSE): lze ho volně používat, upravovat i šířit, jen je potřeba ponechat
+uvedení autora a text licence. Názvy výrobců a modelů zařízení v katalogu (Cisco, Dell, MikroTik,
+Ubiquiti, Netgear) jsou ochranné známky svých vlastníků a slouží jen k označení zařízení.
