@@ -13,12 +13,16 @@ v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazov�
 |---|---|
 | `NetSketchCore` (modely, katalog `devices.json`, `ProjectStore`, undo) | sestaví se na macOS i Linuxu; testy procházejí v CI |
 | `NetSketchCLI` (konzole Cisco IOS / Dell OS9 / MikroTik RouterOS / PC, simulace sítě, cvičení) | sestaví se na macOS i Linuxu; testy v `Tests/NetSketchCLITests` procházejí v CI |
-| `NetSketchCanvas` (plátno, panely, kabely, export PNG/PDF) | jen macOS; opravy tažení a hit-testu, ověřuje se na Macu |
-| `NetSketch` (aplikace: paleta, inspector, konzole, menu) | jen macOS; dokončeno, chyby z prvního sestavení na Macu opraveny |
+| `NetSketchCanvas` (plátno, panely, kabely, export PNG/PDF) | jen macOS; sestaví se a běží |
+| `NetSketch` (aplikace: paleta, inspector, konzole, menu) | jen macOS; sestaví se a běží, konzole i ping ověřené na Macu |
 
-CI (GitHub Actions, `.github/workflows/ci.yml`): na každý push se na Linuxu sestaví a otestuje
-Core a CLI. Sestavení celé aplikace na macOS se spouští ručně (Actions -> CI -> Run workflow),
-protože minuty macOS jsou u soukromého repa drahé.
+CI (GitHub Actions, `.github/workflows/ci.yml`):
+
+- každý push: Linux sestaví Core a CLI, spustí testy, postaví cvičení přes konzole a při změně je
+  commitne do `examples/` (soubory i výstupy konzolí v `examples/UKAZKA.md`);
+- commit se značkou `[screenshots]` ve zprávě: macOS navíc sestaví celou aplikaci a vyrenderuje
+  diagramy z `examples/` do `docs/screenshots/` (minuty macOS jsou u soukromého repa drahé, proto
+  jen na vyžádání).
 
 ## Sestavení a spuštění (macOS 14+)
 
