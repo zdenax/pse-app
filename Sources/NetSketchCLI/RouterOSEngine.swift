@@ -3,10 +3,11 @@ import NetSketchCore
 
 /// A small, accurate subset of the MikroTik RouterOS console.
 ///
-/// Menus: `/interface`, `/interface ethernet`, `/system identity`. Commands: `print`, `set`,
-/// `enable`, `disable`, `comment`, `export`, `/quit`, `..` and `/`. Words may be abbreviated
-/// to any unique prefix, as on RouterOS. Like the IOS engine it keeps no state of its own:
-/// reads come from the project, writes go through `ProjectStore`.
+/// Menus: `/interface`, `/interface ethernet`, `/ip address`, `/ip route`, `/system identity`.
+/// Commands: `print`, `set`, `enable`, `disable`, `comment`, `add`, `remove`, `export`, `/ping`,
+/// `/quit`, `..` and `/`. Words and argument names may be abbreviated to any unique prefix, as
+/// on RouterOS. Like the IOS engine it keeps no state of its own: reads come from the project,
+/// writes go through `ProjectStore`; `/ping` asks the network simulation.
 final class RouterOSEngine: ConsoleEngine {
     private let access: DeviceAccess
     private(set) var isClosed = false
@@ -22,7 +23,7 @@ final class RouterOSEngine: ConsoleEngine {
     // MARK: Menu tree (the single definition used by execution, help and completion)
 
     private enum Action {
-        case print, set, enable, disable, comment, export, quit
+        case print, set, enable, disable, comment, add, remove, export, ping, quit
     }
 
     private struct Command {
@@ -38,14 +39,28 @@ final class RouterOSEngine: ConsoleEngine {
         var commands: [Command] = []
     }
 
+    private static let exportCommand =
+        Command(name: "export", help: "Print or save an export script that can be used to restore configuration", action: .export)
+
     private static let itemCommands = [
         Command(name: "print", help: "Print values of item properties", action: .print),
         Command(name: "set", help: "Change item properties", action: .set),
         Command(name: "enable", help: "Enable items", action: .enable),
         Command(name: "disable", help: "Disable items", action: .disable),
         Command(name: "comment", help: "Set comment for items", action: .comment),
-        Command(name: "export", help: "Print or save an export script that can be used to restore configuration", action: .export),
+        exportCommand,
     ]
+
+    /// Commands of the list menus `/ip address` and `/ip route`.
+    private static let listCommands = [
+        Command(name: "add", help: "Create a new item", action: .add),
+        Command(name: "print", help: "Print values of item properties", action: .print),
+        Command(name: "remove", help: "Remove item", action: .remove),
+        exportCommand,
+    ]
+
+    private static let addressMenu = ["ip", "address"]
+    private static let routeMenu = ["ip", "route"]
 
     private static let rootMenu = Menu(
         name: "",
@@ -54,16 +69,21 @@ final class RouterOSEngine: ConsoleEngine {
             Menu(name: "interface", help: "Interface configuration", submenus: [
                 Menu(name: "ethernet", help: "Ethernet interface configuration", commands: itemCommands),
             ], commands: itemCommands),
+            Menu(name: "ip", help: "IP options", submenus: [
+                Menu(name: "address", help: "Address management", commands: listCommands),
+                Menu(name: "route", help: "Route management", commands: listCommands),
+            ], commands: [exportCommand]),
             Menu(name: "system", help: "System information and utilities", submenus: [
                 Menu(name: "identity", help: "System identity (the name of the router)", commands: [
                     Command(name: "print", help: "Print values of item properties", action: .print),
                     Command(name: "set", help: "Change item properties", action: .set),
-                    Command(name: "export", help: "Print or save an export script that can be used to restore configuration", action: .export),
+                    exportCommand,
                 ]),
             ]),
         ],
         commands: [
-            Command(name: "export", help: "Print or save an export script that can be used to restore configuration", action: .export),
+            exportCommand,
+            Command(name: "ping", help: "Send ICMP Echo packets", action: .ping),
             Command(name: "quit", help: "Quit console", action: .quit),
         ]
     )
@@ -229,8 +249,23 @@ final class RouterOSEngine: ConsoleEngine {
             if let extra = arguments.first { return endOfCommand(extra) }
             return export(location)
         }
+        if action == .ping { return ping(arguments) }
         if location == ["system", "identity"] {
             return action == .print ? printIdentity(arguments) : setIdentity(arguments)
+        }
+        if location == RouterOSEngine.addressMenu {
+            switch action {
+            case .add: return addAddress(arguments)
+            case .remove: return removeAddresses(arguments)
+            default: return printAddresses(arguments)
+            }
+        }
+        if location == RouterOSEngine.routeMenu {
+            switch action {
+            case .add: return addRoute(arguments)
+            case .remove: return removeRoutes(arguments)
+            default: return printRoutes(arguments)
+            }
         }
         let ports = items(in: location)
         switch action {
@@ -239,7 +274,7 @@ final class RouterOSEngine: ConsoleEngine {
         case .enable: return setDisabled(false, ports, arguments: arguments)
         case .disable: return setDisabled(true, ports, arguments: arguments)
         case .comment: return setComment(ports, arguments: arguments)
-        case .export, .quit: return ""
+        case .add, .remove, .export, .ping, .quit: return ""
         }
     }
 
@@ -439,6 +474,373 @@ final class RouterOSEngine: ConsoleEngine {
         }
     }
 
+    // MARK: Arguments of add, remove and ping
+
+    private enum NamedArguments {
+        case values([String: String])
+        case failure(String)
+    }
+
+    /// `key=value` arguments; keys may be abbreviated to a unique prefix, as on RouterOS. A bare
+    /// word is the value of `positional` (`/ping 10.0.0.1`) when the command has one.
+    private func namedArguments(_ arguments: [Word], keys: [String], positional: String? = nil) -> NamedArguments {
+        var values: [String: String] = [:]
+        for word in arguments {
+            if !word.text.hasPrefix("\""), let equals = word.text.firstIndex(of: "=") {
+                let key = String(word.text[..<equals])
+                guard !key.isEmpty, let name = RouterOSEngine.resolve(key, in: keys, name: { $0 }) else {
+                    return .failure(endOfCommand(word))
+                }
+                values[name] = RouterOSEngine.unquoted(String(word.text[word.text.index(after: equals)...]))
+            } else if let positional, values[positional] == nil {
+                values[positional] = RouterOSEngine.unquoted(word.text)
+            } else {
+                return .failure(endOfCommand(word))
+            }
+        }
+        return .values(values)
+    }
+
+    private enum ItemNumbers {
+        case items([Int])
+        case failure(String)
+    }
+
+    /// The items of `remove` in a list of `count` rows: "0", "0,2", "numbers=1" or "[find]"
+    /// (all), numbered as `print` shows them.
+    private func itemNumbers(_ arguments: [Word], count: Int) -> ItemNumbers {
+        let parsed = parse(arguments)
+        if let stray = parsed.stray { return .failure(endOfCommand(stray)) }
+        if let property = parsed.properties.first { return .failure(endOfCommand(property.word)) }
+        guard let spec = parsed.spec else { return .failure("missing value(s) of argument(s) numbers") }
+        let text = RouterOSEngine.unquoted(spec)
+        if text.hasPrefix("[") {
+            let inner = text.dropFirst().dropLast(text.hasSuffix("]") ? 1 : 0)
+            guard inner.split(whereSeparator: { $0.isWhitespace }).map({ $0.lowercased() }) == ["find"] else {
+                return .failure("NetSketch: zde je podporováno jen [find] bez podmínek; použijte čísla z příkazu print.")
+            }
+            return .items(Array(0..<count))
+        }
+        var selected: [Int] = []
+        for piece in text.split(separator: ",", omittingEmptySubsequences: true) {
+            let item = piece.trimmingCharacters(in: .whitespaces)
+            guard !item.isEmpty, item.count <= 6, item.allSatisfy({ $0.isASCII && $0.isNumber }), let number = Int(item) else {
+                return .failure("input does not match any value of numbers")
+            }
+            guard number < count else { return .failure("no such item") }
+            if !selected.contains(number) { selected.append(number) }
+        }
+        return selected.isEmpty ? .failure("missing value(s) of argument(s) numbers") : .items(selected)
+    }
+
+    // MARK: /ip address
+
+    /// True on a switch (CRS): its ports are bridged, so the address belongs to the bridge.
+    private var isSwitch: Bool {
+        access.category.map { NetworkSimulator.isSwitching($0) } ?? false
+    }
+
+    /// The RouterOS name of a layer-3 interface ("ether2", "bridge"); nil when it is gone.
+    private func interfaceName(of interface: L3InterfaceID) -> String? {
+        switch interface {
+        case .port(let id): return access.device?.port(id: id)?.name
+        case .vlan(let number): return isSwitch ? (number == 1 ? "bridge" : "vlan\(number)") : nil
+        }
+    }
+
+    /// The names `interface=` accepts: the bridge (and management ports) of a switch, every port of a router.
+    private var addressInterfaceNames: [String] {
+        let ports = access.interfaces
+        guard isSwitch else { return ports.map(\.name) }
+        return ["bridge"] + ports.filter { $0.connector == .mgmt }.map(\.name)
+    }
+
+    private enum InterfaceLookup {
+        case found(L3InterfaceID, String)
+        case failure(String)
+    }
+
+    /// Resolves `interface=`: a port name (any case), or `bridge`/`bridge1` on a switch, where
+    /// the bridge stands for VLAN 1 of the simulation.
+    private func l3Interface(named text: String) -> InterfaceLookup {
+        let lower = text.lowercased()
+        let noSuchInterface = "input does not match any value of interface"
+        if lower == "bridge" || lower == "bridge1" {
+            guard isSwitch else {
+                return .failure(noSuchInterface
+                    + "\nNetSketch: router v NetSketch nemá bridge, adresu nastavte přímo na port (např. interface=ether2).")
+            }
+            return .found(.vlan(1), "bridge")
+        }
+        guard let port = access.interfaces.first(where: { $0.name.lowercased() == lower }) else {
+            return .failure(noSuchInterface)
+        }
+        if isSwitch, port.connector != .mgmt {
+            return .failure("NetSketch: na přepínači nastavte adresu na interface=bridge.")
+        }
+        return .found(.port(port.id), port.name)
+    }
+
+    /// `add address=A.B.C.D/NN interface=NAME`.
+    ///
+    /// Simplification: NetSketch keeps one address per interface, so a second `add` on the same
+    /// interface replaces the first one (RouterOS would keep both); a notice says so.
+    private func addAddress(_ arguments: [Word]) -> String {
+        let values: [String: String]
+        switch namedArguments(arguments, keys: ["address", "interface"]) {
+        case .failure(let message): return message
+        case .values(let found): values = found
+        }
+        guard let text = values["address"] else { return "missing value(s) of argument(s) address" }
+        guard let interfaceText = values["interface"] else { return "missing value(s) of argument(s) interface" }
+
+        var notes: [String] = []
+        let prefix: IPv4Prefix
+        if let parsed = IPv4Prefix(cidr: text) {
+            prefix = parsed
+        } else if let host = IPv4(text) {
+            // RouterOS takes an address without a prefix length as /32.
+            prefix = IPv4Prefix(address: host, length: 32)
+            notes.append("NetSketch: adresa bez délky prefixu se uloží jako /32 (jako na RouterOS); síť zadejte např. jako \(host)/24.")
+        } else {
+            return "invalid value for argument address"
+        }
+        guard prefix.isHostAddress else {
+            return "invalid value for argument address\nNetSketch: \(prefix.address) je adresa sítě nebo broadcast "
+                + "sítě \(prefix.networkPrefix), zadejte adresu hostitele."
+        }
+
+        let interface: L3InterfaceID
+        let name: String
+        switch l3Interface(named: interfaceText) {
+        case .failure(let message): return message
+        case .found(let found, let foundName):
+            interface = found
+            name = foundName
+        }
+        if let previous = access.addresses.first(where: { $0.interface == interface }) {
+            if previous.address == prefix.description { return "failure: already have such address" }
+            notes.append("NetSketch: rozhraní \(name) má v NetSketch jen jednu adresu, původní \(previous.address) byla nahrazena.")
+        }
+        if let other = access.addressConflict(prefix.address, except: interface) {
+            notes.append("NetSketch: pozor, adresa \(prefix.address) je už nastavena na zařízení \(other).")
+        }
+        access.setAddress(prefix, on: interface)
+        return notes.joined(separator: "\n")
+    }
+
+    /// Rows in the order of the device's addresses; that order also numbers `remove`.
+    private func printAddresses(_ arguments: [Word]) -> String {
+        if let extra = arguments.first { return endOfCommand(extra) }
+        var lines = ["Flags: X - disabled, I - invalid, D - dynamic", " #   ADDRESS            NETWORK         INTERFACE"]
+        for (index, entry) in access.addresses.enumerated() {
+            let name = interfaceName(of: entry.interface)
+            let network = IPv4Prefix(cidr: entry.address)?.network.description
+            // I (invalid): the interface no longer exists or the stored text is not an address.
+            let flag = name == nil || network == nil ? "I" : " "
+            let columns = ["\(index)".leftPadded(2), flag, entry.address.padded(18), (network ?? "").padded(15), name ?? "unknown"]
+            lines.append(columns.joined(separator: " "))
+        }
+        return lines.map { $0.trimmingTrailingWhitespace() }.joined(separator: "\n")
+    }
+
+    private func removeAddresses(_ arguments: [Word]) -> String {
+        let entries = access.addresses
+        switch itemNumbers(arguments, count: entries.count) {
+        case .failure(let message):
+            return message
+        case .items(let selected):
+            access.transaction { selected.forEach { access.setAddress(nil, on: entries[$0].interface) } }
+            return ""
+        }
+    }
+
+    // MARK: /ip route
+
+    /// One row of `/ip route print`.
+    private struct RouteRow {
+        enum Source: Equatable {
+            /// A connected network (dynamic): goes away with its address.
+            case connected
+            /// `staticRoutes[index]` of the device.
+            case stored(Int)
+            /// The device's default gateway (set outside RouterOS), shown as a static default route.
+            case defaultGateway
+        }
+
+        /// "ADC", "A S" or "  S" (inactive static route).
+        let flags: String
+        let destination: String
+        let preferredSource: String
+        let gateway: String
+        let distance: Int
+        let source: Source
+    }
+
+    /// The routing table of the simulation without the local /32 routes, then the stored static
+    /// routes that are not active (their gateway is not on a connected network).
+    private func routeRows() -> [RouteRow] {
+        let stored = access.staticRoutes
+        var used = Set<Int>()
+        var rows: [RouteRow] = []
+        for route in access.simulator.routes(of: access.deviceID) {
+            switch route.kind {
+            case .local:
+                continue
+            case .connected:
+                rows.append(RouteRow(flags: "ADC", destination: route.destination.description,
+                                     preferredSource: route.interface.prefix.address.description,
+                                     gateway: interfaceName(of: route.interface.id) ?? route.interface.name,
+                                     distance: 0, source: .connected))
+            case .staticRoute:
+                guard let hop = route.nextHop else { continue }
+                let index = stored.indices.first { candidate in
+                    !used.contains(candidate) && IPv4(stored[candidate].nextHop) == hop
+                        && IPv4Prefix(cidr: stored[candidate].destination)?.networkPrefix == route.destination
+                }
+                let source: RouteRow.Source
+                if let index {
+                    used.insert(index)
+                    source = .stored(index)
+                } else {
+                    source = .defaultGateway
+                }
+                rows.append(RouteRow(flags: "A S", destination: route.destination.description, preferredSource: "",
+                                     gateway: hop.description, distance: 1, source: source))
+            }
+        }
+        for (index, route) in stored.enumerated() where !used.contains(index) {
+            rows.append(RouteRow(flags: "  S", destination: route.destination, preferredSource: "",
+                                 gateway: route.nextHop, distance: 1, source: .stored(index)))
+        }
+        return rows
+    }
+
+    /// `add [dst-address=A.B.C.D/NN] gateway=A.B.C.D`; the destination defaults to 0.0.0.0/0.
+    /// A route whose gateway is not on a connected network yet is stored all the same (the
+    /// addresses may come later), with a notice.
+    private func addRoute(_ arguments: [Word]) -> String {
+        let values: [String: String]
+        switch namedArguments(arguments, keys: ["dst-address", "gateway"]) {
+        case .failure(let message): return message
+        case .values(let found): values = found
+        }
+        guard let gatewayText = values["gateway"] else { return "missing value(s) of argument(s) gateway" }
+        let destinationText = values["dst-address"] ?? "0.0.0.0/0"
+        guard let destination = IPv4Prefix(cidr: destinationText)
+                ?? IPv4(destinationText).map({ IPv4Prefix(address: $0, length: 32) }) else {
+            return "invalid value for argument dst-address"
+        }
+        guard let gateway = IPv4(gatewayText) else {
+            let lower = gatewayText.lowercased()
+            guard lower.hasPrefix("bridge") || access.interfaces.contains(where: { $0.name.lowercased() == lower }) else {
+                return "invalid value for argument gateway"
+            }
+            return "invalid value for argument gateway\n"
+                + "NetSketch: bránu zadejte jako IP adresu sousedního routeru (rozhraní jako brána se nemodeluje)."
+        }
+        let route = StaticRoute(destination: destination.networkPrefix.description, nextHop: gateway.description)
+        let routes = access.staticRoutes
+        guard !routes.contains(route) else { return "failure: already have such route" }
+        access.setStaticRoutes(routes + [route])
+        let connected = access.simulator.interfaces(of: access.deviceID).contains { $0.prefix.contains(gateway) }
+        return connected ? ""
+            : "NetSketch: trasa je uložena, ale zatím není aktivní – brána \(gateway) neleží v žádné připojené síti "
+                + "(adresa na zapojeném rozhraní)."
+    }
+
+    private func printRoutes(_ arguments: [Word]) -> String {
+        if let extra = arguments.first { return endOfCommand(extra) }
+        let rows = routeRows()
+        var lines = [
+            "Flags: X - disabled, A - active, D - dynamic, C - connect, S - static",
+            " #      DST-ADDRESS        PREF-SRC        GATEWAY            DISTANCE",
+        ]
+        for (index, row) in rows.enumerated() {
+            // The flags column is three wide and followed by two spaces.
+            let columns = [
+                "\(index)".leftPadded(2), row.flags.padded(3) + " ", row.destination.padded(18),
+                row.preferredSource.padded(15), row.gateway.padded(18), "\(row.distance)".leftPadded(8),
+            ]
+            lines.append(columns.joined(separator: " "))
+        }
+        if rows.contains(where: { !$0.flags.hasPrefix("A") }) {
+            lines.append("NetSketch: trasa bez příznaku A není aktivní – její brána neleží v žádné připojené síti.")
+        }
+        return lines.map { $0.trimmingTrailingWhitespace() }.joined(separator: "\n")
+    }
+
+    /// Removes static routes by their number in `print`. Connected routes are refused (as
+    /// dynamic routes on RouterOS); nothing is removed then.
+    private func removeRoutes(_ arguments: [Word]) -> String {
+        let rows = routeRows()
+        let sources: [RouteRow.Source]
+        switch itemNumbers(arguments, count: rows.count) {
+        case .failure(let message): return message
+        case .items(let selected): sources = selected.map { rows[$0].source }
+        }
+        guard !sources.contains(.connected) else {
+            return "failure: cannot remove dynamic route\n"
+                + "NetSketch: připojená síť (příznak C) zmizí odebráním adresy v /ip address."
+        }
+        var removed = Set<Int>()
+        for case .stored(let index) in sources { removed.insert(index) }
+        let remaining = access.staticRoutes.enumerated().filter { !removed.contains($0.offset) }.map { $0.element }
+        access.transaction {
+            if !removed.isEmpty { access.setStaticRoutes(remaining) }
+            if sources.contains(.defaultGateway) { access.setDefaultGateway(nil) }
+        }
+        return ""
+    }
+
+    // MARK: /ping
+
+    private static let maxPingCount = 20
+
+    /// `/ping A.B.C.D [count=N]` or `/ping address=A.B.C.D`: echo requests through the network
+    /// simulation. Only reachability is simulated, so every reply takes 0ms.
+    private func ping(_ arguments: [Word]) -> String {
+        let values: [String: String]
+        switch namedArguments(arguments, keys: ["address", "count"], positional: "address") {
+        case .failure(let message): return message
+        case .values(let found): values = found
+        }
+        guard let text = values["address"] else { return "missing value(s) of argument(s) address" }
+        guard let destination = IPv4(text) else { return "invalid value for argument address" }
+        var count = 4
+        var notes: [String] = []
+        if let countText = values["count"] {
+            guard !countText.isEmpty, countText.count <= 6, countText.allSatisfy({ $0.isASCII && $0.isNumber }),
+                  let value = Int(countText), value > 0 else { return "invalid value for argument count" }
+            count = min(value, RouterOSEngine.maxPingCount)
+            if value > count { notes.append("NetSketch: odesláno jen \(count) paketů (víc NetSketch neposílá).") }
+        }
+
+        let simulator = access.simulator
+        let result = simulator.ping(from: access.deviceID, to: destination)
+        // Every router on the way back lowers the TTL of the reply by one.
+        let ttl = max(1, 64 - max(0, result.hopCount - 1))
+        let host = destination.description.padded(40)
+        var lines = ["  SEQ HOST                                     SIZE TTL TIME       STATUS"]
+        for sequence in 0..<count {
+            let head = "\(sequence)".leftPadded(5) + " " + host
+            if result.success {
+                lines.append([head, "56".leftPadded(4), "\(ttl)".leftPadded(3), "0ms"].joined(separator: " "))
+            } else {
+                lines.append(head + String(repeating: " ", count: 19) + "timeout")
+            }
+        }
+        if result.success {
+            lines.append("    sent=\(count) received=\(count) packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=0ms")
+        } else {
+            lines.append("    sent=\(count) received=0 packet-loss=100%")
+            let reason = simulator.explain(result)
+            if !reason.isEmpty { lines.append(reason) }
+        }
+        lines.append(contentsOf: notes)
+        return lines.joined(separator: "\n")
+    }
+
     // MARK: /export
 
     private static func exportValue(_ value: String) -> String {
@@ -484,6 +886,29 @@ final class RouterOSEngine: ConsoleEngine {
             section("/interface ethernet", all.filter { $0.connector != .wireless })
             if location.last != "ethernet" {
                 section("/interface wireless", all.filter { $0.connector == .wireless })
+            }
+        }
+        // `/ip export` writes both sections, `/ip address export` and `/ip route export` one each.
+        let wantsIP = location.isEmpty || location.first == "ip"
+        if wantsIP, location.last != "route", !access.addresses.isEmpty {
+            lines.append("/ip address")
+            for entry in access.addresses {
+                let name = interfaceName(of: entry.interface) ?? "unknown"
+                lines.append("add address=\(RouterOSEngine.exportValue(entry.address)) interface=\(RouterOSEngine.exportValue(name))")
+            }
+        }
+        if wantsIP, location.last != "address" {
+            var rows = access.staticRoutes.map {
+                "add dst-address=\(RouterOSEngine.exportValue($0.destination)) gateway=\(RouterOSEngine.exportValue($0.nextHop))"
+            }
+            // A default gateway set outside RouterOS is shown by `print` as a static default route.
+            let gateway = access.defaultGateway
+            if !gateway.isEmpty, !access.staticRoutes.contains(where: { $0.destination == "0.0.0.0/0" }) {
+                rows.append("add dst-address=0.0.0.0/0 gateway=\(RouterOSEngine.exportValue(gateway))")
+            }
+            if !rows.isEmpty {
+                lines.append("/ip route")
+                lines.append(contentsOf: rows)
             }
         }
         if wantsIdentity {
@@ -536,6 +961,29 @@ final class RouterOSEngine: ConsoleEngine {
                 if command.action == .set { entries.append(("disabled=", "Defines whether item is ignored or used (yes | no)")) }
             case .enable, .disable:
                 entries.append(contentsOf: items(in: context.location).map { ($0.name, "Interface") })
+            case .add where context.location == RouterOSEngine.addressMenu:
+                // While a value of interface= is typed, the interface names complete the word.
+                if context.lastWord.lowercased().hasPrefix("interface=") {
+                    entries.append(contentsOf: addressInterfaceNames.map { ("interface=" + $0, "Interface") })
+                } else {
+                    entries.append(("address=", "Local IP address with prefix length (A.B.C.D/NN)"))
+                    entries.append(("interface=", "Interface name"))
+                }
+            case .add:
+                entries.append(("dst-address=", "Destination network (A.B.C.D/NN, default 0.0.0.0/0)"))
+                entries.append(("gateway=", "IP address of the next router"))
+            case .remove where context.location == RouterOSEngine.addressMenu:
+                for (index, entry) in access.addresses.enumerated() {
+                    let name = interfaceName(of: entry.interface) ?? "unknown"
+                    entries.append(("\(index)", entry.address + " " + name))
+                }
+            case .remove:
+                for (index, row) in routeRows().enumerated() {
+                    entries.append(("\(index)", row.destination + " " + row.gateway))
+                }
+            case .ping:
+                entries.append(("address=", "Destination IP address"))
+                entries.append(("count=", "How many packets to send (1-\(RouterOSEngine.maxPingCount))"))
             case .print, .export, .quit:
                 break
             }

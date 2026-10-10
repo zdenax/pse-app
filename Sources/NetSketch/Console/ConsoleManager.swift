@@ -82,7 +82,9 @@ final class ConsoleModel {
         let candidates = session.complete(line)
         guard !candidates.isEmpty else { return line }
         if candidates.count == 1 {
-            return Self.applying(completion: candidates[0], to: line) + " "
+            // "address=" waits for its value right after the "=".
+            let separator = candidates[0].hasSuffix("=") ? "" : " "
+            return Self.applying(completion: candidates[0], to: line) + separator
         }
         // Several candidates: list them like IOS does and keep the line.
         append(.echo(prompt: session.prompt), line)
