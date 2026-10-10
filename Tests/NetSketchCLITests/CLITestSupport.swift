@@ -50,7 +50,7 @@ extension ProjectStore {
         return device
     }
 
-    func port(_ hostname: String, _ portName: String) throws -> Port {
+    func port(_ hostname: String, _ portName: String) throws -> NetSketchCore.Port {
         guard let port = try device(hostname).port(named: portName) else {
             throw MissingPort(hostname: hostname, port: portName)
         }
