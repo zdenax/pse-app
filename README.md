@@ -1,5 +1,10 @@
 # pse-app (NetSketch)
 
+> **Nejde o nástroj UJEP.** NetSketch není oficiální aplikace Univerzity J. E. Purkyně v Ústí nad
+> Labem, nevznikl na její zakázku ani s jejím schválením. Je to soukromá cvičná aplikace studenta
+> k procvičování počítačových sítí, inspirovaná vybavením laboratoře a látkou předmětu KI/PSE.
+> Za obsah odpovídá autor.
+
 > **Využití umělé inteligence.** Projekt vznikl s výrazným využitím nástroje generativní AI
 > **Claude Code** (Anthropic). Prohlášení o využití AI v souladu s
 > [pravidly využívání AI (SR-07-26)](https://www.fzp.ujep.cz/wp-content/uploads/2026/06/SR-07-26_Pravidla-AI.pdf):
@@ -15,13 +20,17 @@
 > - Části vytvořené s AI jsou v historii repozitáře označené (`Co-Authored-By: Claude`).
 >   Za obsah projektu a jeho použití odpovídá autor.
 
-Vizuální editor síťové topologie ve stylu Cisco Packet Tracer pro KI/PSE (UJEP), ve dvou verzích:
+Vizuální editor síťové topologie ve stylu Cisco Packet Tracer pro procvičování látky předmětu
+KI/PSE, ve dvou verzích:
 nativní macOS aplikace (Swift + SwiftUI, macOS 14+) a webová verze pro libovolný OS (složka
 [`web/`](web/), TypeScript + React, běží v prohlížeči). Zařízení se kreslí a propojují na plátně, konfigurují
 v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` /
 `traceroute` mezi nimi opravdu prochází podle kabeláže, VLAN, IP adres a statických tras.
 
 ![NetSketch s otevřeným cvičením 2: paleta zařízení, plátno s panely routerů a kabely, inspector](docs/screenshots/aplikace-cviceni-2.png)
+
+**Návod s obrázky:** [docs/NetSketch-navod.pdf](docs/NetSketch-navod.pdf) (spuštění, kreslení, konzole,
+IP adresy, ping a obě cvičení).
 
 ## Rychlé spuštění
 

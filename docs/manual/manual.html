@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>NetSketch – návod</title>
+<!-- Source of docs/NetSketch-navod.pdf. Rebuild the PDF with: node docs/manual/build-pdf.mjs -->
+<style>
+  /* Layout: A4 handbook, one topic per section, screenshots full column width with a caption. */
+  :root {
+    --ink: #17232b;
+    --muted: #55656f;
+    --line: #d5dde1;
+    --paper: #ffffff;
+    --tint: #eef6f5;
+    --accent: #0e7f7a;
+    --code-bg: #0f2233;
+    --code-ink: #dce8ef;
+    --body: "Inter", "DejaVu Sans", "Liberation Sans", sans-serif;
+    --mono: "DejaVu Sans Mono", "Liberation Mono", monospace;
+  }
+  @page { size: A4; margin: 18mm 17mm 20mm 17mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--body); color: var(--ink); background: var(--paper); font-size: 10.5pt; line-height: 1.5; }
+  h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
+  h2 { font-size: 17pt; margin: 0 0 4mm; padding-bottom: 2mm; border-bottom: 2px solid var(--accent); break-after: avoid; }
+  h3 { font-size: 12pt; margin: 6mm 0 2mm; color: var(--accent); break-after: avoid; }
+  p { margin: 0 0 3mm; }
+  ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+  li { margin-bottom: 1mm; }
+  section { break-before: page; }
+  code { font-family: var(--mono); font-size: 9pt; background: var(--tint); padding: 0.2mm 1.2mm; border-radius: 2px; }
+  pre { font-family: var(--mono); font-size: 8.8pt; line-height: 1.45; background: var(--code-bg); color: var(--code-ink); padding: 3mm 4mm; border-radius: 3px; margin: 0 0 4mm; white-space: pre-wrap; break-inside: avoid; }
+  pre .p { color: #6fd3c8; }
+  figure { margin: 0 0 5mm; break-inside: avoid; }
+  figure img { display: block; width: 100%; border: 1px solid var(--line); border-radius: 3px; }
+  figcaption { font-size: 8.8pt; color: var(--muted); margin-top: 1.5mm; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 4mm; font-size: 9.3pt; break-inside: avoid; }
+  th, td { text-align: left; vertical-align: top; padding: 1.6mm 2mm; border-bottom: 1px solid var(--line); }
+  th { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+  td code { white-space: nowrap; }
+  .note { background: var(--tint); border-left: 3px solid var(--accent); padding: 2.5mm 4mm; margin: 0 0 4mm; font-size: 9.6pt; break-inside: avoid; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .steps { counter-reset: step; list-style: none; padding-left: 0; }
+  .steps li { counter-increment: step; position: relative; padding-left: 8mm; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: 0.2mm; width: 5mm; height: 5mm; border-radius: 50%; background: var(--accent); color: #fff; font-size: 8pt; font-weight: 700; text-align: center; line-height: 5mm; }
+
+  /* Cover */
+  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; break-after: page; }
+  .cover h1 { font-size: 40pt; margin: 30mm 0 4mm; letter-spacing: -0.01em; }
+  .cover .sub { font-size: 14pt; color: var(--muted); max-width: 140mm; }
+  .cover .meta { font-size: 9.5pt; color: var(--muted); }
+  .cover figure { margin-top: 10mm; }
+  .toc { list-style: none; padding: 0; columns: 2; column-gap: 10mm; font-size: 10pt; }
+  .toc li { margin-bottom: 1.2mm; }
+  .toc span { color: var(--accent); font-weight: 700; display: inline-block; width: 7mm; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div>
+    <h1>NetSketch</h1>
+    <p class="sub">Návod k editoru síťové topologie s konzolemi Cisco, Dell, MikroTik a PC a se simulací pingu. Soukromá cvičná aplikace studenta.</p>
+    <figure>
+      <img src="../screenshots/web-cviceni-2.png" alt="Okno NetSketch s otevřeným cvičením 2">
+      <figcaption>Webová verze s otevřeným cvičením 2: čtyři routery, dvě PC a statické směrování.</figcaption>
+    </figure>
+    <h3>Obsah</h3>
+    <ol class="toc">
+      <li><span>1</span>Co NetSketch umí</li>
+      <li><span>2</span>Spuštění</li>
+      <li><span>3</span>Okno aplikace</li>
+      <li><span>4</span>Kreslení sítě</li>
+      <li><span>5</span>Konzole zařízení</li>
+      <li><span>6</span>Nastavení IP adres a tras</li>
+      <li><span>7</span>Ping a traceroute</li>
+      <li><span>8</span>Cvičení 1: čtyři multivendor switche</li>
+      <li><span>9</span>Cvičení 2: čtyři routery</li>
+      <li><span>10</span>Soubory a export</li>
+      <li><span>11</span>Co se nesimuluje</li>
+    </ol>
+  </div>
+  <div>
+    <div class="note"><strong>Nejde o nástroj UJEP.</strong> NetSketch není oficiální aplikace Univerzity J. E. Purkyně, nevznikl na její zakázku ani s jejím schválením. Je to soukromá cvičná aplikace studenta k procvičování sítí, inspirovaná vybavením laboratoře a látkou předmětu KI/PSE. Za obsah odpovídá autor.</div>
+    <p class="meta">Verze 10/2026 · repozitář zdenax/pse-app · Projekt vznikl s využitím nástroje generativní AI Claude Code (Anthropic), viz README.</p>
+  </div>
+</div>
+
+<section>
+  <h2>1 Co NetSketch umí</h2>
+  <p>NetSketch je soukromý kreslicí a cvičný nástroj studenta pro počítačové sítě ve stylu Cisco Packet Tracer (není to nástroj UJEP). Síť se nakreslí ze skutečných zařízení z laboratoře, nastaví se v konzolích jejich vlastními příkazy a ping a traceroute ukážou, jestli je zapojení a konfigurace správně.</p>
+  <ul>
+    <li><strong>Zařízení s reálnými panely:</strong> Cisco Catalyst a ISR, Dell S3048-ON, MikroTik, Ubiquiti, PC, servery a access pointy. Kabel se zapojuje do konkrétního portu.</li>
+    <li><strong>Konzole podle výrobce:</strong> Cisco IOS, Dell OS9, MikroTik RouterOS a příkazový řádek PC (<code>C:\&gt;</code>).</li>
+    <li><strong>Simulace sítě:</strong> VLAN, access a trunk porty, IP adresy, výchozí brána, statické trasy, <code>ping</code> a <code>traceroute</code>.</li>
+    <li><strong>Hotová cvičení</strong> ve složce <code>examples/</code> a export diagramu do PNG, SVG a PDF.</li>
+  </ul>
+  <h3>Dvě verze</h3>
+  <table>
+    <tr><th>Verze</th><th>Kde běží</th><th>Kdy použít</th></tr>
+    <tr><td>Webová (<code>web/</code>)</td><td>v prohlížeči na Windows, Linuxu i macOS</td><td>všude, i na školních počítačích</td></tr>
+    <tr><td>macOS aplikace</td><td>macOS 14 a novější</td><td>na Macu jako běžná aplikace</td></tr>
+  </table>
+  <p>Obě verze otevírají stejné soubory <code>.netsketch</code> a chovají se stejně. Konzole vypisují do znaku stejný text.</p>
+</section>
+
+<section>
+  <h2>2 Spuštění</h2>
+  <h3>Webová verze</h3>
+  <p>Potřeba je jen <strong>Node.js 20</strong> nebo novější (<code>node --version</code>). V adresáři repozitáře:</p>
+<pre><span class="p">$</span> cd web
+<span class="p">$</span> npm install      <span class="p"># jen poprvé</span>
+<span class="p">$</span> npm start        <span class="p"># otevře http://localhost:5173</span></pre>
+  <p>Rovnou se cvičením: <code>http://localhost:5173/#cviceni-1</code> nebo <code>#cviceni-2</code>.</p>
+  <h3>macOS aplikace</h3>
+  <p>Potřeba jsou Command Line Tools (<code>xcode-select --install</code>), Xcode není nutný.</p>
+<pre><span class="p">$</span> swift run NetSketch          <span class="p"># spustí aplikaci</span>
+<span class="p">$</span> scripts/make-app.sh          <span class="p"># vytvoří build/NetSketch.app</span>
+<span class="p">$</span> open build/NetSketch.app</pre>
+  <div class="note">Kód je na GitHubu v repozitáři <code>zdenax/pse-app</code>. Po <code>git pull</code> stačí znovu spustit stejný příkaz.</div>
+</section>
+
+<section>
+  <h2>3 Okno aplikace</h2>
+  <figure>
+    <img src="../screenshots/aplikace-cviceni-2.png" alt="Okno macOS aplikace">
+    <figcaption>macOS aplikace se cvičením 2. Webová verze vypadá stejně.</figcaption>
+  </figure>
+  <table>
+    <tr><th>Část</th><th>K čemu slouží</th></tr>
+    <tr><td><strong>Paleta</strong> (vlevo)</td><td>Katalog zařízení podle kategorií s vyhledáváním. Trojúhelník znamená, že počty portů ještě nejsou ověřené na skutečném hardwaru.</td></tr>
+    <tr><td><strong>Lišta</strong> (nahoře)</td><td>Soubor, zpět a znovu, typ kabelu, fyzický nebo logický pohled, mřížka, poznámka, svazek linek, konzole, zoom, export, inspector.</td></tr>
+    <tr><td><strong>Plátno</strong> (uprostřed)</td><td>Diagram. Ve fyzickém pohledu přední panely s porty, v logickém jen ikony a linky.</td></tr>
+    <tr><td><strong>Inspector</strong> (vpravo)</td><td>Vlastnosti vybraného zařízení, kabelu nebo projektu: hostname, poznámka, VLAN, IP adresy, porty a jejich popisy.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>4 Kreslení sítě</h2>
+  <ol class="steps">
+    <li><strong>Přidat zařízení:</strong> přetáhnout ho z palety na plátno, nebo na něj v paletě dvakrát kliknout.</li>
+    <li><strong>Propojit kabelem:</strong> na liště zvolit typ kabelu (přímý, křížený, konzolový, optický), kliknout na port prvního zařízení a pak na port druhého.</li>
+    <li><strong>Přesunout:</strong> táhnout zařízení myší; šipky posouvají výběr po krocích.</li>
+    <li><strong>Přejmenovat:</strong> dvojklik na název zařízení, nebo pole Hostname v inspectoru.</li>
+    <li><strong>Smazat:</strong> vybrat a stisknout Delete. Zpět vrací Cmd+Z (Mac) nebo Ctrl+Z.</li>
+    <li><strong>Poznámka:</strong> dvojklik do prázdného místa na plátně.</li>
+  </ol>
+  <div class="note">Dva kabely mezi stejnou dvojicí zařízení lze spojit do svazku (LAG): vyberte oba a použijte tlačítko svazku na liště. Je to jen kresba, LACP se nesimuluje.</div>
+  <figure>
+    <img src="../screenshots/aplikace-cviceni-1-logicky.png" alt="Logický pohled">
+    <figcaption>Logický pohled cvičení 1: místo panelů jen ikony zařízení a linky.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>5 Konzole zařízení</h2>
+  <p>Konzoli otevře tlačítko s ikonou terminálu na liště nebo <strong>„Otevřít konzoli“</strong> v inspectoru u vybraného zařízení. V macOS aplikaci také Cmd+T. Každé zařízení má vlastní okno konzole; zavření okna konzoli nezruší, <code>exit</code> ano.</p>
+  <table>
+    <tr><th>Klávesa</th><th>Co udělá</th></tr>
+    <tr><td><code>Tab</code></td><td>doplní příkaz nebo ukáže možnosti</td></tr>
+    <tr><td><code>?</code></td><td>nápověda k tomu, co je napsané</td></tr>
+    <tr><td><code>↑</code> <code>↓</code></td><td>historie příkazů</td></tr>
+    <tr><td><code>Ctrl+C</code></td><td>zruší rozepsaný řádek</td></tr>
+    <tr><td><code>Ctrl+Z</code></td><td>konec konfigurace (jako <code>end</code>)</td></tr>
+  </table>
+  <table>
+    <tr><th>Zařízení</th><th>Konzole</th></tr>
+    <tr><td>Cisco (Catalyst, ISR)</td><td>Cisco IOS: <code>enable</code>, <code>configure terminal</code>, <code>show …</code></td></tr>
+    <tr><td>Dell S3048-ON</td><td>Dell OS9: <code>configure</code>, VLAN přes <code>interface vlan N</code></td></tr>
+    <tr><td>MikroTik</td><td>RouterOS: menu <code>/interface</code>, <code>/ip address</code>, <code>/ip route</code></td></tr>
+    <tr><td>Ubiquiti, ostatní</td><td>obecná syntaxe ve stylu Cisco IOS (konzole to při otevření napíše)</td></tr>
+    <tr><td>PC, server</td><td>příkazový řádek <code>C:\&gt;</code>: <code>ipconfig</code>, <code>netsh</code>, <code>ping</code>, <code>tracert</code></td></tr>
+  </table>
+  <p>Všechno, co se v konzoli nastaví, se hned projeví v diagramu a v inspectoru a jde vrátit přes Zpět.</p>
+</section>
+
+<section>
+  <h2>6 Nastavení IP adres a tras</h2>
+  <table>
+    <tr><th>Zařízení</th><th>Adresa</th><th>Trasa a brána</th></tr>
+    <tr><td>Cisco router</td><td><code>interface gi0/0/0</code><br><code>ip address 10.0.0.1 255.255.255.0</code></td><td><code>ip route 0.0.0.0 0.0.0.0 10.0.0.2</code></td></tr>
+    <tr><td>Cisco switch</td><td><code>interface vlan 1</code><br><code>ip address 192.168.10.1 255.255.255.0</code></td><td><code>ip default-gateway 192.168.10.254</code></td></tr>
+    <tr><td>Dell OS9</td><td><code>interface vlan 1</code><br><code>ip address 192.168.10.2/24</code></td><td><code>ip route 10.9.0.0/16 192.168.10.254</code></td></tr>
+    <tr><td>MikroTik</td><td><code>/ip address add address=10.0.12.2/30 interface=ether1</code><br>(switch: <code>interface=bridge</code>)</td><td><code>/ip route add dst-address=192.168.1.0/24 gateway=10.0.12.1</code></td></tr>
+    <tr><td>PC</td><td colspan="2"><code>netsh interface ip set address eth0 static 192.168.1.10 255.255.255.0 192.168.1.1</code><br>(poslední adresa je výchozí brána)</td></tr>
+  </table>
+  <h3>Příklad: router Cisco</h3>
+<pre>R1&gt;<span class="p"> enable</span>
+R1#<span class="p"> configure terminal</span>
+R1(config)#<span class="p"> interface gi0/0/0</span>
+R1(config-if)#<span class="p"> ip address 192.168.1.1 255.255.255.0</span>
+R1(config-if)#<span class="p"> no shutdown</span>
+R1(config-if)#<span class="p"> exit</span>
+R1(config)#<span class="p"> ip route 0.0.0.0 0.0.0.0 10.0.12.2</span>
+R1(config)#<span class="p"> end</span>
+R1#<span class="p"> show ip route</span></pre>
+  <div class="note">VLAN na portech switchů: <code>switchport mode access</code> a <code>switchport access vlan 10</code>, mezi switchi <code>switchport mode trunk</code>. Ping projde jen mezi zařízeními ve stejné VLAN, pokud mezi nimi není router.</div>
+</section>
+
+<section>
+  <h2>7 Ping a traceroute</h2>
+  <p>Ping sleduje nakreslené kabely, VLAN, IP adresy a trasy. Když neprojde, konzole česky napíše, kde a proč se paket zastavil (například „R2 nemá trasu do sítě…“).</p>
+  <figure>
+    <img src="../screenshots/web-konzole-pc1.png" alt="Konzole PC1 s ipconfig, ping a tracert">
+    <figcaption>Konzole PC1 ve cvičení 2: <code>ipconfig</code>, <code>ping 192.168.4.10</code> a <code>tracert</code> přes čtyři routery.</figcaption>
+  </figure>
+  <table>
+    <tr><th>Zařízení</th><th>Ping</th><th>Traceroute</th></tr>
+    <tr><td>Cisco, Dell, Ubiquiti</td><td><code>ping 192.168.4.10</code></td><td><code>traceroute 192.168.4.10</code></td></tr>
+    <tr><td>MikroTik</td><td><code>/ping 192.168.4.10 count=3</code></td><td>–</td></tr>
+    <tr><td>PC, server</td><td><code>ping 192.168.4.10</code></td><td><code>tracert 192.168.4.10</code></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>8 Cvičení 1: čtyři multivendor switche</h2>
+  <p>Soubor <code>examples/cviceni-1-multivendor-switche.netsketch</code>. Čtyři switche různých výrobců zapojené za sebou v jedné síti 192.168.10.0/24 (VLAN 1), na krajích dvě PC.</p>
+  <figure>
+    <img src="../screenshots/web-cviceni-1.png" alt="Cvičení 1">
+    <figcaption>Cvičení 1 ve webové verzi.</figcaption>
+  </figure>
+  <table>
+    <tr><th>Zařízení</th><th>Adresa</th><th>Kde se nastavuje</th></tr>
+    <tr><td>SW1-CISCO (Catalyst 2960)</td><td>192.168.10.1/24</td><td><code>interface vlan 1</code></td></tr>
+    <tr><td>SW2-DELL (S3048-ON)</td><td>192.168.10.2/24</td><td><code>interface vlan 1</code></td></tr>
+    <tr><td>SW3-MIKROTIK (CRS)</td><td>192.168.10.3/24</td><td><code>/ip address … interface=bridge</code></td></tr>
+    <tr><td>SW4-UBIQUITI (UniFi)</td><td>192.168.10.4/24</td><td><code>interface vlan 1</code></td></tr>
+    <tr><td>PC1, PC2</td><td>.101 a .102</td><td><code>netsh …</code></td></tr>
+  </table>
+  <p><strong>Ověření:</strong> konzole PC1, <code>ping 192.168.10.102</code>; konzole SW1, <code>ping 192.168.10.3</code>.</p>
+</section>
+
+<section>
+  <h2>9 Cvičení 2: čtyři routery</h2>
+  <p>Soubor <code>examples/cviceni-2-ctyri-routery.netsketch</code>. Routery Cisco, MikroTik, Ubiquiti a Cisco za sebou, mezi nimi sítě /30, na krajích LAN s PC. R1 a R4 mají výchozí trasu, R2 a R3 statické trasy do obou LAN.</p>
+  <table>
+    <tr><th>Síť</th><th>Mezi</th></tr>
+    <tr><td>192.168.1.0/24</td><td>PC1 (.10) – R1 (.1)</td></tr>
+    <tr><td>10.0.12.0/30</td><td>R1 (.1) – R2 (.2)</td></tr>
+    <tr><td>10.0.23.0/30</td><td>R2 (.1) – R3 (.2)</td></tr>
+    <tr><td>10.0.34.0/30</td><td>R3 (.1) – R4 (.2)</td></tr>
+    <tr><td>192.168.4.0/24</td><td>R4 (.1) – PC2 (.10)</td></tr>
+  </table>
+  <figure>
+    <img src="../screenshots/web-konzole-r2-mikrotik.png" alt="Konzole R2 MikroTik">
+    <figcaption>Konzole R2-MIKROTIK: adresy, směrovací tabulka a ping do LAN 1. Vpravo inspector s IP nastavením.</figcaption>
+  </figure>
+  <p><strong>Ověření:</strong> konzole PC1, <code>ping 192.168.4.10</code> a <code>tracert 192.168.4.10</code>; konzole R1, <code>show ip route</code>. Zkuste na R3 smazat trasu (<code>no ip route 192.168.1.0 255.255.255.0</code>) a podívejte se, co ping napíše; Zpět ji vrátí.</p>
+</section>
+
+<section>
+  <h2>10 Soubory a export</h2>
+  <ul>
+    <li><strong>Soubor › Nový, Otevřít, Uložit, Uložit jako:</strong> projekty se ukládají jako <code>.netsketch</code> (JSON). Obě verze aplikace je otevřou.</li>
+    <li><strong>Export</strong> (tlačítko se šipkou na liště): celý diagram do PNG, SVG nebo PDF, bez výběru a bez zoomu.</li>
+    <li><strong>Vlastní zařízení:</strong> tlačítko „Nové zařízení…“ pod paletou. Vlastní šablony se ukládají zvlášť a v projektu zůstanou, i když se katalog změní.</li>
+  </ul>
+  <figure>
+    <img src="../screenshots/web-konzole-r1-cisco.png" alt="Konzole R1 Cisco">
+    <figcaption>Konzole R1-CISCO: <code>show ip route</code> a ping do LAN 2.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>11 Co se nesimuluje</h2>
+  <p>NetSketch počítá dosažitelnost podle zapojení a konfigurace, není to emulátor firmware. Nesimuluje se:</p>
+  <ul>
+    <li>STP, LACP a PAgP (svazky linek se jen kreslí),</li>
+    <li>dynamické směrování (OSPF, RIP, EIGRP), DHCP, NAT a ACL,</li>
+    <li>časy odezvy a ztrátovost: ping buď projde, nebo ne.</li>
+  </ul>
+  <p>Příkazy, které diagram neumí uložit, konzole přijme a napíše poznámku „NetSketch: …“, že se nic nezměnilo.</p>
+  <div class="note"><strong>Katalog zařízení:</strong> počty a názvy portů jsou podle specifikací výrobců a zatím nejsou ověřené na skutečném hardwaru (žlutý trojúhelník). Před použitím ve výuce je zkontrolujte podle zařízení v laboratoři.</div>
+  <h3>Poznámka k využití AI</h3>
+  <p>Projekt vznikl s výrazným využitím nástroje generativní AI Claude Code (Anthropic) podle zadání a pokynů autora; podrobné prohlášení je v souboru README v repozitáři.</p>
+</section>
+
+</body>
+</html>
