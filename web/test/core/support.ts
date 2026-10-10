@@ -27,6 +27,14 @@ export const TemplateID = {
   pc: "generic-pc",
   server: "generic-server",
   accessPoint: "generic-ap",
+  // Added from the photo of the lab rack.
+  c2811: "cisco-2811",
+  c3550: "cisco-catalyst-3550-48",
+  c3750: "cisco-catalyst-3750-48ps",
+  crs326: "mikrotik-crs326-24g-2s",
+  usgPro4: "ubiquiti-usg-pro-4",
+  fs726t: "netgear-fs726t",
+  edgeRouterX: "ubiquiti-edgerouter-x",
 } as const;
 
 export const allTemplateIDs: string[] = Object.values(TemplateID);

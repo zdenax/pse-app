@@ -40,9 +40,19 @@ enum TemplateID {
     static let pc = "generic-pc"
     static let server = "generic-server"
     static let accessPoint = "generic-ap"
+    // Added from the photo of the lab rack.
+    static let c2811 = "cisco-2811"
+    static let c3550 = "cisco-catalyst-3550-48"
+    static let c3750 = "cisco-catalyst-3750-48ps"
+    static let crs326 = "mikrotik-crs326-24g-2s"
+    static let usgPro4 = "ubiquiti-usg-pro-4"
+    static let fs726t = "netgear-fs726t"
+    static let edgeRouterX = "ubiquiti-edgerouter-x"
 
     static let all = [
-        c2960_24, c2960_48, c3650, isr4321, dellS3048, hapLite, crs, udmPro, unifi24, pc, server, accessPoint,
+        c2960_24, c2960_48, c3650, isr4321, dellS3048, hapLite, crs, udmPro, unifi24,
+        c2811, c3550, c3750, crs326, usgPro4, fs726t, edgeRouterX,
+        pc, server, accessPoint,
     ]
 }
 
