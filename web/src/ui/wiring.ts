@@ -1,32 +1,36 @@
-// The single place where the UI shell meets the implementations of src/core and src/cli.
-// main.tsx calls loadWiring(); when it throws, a friendly "rozpracováno" page is shown instead.
-//
-// TODO(integration): replace the stub below once src/core and src/cli are finished, e.g.:
-//
-//   import { Catalog, ProjectStore } from "../core";
-//   import { CLI, CLISession } from "../cli";
-//
-//   export async function loadWiring(): Promise<AppWiring> {
-//     const store = new ProjectStore(new Catalog());
-//     return {
-//       store,
-//       createSession: (deviceID) => new CLISession(store, deviceID),
-//       supportsConsole: (device) => CLI.supportsConsole(device),
-//       // exporters: { png, pdf, svg }   // from the canvas implementation
-//     };
-//   }
-//
-// Keep every import of src/core and src/cli implementations in this file.
+// The single place where the UI shell meets the implementations of src/core, src/cli and
+// src/canvas. main.tsx calls loadWiring(); when it throws, a friendly "rozpracováno" page is
+// shown instead. Keep every import of those implementations in this file.
 
+import { Catalog, ProjectStore } from "../core";
+import type { CatalogStorage } from "../core";
+import { CLI, CLISession } from "../cli";
+import { canvasExporters } from "../canvas/exporters";
 import type { AppWiring } from "./App";
 
-export class WiringNotReadyError extends Error {
-  constructor() {
-    super("Jádro aplikace (src/core) a konzole (src/cli) zatím nejsou v ui/wiring.ts propojené.");
-    this.name = "WiringNotReadyError";
+/** Custom device templates ("Nové zařízení…") live in the browser's local storage. */
+const customTemplatesKey = "netsketch.customTemplates";
+
+function browserStorage(): CatalogStorage | undefined {
+  try {
+    const storage = window.localStorage;
+    return {
+      load: () => storage.getItem(customTemplatesKey),
+      save: (text: string) => storage.setItem(customTemplatesKey, text),
+    };
+  } catch {
+    // Private mode or blocked storage: custom templates live for this session only.
+    return undefined;
   }
 }
 
 export async function loadWiring(): Promise<AppWiring> {
-  throw new WiringNotReadyError();
+  const catalog = new Catalog({ storage: browserStorage() });
+  const store = new ProjectStore(catalog);
+  return {
+    store,
+    createSession: (deviceID) => new CLISession(store, deviceID),
+    supportsConsole: (device) => CLI.supportsConsole(device),
+    exporters: canvasExporters,
+  };
 }

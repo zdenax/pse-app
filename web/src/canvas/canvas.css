@@ -1,0 +1,152 @@
+/* The SVG topology canvas (src/canvas). Colors of the drawing come from the palette objects in
+   canvas/palette.ts; the chrome around it (menus) follows the shell's variables in ui/styles.css. */
+
+.ns-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ns-canvas-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  /* All hit testing is done by the scene; the SVG never handles pointer events itself. */
+  pointer-events: none;
+  text-rendering: geometricPrecision;
+}
+
+.ns-canvas-banners {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.ns-canvas-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: calc(100% - 32px);
+  padding: 7px 12px;
+  border: 0.8px solid;
+  border-radius: 999px;
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  animation: ns-canvas-banner-in 0.18s ease-out;
+}
+
+.ns-canvas-banner > span {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+@keyframes ns-canvas-banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.ns-canvas-editor {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 2px 5px;
+  border: 1.5px solid;
+  border-radius: 4px;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.28;
+  user-select: text;
+  -webkit-user-select: text;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.ns-canvas-menu-host {
+  position: absolute;
+  z-index: 20;
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 13px;
+}
+
+.ns-canvas-menu {
+  min-width: 190px;
+  padding: 5px;
+  border-radius: 8px;
+  background: var(--popover-bg, #ffffff);
+  box-shadow: var(--popover-shadow, 0 10px 30px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08));
+  color: var(--text, #1d1d1f);
+}
+
+.ns-canvas-menu-row {
+  position: relative;
+}
+
+.ns-canvas-submenu {
+  position: absolute;
+  top: -5px;
+  left: calc(100% + 2px);
+}
+
+.ns-canvas-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 4px;
+  padding: 4px 10px 4px 4px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.ns-canvas-menu-item:not(:disabled):hover,
+.ns-canvas-menu-item:not(:disabled):focus-visible,
+.ns-canvas-menu-item.open {
+  background: var(--menu-hover-bg, #13a89e);
+  color: var(--menu-hover-text, #ffffff);
+  outline: none;
+}
+
+.ns-canvas-menu-item:disabled {
+  color: var(--text-tertiary, #a0a0a6);
+}
+
+.ns-canvas-menu-check {
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+}
+
+.ns-canvas-menu-label {
+  flex: 1;
+}
+
+.ns-canvas-menu-arrow {
+  margin-left: 16px;
+}
+
+.ns-canvas-menu-separator {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--separator, rgba(0, 0, 0, 0.11));
+}
