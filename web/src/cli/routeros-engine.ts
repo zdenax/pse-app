@@ -26,16 +26,30 @@ import type { DeviceAccess, PortSnapshot } from "./model-access";
 import { CLILimits, Notices } from "./notices";
 import type { ConsoleEngine } from "./session";
 import { IPv4, IPv4Prefix } from "./sim/ipv4";
+import { collectRouterOSMenus, type RouterOSContext, type RouterOSFeatureMenu } from "./features/routeros-menus";
 import { NetworkSimulator } from "./sim/network-simulator";
 
 // MARK: Menu tree (the single definition used by execution, help and completion)
 
-type Action = "print" | "set" | "enable" | "disable" | "comment" | "add" | "remove" | "export" | "ping" | "quit";
+type Action =
+  | "print"
+  | "set"
+  | "enable"
+  | "disable"
+  | "comment"
+  | "add"
+  | "remove"
+  | "export"
+  | "ping"
+  | "quit"
+  | "feature";
 
 interface Command {
   readonly name: string;
   readonly help: string;
   readonly action: Action;
+  /** A command of a protocol feature (features/routeros-menus.ts). */
+  readonly run?: (context: RouterOSContext, args: Word[]) => string;
 }
 
 interface Menu {
@@ -243,6 +257,38 @@ function itemNumber(text: string): number | null {
 }
 
 /** Description texts are shown on one line. */
+/** The menu tree with the menus of the protocol features merged in. */
+function withFeatureMenus(base: Menu, features: RouterOSFeatureMenu[]): Menu {
+  const copy = (menu: Menu): Menu => ({ ...menu, submenus: menu.submenus.map(copy), commands: [...menu.commands] });
+  const result = copy(base);
+  for (const feature of features) {
+    let menu = result;
+    for (const [index, name] of feature.path.entries()) {
+      let next = menu.submenus.find((submenu) => submenu.name === name);
+      if (!next) {
+        const last = index === feature.path.length - 1;
+        next = { name, help: last ? feature.help : "", submenus: [], commands: last ? [] : [exportCommand] };
+        (menu.submenus as Menu[]).push(next);
+      }
+      menu = next;
+    }
+    const commands = menu.commands as Command[];
+    for (const command of feature.commands) {
+      const existing = commands.findIndex((candidate) => candidate.name === command.name);
+      const entry: Command = {
+        name: command.name,
+        help: command.help,
+        action: "feature",
+        run: (context, args) => command.run(context, args),
+      };
+      if (existing >= 0) commands[existing] = entry;
+      else commands.push(entry);
+    }
+    if (!commands.some((command) => command.name === "export")) commands.push(exportCommand);
+  }
+  return result;
+}
+
 function oneLine(text: string): string {
   return splitCharacters(text, isNewline).join(" ");
 }
@@ -312,9 +358,29 @@ export class RouterOSEngine implements ConsoleEngine {
   private path: string[] = [];
   private lastHostname: string;
 
+  /** The menus of the protocol features. */
+  private readonly featureMenus: RouterOSFeatureMenu[];
+  private readonly rootMenu: Menu;
+
   constructor(access: DeviceAccess) {
     this.access = access;
     this.lastHostname = access.hostname;
+    this.featureMenus = collectRouterOSMenus();
+    this.rootMenu = withFeatureMenus(rootMenu, this.featureMenus);
+  }
+
+  /** What feature commands may use (features/routeros-menus.ts). */
+  private get featureContext(): RouterOSContext {
+    return {
+      access: this.access,
+      hostname: this.hostname,
+      named: (args, keys, positional = null) => this.namedArguments(args, keys, positional),
+      itemNumbers: (args, count) => this.itemNumbers(args, count),
+      l3Interface: (name) => this.l3Interface(name),
+      interfaceName: (id) => this.interfaceName(id),
+      endOfCommand: (word) => this.endOfCommand(word),
+      exportValue,
+    };
   }
 
   get isClosed(): boolean {
@@ -322,7 +388,7 @@ export class RouterOSEngine implements ConsoleEngine {
   }
 
   private menu(at: readonly string[]): Menu {
-    let menu = rootMenu;
+    let menu = this.rootMenu;
     for (const name of at) {
       const next = menu.submenus.find((submenu) => submenu.name === name);
       if (!next) break;
@@ -397,6 +463,7 @@ export class RouterOSEngine implements ConsoleEngine {
       }
       const command = resolve(word.text, current.commands, (item) => item.name);
       if (command) {
+        if (command.run) return command.run(this.featureContext, words.slice(index + 1));
         return this.run(command.action, location, words.slice(index + 1));
       }
       return `bad command name ${word.text} (line 1 column ${word.column})`;
@@ -1126,6 +1193,14 @@ export class RouterOSEngine implements ConsoleEngine {
         lines.push("/ip route");
         lines.push(...rows);
       }
+    }
+    for (const menu of this.featureMenus) {
+      const covered = location.every((name, index) => menu.path[index] === name);
+      if (!covered || !menu.export) continue;
+      const rows = menu.export(this.featureContext);
+      if (rows.length === 0) continue;
+      lines.push("/" + menu.path.join(" "));
+      lines.push(...rows);
     }
     if (wantsIdentity) {
       lines.push("/system identity");

@@ -4,6 +4,7 @@
 // Addresses, routes and the default gateway are stored in the project; ping and traceroute ask
 // NetworkSimulator, which follows the drawn cabling.
 
+import { featureInterfaceLines } from "./features/ios-commands";
 import type { L3InterfaceID, StaticRoute } from "../core/model";
 import { leftPadded, padded, ParsedCommand, splitSpaces, splitWords, swiftInt, trimmingTrailingWhitespace } from "./command-tree";
 import type { IOSEngine } from "./ios-engine";
@@ -424,7 +425,11 @@ export function sviConfigBlocks(engine: IOSEngine): string[][] {
     if (parsed === null || parsed.kind !== "vlan") continue;
     const text = addressLine(engine, entry.interface);
     if (text === null) continue;
-    blocks.push([engine.isDell ? `interface Vlan ${parsed.number}` : `interface Vlan${parsed.number}`, text]);
+    blocks.push([
+      engine.isDell ? `interface Vlan ${parsed.number}` : `interface Vlan${parsed.number}`,
+      text,
+      ...featureInterfaceLines(engine, entry.interface),
+    ]);
   }
   return blocks;
 }

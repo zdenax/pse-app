@@ -24,6 +24,7 @@ import type { DeviceAccess } from "./model-access";
 import { CLILimits, Notices } from "./notices";
 import type { ConsoleEngine } from "./session";
 import { IPv4, IPv4Prefix } from "./sim/ipv4";
+import { collectHostCommands } from "./features/host-commands";
 
 interface HostCommand {
   readonly name: string;
@@ -59,7 +60,28 @@ export class HostEngine implements ConsoleEngine {
     return this.closed;
   }
 
-  private static readonly commands: readonly HostCommand[] = [
+  /** The base commands with those of the protocol features (features/host-commands.ts). */
+  private static allCommands: readonly HostCommand[] | null = null;
+
+  private static get commands(): readonly HostCommand[] {
+    if (HostEngine.allCommands === null) {
+      const features = collectHostCommands().map(
+        (command): HostCommand => ({
+          name: command.name,
+          help: command.help,
+          run: (engine, words) => command.run({ access: engine.access, hostname: engine.hostname }, words),
+        }),
+      );
+      const replaced = new Set(features.map((command) => command.name));
+      HostEngine.allCommands = [
+        ...HostEngine.baseCommands.filter((command) => !replaced.has(command.name)),
+        ...features,
+      ];
+    }
+    return HostEngine.allCommands;
+  }
+
+  private static readonly baseCommands: readonly HostCommand[] = [
     { name: "help", help: "Display the available commands", run: (engine) => engine.helpText() },
     {
       name: "ipconfig",

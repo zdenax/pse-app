@@ -3,6 +3,7 @@
 
 import type { Device, DeviceCategory } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
+import { EdgeOSEngine } from "./edgeos-engine";
 import { HostEngine } from "./host-engine";
 import { IOSEngine } from "./ios-engine";
 import { DeviceAccess } from "./model-access";
@@ -21,15 +22,20 @@ export interface ConsoleEngine {
   help(partial: string): string;
 }
 
-/** All dialects, in the order of the Swift enum (CLIDialect.allCases). */
-export const allDialects: readonly CLIDialect[] = ["ios", "dellOS9", "routerOS", "generic", "host"];
+/** All dialects, in the order of the Swift enum (CLIDialect.allCases), then the web-only ones. */
+export const allDialects: readonly CLIDialect[] = ["ios", "dellOS9", "routerOS", "generic", "host", "edgeOS"];
 
-function dialectOfVendor(vendor: string, _model: string, category: DeviceCategory): CLIDialect {
+function dialectOfVendor(vendor: string, model: string, category: DeviceCategory): CLIDialect {
   if (category === "PC" || category === "server") return "host";
   const lower = vendor.toLowerCase();
   if (lower.includes("cisco")) return "ios";
   if (lower.includes("dell")) return "dellOS9";
   if (lower.includes("mikrotik")) return "routerOS";
+  // Ubiquiti routers with a real configuration CLI (EdgeOS); UniFi devices are configured in
+  // the UniFi controller and keep the generic IOS-style console (exercises 1 and 2 use it).
+  if (lower.includes("ubiquiti") && category === "router" && /edgerouter|\busg\b|usg-|edgeos/i.test(model)) {
+    return "edgeOS";
+  }
   return "generic";
 }
 
@@ -97,6 +103,9 @@ export class CLISession implements ConsoleSession {
         break;
       case "host":
         this.engine = new HostEngine(access);
+        break;
+      case "edgeOS":
+        this.engine = new EdgeOSEngine(access);
         break;
       default:
         this.engine = new IOSEngine(access, chosen);

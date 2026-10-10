@@ -60,7 +60,13 @@ export type Mode =
   /** `interface vlan N`: Dell OS9 VLAN membership and address, IOS switch virtual interface. */
   | { kind: "vlanInterface"; vlan: number }
   /** Line configuration; accepted formally, nothing is stored. */
-  | { kind: "line"; name: string };
+  | { kind: "line"; name: string }
+  /**
+   * A configuration mode of a protocol feature (features/ios-commands.ts): `router ospf 1`,
+   * `ip dhcp pool LAN`, `ip access-list extended WEB`. `prompt` is the text in parentheses
+   * ("config-router", "dhcp-config"); `context` what the mode edits (process, pool, list name).
+   */
+  | { kind: "feature"; name: string; prompt: string; context: Record<string, string | number> };
 
 interface VirtualType {
   name: string;
@@ -131,6 +137,9 @@ export class IOSEngine implements ConsoleEngine {
       case "host":
         name = "příkazový řádek";
         break;
+      case "edgeOS":
+        name = "Ubiquiti EdgeOS";
+        break;
     }
     const model = [this.access.vendor, this.access.model].filter((part) => part !== "").join(" ");
     return Notices.banner(this.hostname, model, name, this.dialect === "generic");
@@ -163,6 +172,8 @@ export class IOSEngine implements ConsoleEngine {
         return host + (this.isDell ? `(conf-if-vl-${mode.vlan})#` : "(config-if)#");
       case "line":
         return host + (this.isDell ? `(config-line-${mode.name})#` : "(config-line)#");
+      case "feature":
+        return host + `(${mode.prompt})#`;
     }
   }
 
@@ -191,6 +202,8 @@ export class IOSEngine implements ConsoleEngine {
         return this.isDell ? tables.vlanInterfaceConfig : tables.sviConfig;
       case "line":
         return tables.lineConfig;
+      case "feature":
+        return tables.featureModes.get(this.mode.name) ?? tables.globalConfig;
     }
   }
 
