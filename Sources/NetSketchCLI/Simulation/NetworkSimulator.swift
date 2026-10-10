@@ -122,12 +122,12 @@ struct NetworkSimulator {
         }
     }
 
-    private static func isRouted(_ port: Port, on device: Device) -> Bool {
+    private static func isRouted(_ port: NetSketchCore.Port, on device: Device) -> Bool {
         !isSwitching(device.category) || port.connector == .mgmt
     }
 
     /// What a port puts on its cable, and where each channel leads inside the device.
-    private static func channels(of port: Port, on device: Device, vlans: Set<Int>) -> [Channel: Node] {
+    private static func channels(of port: NetSketchCore.Port, on device: Device, vlans: Set<Int>) -> [Channel: Node] {
         guard port.connector != .console, !port.adminDown else { return [:] }
         if isRouted(port, on: device) { return [.untagged: .port(device.id, port.id)] }
         let config = SwitchportConfig.parse(port.vlan) ?? SwitchportConfig()
@@ -164,7 +164,7 @@ struct NetworkSimulator {
     }
 
     /// True when the port has a cable whose far end is not shut down.
-    private func isLinkUp(_ device: Device, _ port: Port) -> Bool {
+    private func isLinkUp(_ device: Device, _ port: NetSketchCore.Port) -> Bool {
         guard !port.adminDown, let peer = project.peer(of: PortRef(deviceID: device.id, portID: port.id)) else { return false }
         return !peer.port.adminDown
     }
