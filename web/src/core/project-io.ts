@@ -40,6 +40,7 @@ import type {
   VLANEntry,
 } from "./model";
 import { projectFormatVersion } from "./model";
+import { cloneProtocols, isEmptyProtocols, readProtocols } from "./protocols";
 import { makePanelLayout, makePanelSection } from "./panel-layout";
 import {
   findBundle,
@@ -194,8 +195,15 @@ const readDevice: Reader<Device> = (value, path) => {
     addresses: optional(c, "addresses", path, readArray(readAddress)) ?? [],
     defaultGateway: optional(c, "defaultGateway", path, readString) ?? "",
     staticRoutes: optional(c, "staticRoutes", path, readArray(readRoute)) ?? [],
+    ...protocolsField(c.protocols),
   };
 };
+
+/** `protocols` (web only) is kept only when something is configured. */
+function protocolsField(raw: unknown): { protocols?: Device["protocols"] } {
+  const protocols = readProtocols(raw);
+  return isEmptyProtocols(protocols) ? {} : { protocols };
+}
 
 const readPortRef: Reader<PortRef> = (value, path) => {
   const c = readObject(value, path);
@@ -215,6 +223,10 @@ const readLink: Reader<Link> = (value, path) => {
   };
   const bundleID = optional(c, "bundleID", path, readUUID);
   if (bundleID !== undefined) link.bundleID = bundleID;
+  const delay = optional(c, "delay", path, readDouble);
+  if (delay !== undefined && Number.isFinite(delay) && delay > 0) link.delay = delay;
+  const loss = optional(c, "loss", path, readDouble);
+  if (loss !== undefined && Number.isFinite(loss) && loss > 0) link.loss = Math.min(loss, 100);
   return link;
 };
 
@@ -287,6 +299,9 @@ function deviceJSON(device: Device): JSONObject {
   if (device.staticRoutes.length > 0) {
     json.staticRoutes = device.staticRoutes.map((route) => ({ destination: route.destination, nextHop: route.nextHop }));
   }
+  if (!isEmptyProtocols(device.protocols)) {
+    json.protocols = cloneProtocols(device.protocols) as unknown as JSONObject;
+  }
   return json;
 }
 
@@ -332,6 +347,8 @@ function linkJSON(link: Link): JSONObject {
     statusB: link.statusB,
     note: link.note,
     bundleID: link.bundleID,
+    delay: link.delay !== undefined && link.delay > 0 ? link.delay : undefined,
+    loss: link.loss !== undefined && link.loss > 0 ? link.loss : undefined,
   };
 }
 

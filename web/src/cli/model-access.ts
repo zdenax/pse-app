@@ -14,6 +14,7 @@ import type {
   VLANEntry,
 } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
+import { cloneProtocols, type DeviceProtocols } from "../core/protocols";
 import { IPv4, IPv4Prefix } from "./sim/ipv4";
 import { NetworkSimulator } from "./sim/network-simulator";
 import { SwitchportConfig } from "./switchport";
@@ -322,6 +323,24 @@ export class DeviceAccess {
 
   setStaticRoutes(routes: StaticRoute[]): boolean {
     return this.attempt(() => this.store.setStaticRoutes(this.deviceID, routes));
+  }
+
+  // MARK: Protocols (DHCP, ACL, NAT, OSPF, RIP, STP, LACP)
+
+  /** A copy of the protocol configuration; edit it and write it back with `setProtocols`. */
+  get protocols(): DeviceProtocols {
+    return cloneProtocols(this.device?.protocols);
+  }
+
+  setProtocols(protocols: DeviceProtocols): boolean {
+    return this.attempt(() => this.store.setProtocols(this.deviceID, protocols));
+  }
+
+  /** Reads, changes and writes back the protocol configuration (one undo step). */
+  updateProtocols(change: (protocols: DeviceProtocols) => void): boolean {
+    const protocols = this.protocols;
+    change(protocols);
+    return this.setProtocols(protocols);
   }
 
   /** Another device's interface that already uses `address`, as "hostname interface". */

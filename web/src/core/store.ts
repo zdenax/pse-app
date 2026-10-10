@@ -8,6 +8,7 @@
 // compare by reference. `subscribe` listeners run after every observable change.
 
 import { Catalog } from "./catalog";
+import { cloneProtocols, isEmptyProtocols, protocolKeys, type DeviceProtocols } from "./protocols";
 import { hostnamePrefix, nextLinkStatus } from "./enums";
 import { EditError } from "./errors";
 import type {
@@ -517,6 +518,19 @@ export class ProjectStore implements ProjectStoreAPI {
     this.updateDevice(deviceID, (device) => ({ ...device, staticRoutes: unique }));
   }
 
+  /**
+   * Replaces the protocol configuration (DHCP, ACL, NAT, OSPF, RIP, STP, LACP) of the device.
+   * An empty configuration removes the field, so the file stays as the Swift app writes it.
+   */
+  setProtocols(deviceID: string, protocols: DeviceProtocols): void {
+    const copy = cloneProtocols(protocols);
+    for (const key of protocolKeys) if (copy[key] === undefined) delete copy[key];
+    this.updateDevice(deviceID, (device) => {
+      const { protocols: _old, ...rest } = device;
+      return isEmptyProtocols(copy) ? rest : { ...rest, protocols: copy };
+    });
+  }
+
   /** Moves the device centre to `to` (snapped when `snapToGrid` is on). */
   setPosition(deviceID: string, to: Point): void {
     const target = this.snap(to);
@@ -728,6 +742,22 @@ export class ProjectStore implements ProjectStoreAPI {
 
   setLinkNote(linkID: string, note: string): void {
     this.updateLink(linkID, (link) => ({ ...link, note }));
+  }
+
+  /**
+   * Sets the simulated one-way delay (ms) and packet loss (%) of a cable; 0 or a missing value
+   * removes the property. Loss is clamped to 0...100.
+   */
+  setLinkQuality(linkID: string, quality: { delay?: number; loss?: number }): void {
+    this.updateLink(linkID, (link) => {
+      const { delay: _delay, loss: _loss, ...rest } = link;
+      const next: Link = { ...rest };
+      const delay = quality.delay ?? 0;
+      const loss = Math.min(100, quality.loss ?? 0);
+      if (Number.isFinite(delay) && delay > 0) next.delay = delay;
+      if (Number.isFinite(loss) && loss > 0) next.loss = loss;
+      return next;
+    });
   }
 
   // MARK: Bundles

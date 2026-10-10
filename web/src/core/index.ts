@@ -1,6 +1,7 @@
 // Public API of the NetSketch core (the TypeScript port of the Swift module NetSketchCore).
 
 export * from "./model";
+export * from "./protocols";
 export type * from "./store-api";
 
 export * from "./enums";
