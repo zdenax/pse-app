@@ -58,6 +58,10 @@ let appTargets: [Target] = [
         name: "NetSketch",
         dependencies: ["NetSketchCore", "NetSketchCanvas", "NetSketchCLI"]
     ),
+    .executableTarget(
+        name: "NetSketchRender",
+        dependencies: ["NetSketchCore", "NetSketchCanvas"]
+    ),
 ]
 #else
 let appProducts: [Product] = []

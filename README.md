@@ -50,6 +50,9 @@ Příklad projektu: `examples/trojuhelnik.netsketch` (Soubor > Otevřít).
 | `examples/cviceni-1-multivendor-switche.netsketch` | 4 switche (Cisco, Dell, MikroTik, Ubiquiti) v síti 192.168.10.0/24, management IP na VLAN 1, 2 PC; ping mezi všemi |
 | `examples/cviceni-2-ctyri-routery.netsketch` | 4 routery (Cisco, MikroTik, Ubiquiti, Cisco), propoje /30, statické trasy, PC v LAN 192.168.1.0/24 a 192.168.4.0/24 |
 
+Výstupy konzolí z hotových cvičení (ipconfig, ping, tracert, show ip route, ...) a obrázky diagramů
+jsou v [examples/UKAZKA.md](examples/UKAZKA.md).
+
 Cvičení jsou definovaná v `Sources/NetSketchCLI/Exercises.swift` a sestavená přes konzole zařízení
 (stejnými příkazy, jaké by psal student). `swift run NetSketchExamples` je uloží do `examples/`,
 CI je při změně samo přegeneruje a commitne a testy ověřují, že všechny pingy v nich projdou.

@@ -42,6 +42,34 @@ jobs:
             git push
           fi
 
+  screenshots:
+    # macOS: builds the whole package (canvas and app included) and renders the example
+    # projects to PNG. Runs only for commits whose message contains [screenshots].
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[screenshots]')
+    needs: linux
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The branch tip: the linux job may just have committed regenerated exercises.
+          ref: ${{ github.ref_name }}
+      - name: Build (whole package)
+        run: swift build
+      - name: Render examples
+        run: swift run NetSketchRender docs/screenshots examples/*.netsketch
+      - name: Commit screenshots
+        run: |
+          if [ -n "$(git status --porcelain docs/screenshots)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/screenshots
+            git commit -m "docs: render example screenshots"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
+
   macos:
     if: github.event_name == 'workflow_dispatch' && inputs.macos
     runs-on: macos-15

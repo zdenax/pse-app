@@ -17,6 +17,8 @@ public enum Exercises {
         public let build: (ProjectStore) throws -> Void
         /// Pairs (from hostname, to address) that must answer a ping when the exercise is done.
         public let pings: [(from: String, to: String)]
+        /// Console sessions that show the finished exercise working (for examples/UKAZKA.md).
+        public var demo: [(device: String, commands: [String])] = []
     }
 
     public struct CommandFailed: Error, CustomStringConvertible {
@@ -89,6 +91,12 @@ public enum Exercises {
             ("PC1", "192.168.10.102"), ("PC2", "192.168.10.101"),
             ("SW1-CISCO", "192.168.10.2"), ("SW1-CISCO", "192.168.10.3"), ("SW1-CISCO", "192.168.10.4"),
             ("SW2-DELL", "192.168.10.4"), ("SW3-MIKROTIK", "192.168.10.1"), ("SW4-UBIQUITI", "192.168.10.101"),
+        ],
+        demo: [
+            ("PC1", ["ipconfig", "ping 192.168.10.102"]),
+            ("SW1-CISCO", ["enable", "show ip interface brief", "ping 192.168.10.3"]),
+            ("SW2-DELL", ["enable", "show ip route", "ping 192.168.10.4"]),
+            ("SW3-MIKROTIK", ["/ip address print", "/ping 192.168.10.101 count=3"]),
         ]
     )
 
@@ -159,6 +167,12 @@ public enum Exercises {
             ("PC1", "192.168.4.10"), ("PC2", "192.168.1.10"),
             ("R1-CISCO", "10.0.34.2"), ("R2-MIKROTIK", "192.168.4.10"), ("R4-CISCO", "10.0.12.1"),
             ("PC1", "10.0.23.2"),
+        ],
+        demo: [
+            ("PC1", ["ipconfig", "ping 192.168.4.10", "tracert 192.168.4.10"]),
+            ("R1-CISCO", ["enable", "show ip route", "show ip interface brief", "ping 192.168.4.10"]),
+            ("R2-MIKROTIK", ["/ip address print", "/ip route print", "/ping 192.168.1.10 count=3"]),
+            ("R3-UBIQUITI", ["enable", "show ip route", "traceroute 192.168.1.10"]),
         ]
     )
 
@@ -208,6 +222,26 @@ public enum Exercises {
             text = text.replacingOccurrences(of: original, with: stable)
         }
         return Data(text.utf8)
+    }
+
+    /// The demo sessions of an exercise as Markdown: each device's prompt, commands and answers.
+    public static func demoTranscript(_ exercise: Exercise, in store: ProjectStore) -> String {
+        var text = "## \(exercise.title)\n\nSoubor: `examples/\(exercise.fileName)`\n"
+        let image = (exercise.fileName as NSString).deletingPathExtension
+        text += "\n![\(exercise.title)](../docs/screenshots/\(image)-fyzicky.png)\n"
+        for session in exercise.demo {
+            guard let device = store.project.device(hostname: session.device) else { continue }
+            let cli = CLISession(store: store, deviceID: device.id)
+            text += "\n### \(session.device)\n\n```\n"
+            for command in session.commands {
+                let prompt = cli.prompt
+                let output = cli.execute(command)
+                text += prompt + (prompt.hasSuffix(" ") ? "" : " ") + command + "\n"
+                if !output.isEmpty { text += output + "\n" }
+            }
+            text += "```\n"
+        }
+        return text
     }
 
     /// Runs the exercise's pings in a built project; returns the failures (empty when all pass).
