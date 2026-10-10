@@ -437,8 +437,9 @@ enum CanvasHit: Equatable {
 extension DiagramScene {
     /// Topmost element at `point` (canvas coordinates). `tolerance` is the pick slop in canvas points.
     func hitTest(_ point: CGPoint, tolerance: CGFloat) -> CanvasHit {
-        // Drawing order is devices < cables < annotations, so test in reverse - except that ports
-        // win over the cable ends that sit on them, otherwise a plugged port could not be clicked.
+        // Drawing order is panels < cables < icons and names < cable decorations < bundles < annotations,
+        // so test in reverse - except that ports win over the cable ends that sit on them, otherwise
+        // a plugged port could not be clicked.
         for annotation in annotations.reversed() where annotation.frame.contains(point) {
             return .annotation(annotation.id)
         }
@@ -452,13 +453,19 @@ extension DiagramScene {
         for bundle in bundles.reversed() where bundle.labelRect.contains(point) {
             return .bundleLabel(bundleID: bundle.id, linkIDs: bundle.linkIDs)
         }
+        // Icons and name plates hide the cables running behind them (in both views).
         for node in nodes.reversed() {
             if let warning = node.warningRect, warning.insetBy(dx: -3, dy: -3).contains(point) {
                 return .warning(deviceID: node.deviceID)
             }
-            if let panel = node.panel, let port = panel.port(at: point) {
-                return .port(PortRef(deviceID: node.deviceID, portID: port.portID))
+            if node.iconRect.contains(point) || node.labelPlateRect.contains(point) {
+                return .deviceHeader(node.deviceID)
             }
+        }
+        // Only the topmost panel under the point counts: it hides the ports of the panels below it.
+        if let node = nodes.last(where: { $0.bodyRect.contains(point) }), let panel = node.panel,
+           let port = panel.port(at: point) {
+            return .port(PortRef(deviceID: node.deviceID, portID: port.portID))
         }
         // Cables are thin: prefer them over the plates they cross, but only close to the line.
         var best: (distance: CGFloat, link: LinkGeometry)?

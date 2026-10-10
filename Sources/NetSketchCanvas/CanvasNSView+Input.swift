@@ -20,6 +20,7 @@ extension CanvasNSView {
 
     func pointerDown(at viewPoint: CGPoint, clickCount: Int, extending: Bool, panModifier: Bool) {
         finishEditing(commit: true, restoreFocus: true)
+        endInterruptedDrag()
         pointerView = viewPoint
         let canvas = canvasPoint(viewPoint)
         let hit = self.hit(atView: viewPoint)
@@ -80,6 +81,13 @@ extension CanvasNSView {
                 applyRubberBand()
             }
         case .draggingItems(let startCanvas):
+            // Undo, redo or saving mid-drag closes the drag's undo group; outside a group every
+            // event would move the selection by the whole translation again, so the drag ends here.
+            guard store.isGrouping else {
+                interaction = .idle
+                updateCursor()
+                return
+            }
             store.dragSelection(translation: CGSize(width: canvas.x - startCanvas.x, height: canvas.y - startCanvas.y))
         case .rubberBand(let startCanvas, _, let base):
             interaction = .rubberBand(startCanvas: startCanvas, currentCanvas: canvas, base: base)
@@ -115,6 +123,14 @@ extension CanvasNSView {
         }
         pointerMoved(to: viewPoint)
         needsDisplay = true
+    }
+
+    /// Closes a drag whose mouse-up never arrived (e.g. swallowed by a context menu), so that
+    /// `store.beginDrag()` stays balanced and later edits do not pile into the drag's undo step.
+    func endInterruptedDrag() {
+        guard case .draggingItems = interaction else { return }
+        store.endDrag()
+        interaction = .idle
     }
 
     /// Pointer moved without a button; `nil` = left the view.
@@ -347,7 +363,9 @@ extension CanvasNSView {
     }
 
     override func otherMouseDown(with event: NSEvent) {
-        // Middle button pans.
+        // Middle button pans - unless the primary button is busy: overwriting its drag would
+        // leave `store.beginDrag()` open.
+        guard case .idle = interaction else { return }
         finishEditing(commit: true, restoreFocus: true)
         interaction = .panning(lastView: viewPoint(event))
         NSCursor.closedHand.set()
@@ -358,7 +376,7 @@ extension CanvasNSView {
     }
 
     override func otherMouseUp(with event: NSEvent) {
-        interaction = .idle
+        if case .panning = interaction { interaction = .idle }
         pointerMoved(to: viewPoint(event))
     }
 
