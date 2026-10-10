@@ -1,4 +1,21 @@
-# pse-app (NetSketch)
+# NetSketch
+
+**Cvičný editor počítačových sítí ve stylu Cisco Packet Tracer, který běží všude: v prohlížeči na
+Windows, Linuxu i macOS, a na Macu navíc jako nativní aplikace.**
+
+Síť se nakreslí ze zařízení z laboratoře (Cisco, Dell, MikroTik, Ubiquiti, PC), nastaví se v konzolích
+jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` a
+`traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
+
+| Verze | Kde běží | Technologie |
+|---|---|---|
+| **Webová** ([`web/`](web/)) | v prohlížeči na Windows, Linuxu i macOS | TypeScript, React, SVG |
+| **Nativní macOS** | macOS 14 a novější | Swift, SwiftUI, AppKit |
+
+Obě verze otevírají stejné soubory `.netsketch` a chovají se stejně (výstupy konzolí se shodují do
+znaku, ověřují to testy).
+
+![NetSketch s otevřeným cvičením 2: paleta zařízení, plátno s panely routerů a kabely, inspector](docs/screenshots/aplikace-cviceni-2.png)
 
 > **Nejde o nástroj UJEP.** NetSketch není oficiální aplikace Univerzity J. E. Purkyně v Ústí nad
 > Labem, nevznikl na její zakázku ani s jejím schválením. Je to soukromá cvičná aplikace studenta
@@ -19,15 +36,6 @@
 >   jako neověřené, dokud nejsou zkontrolované na skutečném hardwaru.
 > - Části vytvořené s AI jsou v historii repozitáře označené (`Co-Authored-By: Claude`).
 >   Za obsah projektu a jeho použití odpovídá autor.
-
-Vizuální editor síťové topologie ve stylu Cisco Packet Tracer pro procvičování látky předmětu
-KI/PSE, ve dvou verzích:
-nativní macOS aplikace (Swift + SwiftUI, macOS 14+) a webová verze pro libovolný OS (složka
-[`web/`](web/), TypeScript + React, běží v prohlížeči). Zařízení se kreslí a propojují na plátně, konfigurují
-v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` /
-`traceroute` mezi nimi opravdu prochází podle kabeláže, VLAN, IP adres a statických tras.
-
-![NetSketch s otevřeným cvičením 2: paleta zařízení, plátno s panely routerů a kabely, inspector](docs/screenshots/aplikace-cviceni-2.png)
 
 **Návod s obrázky:** [docs/NetSketch-navod.pdf](docs/NetSketch-navod.pdf) (spuštění, kreslení, konzole,
 IP adresy, ping a obě cvičení).
