@@ -16,11 +16,11 @@ C:\> ipconfig
 
 Ethernet adapter eth0:
 
-   Media State . . . . . . . . . .  : Media connected
-   Cabled to . . . . . . . . . . .  : SW1-CISCO Fa0/1
-   IPv4 Address . . . . . . . . . . : 192.168.10.101
-   Subnet Mask . . . . . . . . . .  : 255.255.255.0
-   Default Gateway . . . . . . . .  : 0.0.0.0
+   Media State . . . . . . . . . . . : Media connected
+   Cabled to . . . . . . . . . . . . : SW1-CISCO Fa0/1
+   IPv4 Address . . . . . . . . . .  : 192.168.10.101
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 0.0.0.0
 C:\> ping 192.168.10.102
 
 Pinging 192.168.10.102 with 32 bytes of data:
@@ -122,11 +122,11 @@ C:\> ipconfig
 
 Ethernet adapter eth0:
 
-   Media State . . . . . . . . . .  : Media connected
-   Cabled to . . . . . . . . . . .  : R1-CISCO Gi0/0/0
-   IPv4 Address . . . . . . . . . . : 192.168.1.10
-   Subnet Mask . . . . . . . . . .  : 255.255.255.0
-   Default Gateway . . . . . . . .  : 192.168.1.1
+   Media State . . . . . . . . . . . : Media connected
+   Cabled to . . . . . . . . . . . . : R1-CISCO Gi0/0/0
+   IPv4 Address . . . . . . . . . .  : 192.168.1.10
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.1.1
 C:\> ping 192.168.4.10
 
 Pinging 192.168.4.10 with 32 bytes of data:
