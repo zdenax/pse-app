@@ -232,6 +232,30 @@ private func pair(_ templateA: String, _ portA: String, _ templateB: String, _ p
         #expect(Exercises.failedPings(exercise, in: reopened) == [])
     }
 
+    @Test(arguments: Exercises.all.map(\.fileName))
+    func exerciseFileIsDeterministic(fileName: String) throws {
+        let exercise = try #require(Exercises.all.first { $0.fileName == fileName })
+        let first = makeStore()
+        let second = makeStore()
+        try exercise.build(first)
+        try exercise.build(second)
+        #expect(try Exercises.fileData(of: first) == Exercises.fileData(of: second))
+    }
+
+    /// The files in examples/ (written by NetSketchExamples, committed by CI) open and work.
+    @Test(arguments: Exercises.all.map(\.fileName))
+    func committedExerciseFileWorks(fileName: String) throws {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("examples").appendingPathComponent(fileName)
+        guard FileManager.default.fileExists(atPath: url.path) else { return }
+        let exercise = try #require(Exercises.all.first { $0.fileName == fileName })
+        let store = makeStore()
+        try store.open(url)
+        #expect(store.openIssues.isEmpty)
+        #expect(Exercises.failedPings(exercise, in: store) == [])
+    }
+
     @Test func pcConsoleShowsTheRouteThroughTheRouters() throws {
         let store = makeStore()
         try Exercises.fourRouters.build(store)

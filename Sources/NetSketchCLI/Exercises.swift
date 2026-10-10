@@ -187,6 +187,29 @@ public enum Exercises {
         }
     }
 
+    /// The project file of a built exercise with stable identifiers: every UUID is replaced, in
+    /// order of first appearance, by 00000000-0000-4000-8000-000000000001, ...002, and so on.
+    /// The same exercise code therefore always produces the same file.
+    public static func fileData(of store: ProjectStore) throws -> Data {
+        let data = try store.project.encoded()
+        guard var text = String(data: data, encoding: .utf8) else { return data }
+        let pattern = try NSRegularExpression(
+            pattern: "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}")
+        var mapping: [String: String] = [:]
+        let whole = NSRange(text.startIndex..., in: text)
+        for match in pattern.matches(in: text, range: whole) {
+            guard let range = Range(match.range, in: text) else { continue }
+            let original = String(text[range])
+            if mapping[original] == nil {
+                mapping[original] = String(format: "00000000-0000-4000-8000-%012lX", mapping.count + 1)
+            }
+        }
+        for (original, stable) in mapping {
+            text = text.replacingOccurrences(of: original, with: stable)
+        }
+        return Data(text.utf8)
+    }
+
     /// Runs the exercise's pings in a built project; returns the failures (empty when all pass).
     public static func failedPings(_ exercise: Exercise, in store: ProjectStore) -> [String] {
         let simulator = NetworkSimulator(project: store.project)

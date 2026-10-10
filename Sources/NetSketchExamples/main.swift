@@ -23,7 +23,7 @@ for exercise in Exercises.all {
         for problem in problems { print("ping FAILED \(problem)") }
         if !problems.isEmpty { failed = true }
         let url = directory.appendingPathComponent(exercise.fileName)
-        try store.save(to: url)
+        try Exercises.fileData(of: store).write(to: url, options: .atomic)
         print("written \(url.path) (\(exercise.title))")
     } catch {
         print("error in \(exercise.fileName): \(error)")
