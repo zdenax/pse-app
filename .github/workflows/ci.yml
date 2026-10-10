@@ -1,0 +1,38 @@
+name: CI
+
+# Linux: builds and tests the portable targets (NetSketchCore, NetSketchCLI) on every push.
+# macOS: builds the whole package incl. NetSketchCanvas and the app; started by hand
+# (Actions -> CI -> Run workflow), because macOS minutes are expensive on private repos.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      macos:
+        description: "Sestavit a otestovat i na macOS (Canvas + aplikace)"
+        type: boolean
+        default: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    container: swift:6.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build --build-tests
+      - name: Test
+        run: swift test
+
+  macos:
+    if: github.event_name == 'workflow_dispatch' && inputs.macos
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Build
+        run: swift build --build-tests
+      - name: Test
+        run: swift test

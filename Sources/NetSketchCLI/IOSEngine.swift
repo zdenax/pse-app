@@ -203,18 +203,20 @@ final class IOSEngine: ConsoleEngine {
         let parser = CommandParser(engine: self)
         var result = parser.parse(input, tree: currentTree)
 
-        // Like IOS, a sub-mode accepts global configuration commands and leaves the sub-mode.
-        if isSubConfigMode, case .invalid(let column) = result, let first = input.tokens.first,
-           column < first.column + first.text.count {
+        // Like IOS, a sub-mode accepts global configuration commands and leaves the sub-mode
+        // ("no vlan 20" inside "interface fa0/1" too). When both fail, the error of the parse
+        // that got further is reported.
+        if isSubConfigMode, case .invalid(let column) = result, let first = input.tokens.first {
+            let firstWordFailed = column < first.column + first.text.count
             let global = parser.parse(input, tree: tables.globalConfig)
             switch global {
             case .run:
                 mode = .globalConfig
                 result = global
             case .incomplete, .ambiguous:
-                result = global
+                if firstWordFailed { result = global }
             case .invalid(let globalColumn):
-                if globalColumn >= first.column + first.text.count { result = global }
+                if globalColumn > column { result = global }
             }
         }
 

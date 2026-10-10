@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 import Observation
 
 /// Something that can be selected on the canvas.

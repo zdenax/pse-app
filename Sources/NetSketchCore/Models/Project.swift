@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 
 /// Errors raised when reading a project file.
 public enum ProjectFileError: Error, Equatable, Sendable {
