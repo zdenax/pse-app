@@ -59,6 +59,11 @@ jobs:
         run: swift build
       - name: Render examples
         run: swift run NetSketchRender docs/screenshots examples/*.netsketch
+      - name: App screenshots
+        # The real app: opens the exercises, types into consoles, saves pictures of the windows.
+        timeout-minutes: 10
+        continue-on-error: true
+        run: swift run NetSketch --screenshots=docs/screenshots
       - name: Commit screenshots
         run: |
           if [ -n "$(git status --porcelain docs/screenshots)" ]; then

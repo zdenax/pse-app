@@ -5,7 +5,7 @@ ve stylu Cisco Packet Tracer pro KI/PSE (UJEP). Zařízení se kreslí a propoju
 v konzolích podle výrobce (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` /
 `traceroute` mezi nimi opravdu prochází podle kabeláže, VLAN, IP adres a statických tras.
 
-![NetSketch: paleta zařízení, plátno s fyzickými panely a kabely, inspector projektu](docs/screenshots/aplikace.jpg)
+![NetSketch s otevřeným cvičením 2: paleta zařízení, plátno s panely routerů a kabely, inspector](docs/screenshots/aplikace-cviceni-2.png)
 
 ## Stav (2026-10-10)
 
@@ -60,6 +60,34 @@ jsou v [examples/UKAZKA.md](examples/UKAZKA.md).
 Cvičení jsou definovaná v `Sources/NetSketchCLI/Exercises.swift` a sestavená přes konzole zařízení
 (stejnými příkazy, jaké by psal student). `swift run NetSketchExamples` je uloží do `examples/`,
 CI je při změně samo přegeneruje a commitne a testy ověřují, že všechny pingy v nich projdou.
+
+## Obrázky
+
+Konzole PC1 ve cvičení 2: `ipconfig`, `ping` a `tracert` přes čtyři routery.
+
+![Konzole PC1: ipconfig, ping a tracert](docs/screenshots/konzole-pc1.png)
+
+| Cisco IOS (R1): `show ip route`, `ping` | MikroTik RouterOS (R2): `/ip address print`, `/ip route print`, `/ping` |
+|---|---|
+| ![Konzole R1](docs/screenshots/konzole-r1-cisco.png) | ![Konzole R2](docs/screenshots/konzole-r2-mikrotik.png) |
+
+| Cvičení 1, fyzický pohled | Cvičení 1, logický pohled |
+|---|---|
+| ![Cvičení 1, fyzický pohled](docs/screenshots/aplikace-cviceni-1.png) | ![Cvičení 1, logický pohled](docs/screenshots/aplikace-cviceni-1-logicky.png) |
+
+| Inspector vybraného PC (IP z konzole) | Dell OS9 (SW2): `show ip route`, `ping` |
+|---|---|
+| ![Inspector PC1](docs/screenshots/aplikace-inspector-pc1.png) | ![Konzole SW2](docs/screenshots/konzole-sw2-dell.png) |
+
+Celé diagramy vyrenderované exportem (PNG):
+[cvičení 1](docs/screenshots/cviceni-1-multivendor-switche-fyzicky.png),
+[cvičení 1 logicky](docs/screenshots/cviceni-1-multivendor-switche-logicky.png),
+[cvičení 2](docs/screenshots/cviceni-2-ctyri-routery-fyzicky.png),
+[cvičení 2 logicky](docs/screenshots/cviceni-2-ctyri-routery-logicky.png),
+[trojúhelník](docs/screenshots/trojuhelnik-fyzicky.png).
+
+Obrázky vytváří CI na macOS (`swift run NetSketch --screenshots=docs/screenshots` a `NetSketchRender`)
+pro commity se značkou `[screenshots]`.
 
 ## Simulace sítě
 
