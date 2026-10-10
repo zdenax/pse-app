@@ -18,7 +18,8 @@ public struct Port: Codable, Identifiable, Equatable, Hashable, Sendable {
     public var verified: Bool
     /// User text shown in the inspector (like an interface description).
     public var description: String
-    /// Free text, e.g. "10" or "trunk 10,20". No logic is attached to it.
+    /// Free text, e.g. "10" or "trunk 10,20". The core attaches no logic to it; the CLI reads
+    /// and writes a canonical format (see `SwitchportConfig` in NetSketchCLI, docs/katalog.md).
     public var vlan: String
     /// Index of the template port group this port came from; used by `PanelLayout`.
     public var groupIndex: Int

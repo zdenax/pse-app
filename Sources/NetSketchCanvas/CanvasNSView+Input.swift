@@ -34,6 +34,12 @@ extension CanvasNSView {
             interaction = .idle
             return
         }
+        // The first click of a double-click on a port already did the cabling step; a second
+        // one would report the freshly plugged port as taken, or cancel what was just started.
+        if clickCount >= 2, case .port = hit {
+            interaction = .idle
+            return
+        }
 
         var collapseTo: SelectionItem?
         switch hit {
