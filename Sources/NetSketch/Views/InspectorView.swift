@@ -194,7 +194,8 @@ struct PortRow: View {
     let connection: PortConnection
 
     private var store: ProjectStore { model.store }
-    private var port: Port { connection.port }
+    // Qualified: a bare `Port` is ambiguous with Foundation.Port (NSPort).
+    private var port: NetSketchCore.Port { connection.port }
     private var ref: PortRef { PortRef(deviceID: deviceID, portID: connection.port.id) }
 
     var body: some View {
@@ -279,7 +280,8 @@ struct PortRow: View {
 
 struct LinkInspector: View {
     let model: AppModel
-    let link: Link
+    // Qualified: a bare `Link` is ambiguous with SwiftUI.Link.
+    let link: NetSketchCore.Link
 
     private var store: ProjectStore { model.store }
 
@@ -431,7 +433,7 @@ struct BundleSection: View {
 
 struct AnnotationInspector: View {
     let model: AppModel
-    let annotation: Annotation
+    let annotation: NetSketchCore.Annotation
 
     var body: some View {
         ScrollView {
