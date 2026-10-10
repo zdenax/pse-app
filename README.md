@@ -1,5 +1,20 @@
 # pse-app (NetSketch)
 
+> **Využití umělé inteligence.** Projekt vznikl s výrazným využitím nástroje generativní AI
+> **Claude Code** (Anthropic). Prohlášení o využití AI v souladu s
+> [pravidly využívání AI (SR-07-26)](https://www.fzp.ujep.cz/wp-content/uploads/2026/06/SR-07-26_Pravidla-AI.pdf):
+>
+> - **K čemu byla AI použita:** návrh a psaní zdrojového kódu (Swift i TypeScript), testů, CI,
+>   dokumentace, katalogu zařízení a ukázkových cvičení, podle zadání a průběžných pokynů autora.
+> - **Co dělal autor:** zadání a rozsah projektu, volba funkcí a technologií, průběžná kontrola
+>   výsledků, spouštění a testování aplikace na Macu, podklady z laboratoře (fotka racku pro katalog
+>   zařízení) a rozhodnutí o přijetí změn.
+> - **Ověření výstupů AI:** automatické testy (Swift i webová verze, včetně vzájemného porovnání
+>   výstupů obou verzí) a ruční vyzkoušení aplikace. Údaje o portech v katalogu zůstávají označené
+>   jako neověřené, dokud nejsou zkontrolované na skutečném hardwaru.
+> - Části vytvořené s AI jsou v historii repozitáře označené (`Co-Authored-By: Claude`).
+>   Za obsah projektu a jeho použití odpovídá autor.
+
 Vizuální editor síťové topologie ve stylu Cisco Packet Tracer pro KI/PSE (UJEP), ve dvou verzích:
 nativní macOS aplikace (Swift + SwiftUI, macOS 14+) a webová verze pro libovolný OS (složka
 [`web/`](web/), TypeScript + React, běží v prohlížeči). Zařízení se kreslí a propojují na plátně, konfigurují
