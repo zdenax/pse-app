@@ -270,6 +270,32 @@ public final class ProjectStore {
         try updateDevice(deviceID) { $0.vlans = table }
     }
 
+    // MARK: IP configuration (set from the consoles; used by the network simulation of the CLI)
+
+    /// Sets or, with `nil`, removes the address of one layer-3 interface of the device.
+    public func setAddress(deviceID: UUID, interface: L3InterfaceID, _ address: String?) throws {
+        try updateDevice(deviceID) { device in
+            let index = device.addresses.firstIndex { $0.interface == interface }
+            switch (index, address) {
+            case (let index?, let address?): device.addresses[index].address = address
+            case (let index?, nil): device.addresses.remove(at: index)
+            case (nil, let address?): device.addresses.append(InterfaceAddress(interface: interface, address: address))
+            case (nil, nil): break
+            }
+        }
+    }
+
+    public func setDefaultGateway(deviceID: UUID, _ gateway: String) throws {
+        try updateDevice(deviceID) { $0.defaultGateway = gateway }
+    }
+
+    /// Replaces the static routes; a route that occurs more than once is kept once.
+    public func setStaticRoutes(deviceID: UUID, _ routes: [StaticRoute]) throws {
+        var seen = Set<StaticRoute>()
+        let unique = routes.filter { seen.insert($0).inserted }
+        try updateDevice(deviceID) { $0.staticRoutes = unique }
+    }
+
     /// Moves the device centre to `point` (snapped when `snapToGrid` is on).
     public func setPosition(deviceID: UUID, to point: CGPoint) throws {
         let target = snap(point)

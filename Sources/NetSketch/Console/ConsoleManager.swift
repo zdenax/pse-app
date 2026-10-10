@@ -54,11 +54,12 @@ final class ConsoleModel {
         case .dellOS9: return "Dell OS9"
         case .routerOS: return "MikroTik RouterOS"
         case .generic: return "obecný"
+        case .host: return "příkazový řádek"
         }
     }
 
     var footerText: String {
-        "Dialekt: \(dialectName)   ·   Tab doplní   ·   ? nápověda   ·   ↑↓ historie   ·   Ctrl-C zruší řádek   ·   Ctrl-Z end   ·   jen konfigurace, bez simulace"
+        "Dialekt: \(dialectName)   ·   Tab doplní   ·   ? nápověda   ·   ↑↓ historie   ·   Ctrl-C zruší řádek   ·   Ctrl-Z end   ·   ping a traceroute podle diagramu"
     }
 
     // MARK: Commands

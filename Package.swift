@@ -80,6 +80,10 @@ let package = Package(
             name: "NetSketchCLI",
             dependencies: ["NetSketchCore"]
         ),
+        .executableTarget(
+            name: "NetSketchExamples",
+            dependencies: ["NetSketchCore", "NetSketchCLI"]
+        ),
         .testTarget(
             name: "NetSketchCoreTests",
             dependencies: ["NetSketchCore"],

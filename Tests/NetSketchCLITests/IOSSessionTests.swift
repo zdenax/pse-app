@@ -15,18 +15,17 @@ import NetSketchCore
         #expect(CLI.dialect(vendor: "", model: "", category: .switch) == .generic)
     }
 
-    @Test func onlyNetworkDevicesHaveAConsole() throws {
+    @Test func everythingButAccessPointsHasAConsole() throws {
         let store = makeStore()
         let supported = [TemplateID.c2960_24, TemplateID.c3650, TemplateID.isr4321, TemplateID.dellS3048,
-                         TemplateID.hapLite, TemplateID.udmPro]
+                         TemplateID.hapLite, TemplateID.udmPro, TemplateID.pc, TemplateID.server]
         for id in supported {
             let device = try store.addDevice(templateID: id, at: .zero)
             #expect(CLI.supportsConsole(device), "\(id)")
         }
-        for id in [TemplateID.pc, TemplateID.server, TemplateID.accessPoint] {
-            let device = try store.addDevice(templateID: id, at: .zero)
-            #expect(!CLI.supportsConsole(device), "\(id)")
-        }
+        let accessPoint = try store.addDevice(templateID: TemplateID.accessPoint, at: .zero)
+        #expect(!CLI.supportsConsole(accessPoint))
+        #expect(CLI.dialect(vendor: "Generic", model: "PC", category: .pc) == .host)
     }
 
     @Test func sessionPicksTheEngineOfTheDialect() throws {
@@ -234,11 +233,15 @@ import NetSketchCore
         #expect(cli.prompt == "ACCESS1(config-if)#")
     }
 
-    @Test func virtualInterfacesAreNotStored() throws {
+    @Test func virtualInterfaces() throws {
         let (_, _, cli) = try configured()
-        #expect(cli.execute("interface vlan 10") == Notices.virtualInterface)
         #expect(cli.execute("interface port-channel 1") == Notices.lagIsDrawn)
         #expect(cli.prompt == "SW1(config)#")
+        // A switch has VLAN interfaces (SVI), a router has none in the diagram.
+        #expect(cli.execute("interface vlan 10") == "")
+        #expect(cli.prompt == "SW1(config-if)#")
+        let (_, _, router) = try configured(TemplateID.isr4321)
+        #expect(router.execute("interface vlan 10") == Notices.virtualInterface)
     }
 
     @Test func unknownPortNumberIsAnError() throws {
@@ -251,8 +254,9 @@ import NetSketchCore
     @Test func notStoredCommandsSaySo() throws {
         let (store, _, cli) = try configured()
         let before = store.project
-        #expect(cli.execute("ip routing").hasPrefix("NetSketch:"))
-        #expect(cli.execute("do ping 10.0.0.1") == Notices.needsSimulation)
+        #expect(cli.execute("ip domain-name lab.local").hasPrefix("NetSketch:"))
+        #expect(cli.execute("ip routing") == "")
+        #expect(cli.execute("do telnet 10.0.0.1") == Notices.needsSimulation)
         #expect(cli.execute("do write memory") == Notices.savedInProject)
         #expect(store.project == before)
     }

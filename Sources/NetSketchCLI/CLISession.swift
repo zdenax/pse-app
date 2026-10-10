@@ -11,6 +11,8 @@ public enum CLIDialect: String, CaseIterable, Sendable {
     case routerOS
     /// A device whose real CLI NetSketch does not know: IOS-style syntax, clearly announced.
     case generic
+    /// The command prompt of a PC or server (`C:\\>`, Windows-style commands).
+    case host
 }
 
 /// Entry points of the CLI target that do not need a session.
@@ -18,6 +20,7 @@ public enum CLI {
     /// The dialect of a device, decided by its vendor. The model and category are accepted so
     /// that a vendor with several operating systems can be told apart later.
     public static func dialect(vendor: String, model: String, category: DeviceCategory) -> CLIDialect {
+        if category == .pc || category == .server { return .host }
         let vendor = vendor.lowercased()
         if vendor.contains("cisco") { return .ios }
         if vendor.contains("dell") { return .dellOS9 }
@@ -29,12 +32,12 @@ public enum CLI {
         dialect(vendor: device.vendor, model: device.model, category: device.category)
     }
 
-    /// Only network devices (switches and routers) get a configuration console.
-    /// PCs, servers and access points have nothing the CLI could configure.
+    /// Switches and routers get a configuration console, PCs and servers a command prompt.
+    /// Access points have nothing the console could configure.
     public static func supportsConsole(_ device: Device) -> Bool {
         switch device.category {
-        case .switch, .l3switch, .router: return true
-        case .accessPoint, .pc, .server: return false
+        case .switch, .l3switch, .router, .pc, .server: return true
+        case .accessPoint: return false
         }
     }
 }
@@ -56,6 +59,7 @@ public final class CLISession {
         self.dialect = dialect
         switch dialect {
         case .routerOS: engine = RouterOSEngine(access: access)
+        case .host: engine = HostEngine(access: access)
         case .ios, .dellOS9, .generic: engine = IOSEngine(access: access, dialect: dialect)
         }
     }

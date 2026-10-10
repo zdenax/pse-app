@@ -72,8 +72,26 @@ enum Notices {
     static let interfaceStatic =
         "NetSketch: stav plyne jen z kabeláže a příkazu shutdown; čítače a provozní údaje vyžadují simulaci."
 
+    static let statusFromDiagram =
+        "NetSketch: stav rozhraní plyne z kabeláže v diagramu a z příkazu shutdown."
+
     static let noAddresses =
         "NetSketch: IP adresy diagram neukládá; stav plyne jen z kabeláže a příkazu shutdown."
+
+    static let switchPortHasNoAddress =
+        "NetSketch: port přepínače je přepínaný (L2), IP adresu nemá. Nastavte ji na rozhraní VLAN: "
+        + "„interface vlan 1“ a „ip address …“."
+
+    static let dhcpNotSimulated =
+        "NetSketch: DHCP se nesimuluje, nastavte adresu ručně. Nic se nezměnilo."
+
+    static func duplicateAddress(_ address: String, _ owner: String) -> String {
+        "NetSketch: adresu \(address) už používá i \(owner). Ping na ni nemusí dojít tam, kam čekáte."
+    }
+
+    static func inactiveRoutes(_ routes: [String]) -> String {
+        "NetSketch: neaktivní statické trasy (další skok není v žádné připojené síti): " + routes.joined(separator: "; ")
+    }
 
     static let versionStatic =
         "NetSketch: verze softwaru, sériová čísla ani uptime nejsou v diagramu uloženy."
@@ -100,7 +118,7 @@ enum Notices {
     static func banner(hostname: String, model: String, dialect: String, unknownCLI: Bool) -> String {
         var lines = [
             "NetSketch – konzole zařízení \(hostname) (\(model), dialekt \(dialect)).",
-            "Příkazy čtou a upravují pouze data diagramu; síťové protokoly se nesimulují.",
+            "Příkazy upravují data diagramu. Ping a traceroute sledují kabely, VLAN, IP adresy a statické trasy; dynamické protokoly (STP, OSPF, DHCP) se nesimulují.",
         ]
         if unknownCLI {
             lines.append("Skutečné CLI tohoto zařízení NetSketch nezná, proto nabízí obecnou syntaxi ve stylu Cisco IOS.")

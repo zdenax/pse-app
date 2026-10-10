@@ -93,7 +93,9 @@ public struct VLANEntry: Codable, Identifiable, Equatable, Hashable, Sendable {
 ///
 /// It carries a snapshot of its template (vendor, model, ports, panel layout), so a project
 /// keeps opening even when the catalog entry changes or disappears.
-/// Decoding is lenient: `note`, `layout`, `verified` and `vlans` may be missing in the file.
+/// Decoding is lenient: `note`, `layout`, `verified`, `vlans` and the IP configuration may be
+/// missing in the file. The IP configuration is written only when it is not empty, so files of
+/// projects without it stay exactly as they were.
 public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
     public var id: UUID
     /// Slug of the catalog template the device was created from.
@@ -113,6 +115,12 @@ public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
     public var verified: Bool
     /// VLAN table edited through the configuration CLI. Stored only; no logic.
     public var vlans: [VLANEntry]
+    /// IPv4 addresses of the device's layer-3 interfaces (set from the console).
+    public var addresses: [InterfaceAddress]
+    /// Default gateway of a PC, server or switch; empty when none is set.
+    public var defaultGateway: String
+    /// Static routes of a router or layer-3 switch.
+    public var staticRoutes: [StaticRoute]
 
     public init(
         id: UUID = UUID(),
@@ -126,7 +134,10 @@ public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
         note: String = "",
         layout: PanelLayout = PanelLayout(),
         verified: Bool = false,
-        vlans: [VLANEntry] = []
+        vlans: [VLANEntry] = [],
+        addresses: [InterfaceAddress] = [],
+        defaultGateway: String = "",
+        staticRoutes: [StaticRoute] = []
     ) {
         self.id = id
         self.templateID = templateID
@@ -140,6 +151,14 @@ public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
         self.layout = layout
         self.verified = verified
         self.vlans = vlans
+        self.addresses = addresses
+        self.defaultGateway = defaultGateway
+        self.staticRoutes = staticRoutes
+    }
+
+    /// The address of a layer-3 interface, if one is set.
+    public func address(of interface: L3InterfaceID) -> InterfaceAddress? {
+        addresses.first { $0.interface == interface }
     }
 
     /// "Vendor Model".
@@ -179,6 +198,7 @@ public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
 
     private enum CodingKeys: String, CodingKey {
         case id, templateID, vendor, model, category, hostname, position, ports, note, layout, verified, vlans
+        case addresses, defaultGateway, staticRoutes
     }
 
     public init(from decoder: Decoder) throws {
@@ -195,6 +215,9 @@ public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
         layout = try c.decodeIfPresent(PanelLayout.self, forKey: .layout) ?? PanelLayout()
         verified = try c.decodeIfPresent(Bool.self, forKey: .verified) ?? false
         vlans = try c.decodeIfPresent([VLANEntry].self, forKey: .vlans) ?? []
+        addresses = try c.decodeIfPresent([InterfaceAddress].self, forKey: .addresses) ?? []
+        defaultGateway = try c.decodeIfPresent(String.self, forKey: .defaultGateway) ?? ""
+        staticRoutes = try c.decodeIfPresent([StaticRoute].self, forKey: .staticRoutes) ?? []
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -211,6 +234,9 @@ public struct Device: Codable, Identifiable, Equatable, Hashable, Sendable {
         try c.encode(layout, forKey: .layout)
         try c.encode(verified, forKey: .verified)
         try c.encode(vlans, forKey: .vlans)
+        if !addresses.isEmpty { try c.encode(addresses, forKey: .addresses) }
+        if !defaultGateway.isEmpty { try c.encode(defaultGateway, forKey: .defaultGateway) }
+        if !staticRoutes.isEmpty { try c.encode(staticRoutes, forKey: .staticRoutes) }
     }
 }
 
