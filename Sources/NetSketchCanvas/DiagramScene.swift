@@ -165,6 +165,20 @@ struct DiagramScene {
         nodeIndex[deviceID].map { nodes[$0] }
     }
 
+    /// Distance along the cable from `start` at which it is clear of its own device: out of the
+    /// panel and, when it runs on through the icon and name above the panel, past those too.
+    /// Status dots and port names go there instead of on top of the device's name.
+    static func clearance(from start: CGPoint, to end: CGPoint, of node: NodeGeometry) -> CGFloat {
+        let length = hypot(end.x - start.x, end.y - start.y)
+        guard length > 1 else { return 0 }
+        var distance = Geometry.exitParameter(from: start, to: end, leaving: node.bodyRect) * length
+        if let (enter, leave) = Geometry.clipInterval(from: start, to: end, in: node.headerRect.insetBy(dx: -2, dy: -2)),
+           enter * length <= distance + 12, leave * length < length / 2 {
+            distance = max(distance, leave * length)
+        }
+        return distance
+    }
+
     /// Center of a port in the physical view.
     func portCenter(_ ref: PortRef) -> CGPoint? {
         node(for: ref.deviceID)?.panel?.port(id: ref.portID)?.center
@@ -229,9 +243,9 @@ struct DiagramScene {
                 if length > 1 {
                     let ux = (end.x - start.x) / length
                     let uy = (end.y - start.y) / length
-                    // Distances along the cable (from end a) at which it leaves the two panels.
-                    var exitA = Geometry.exitParameter(from: start, to: end, leaving: nodeA.bodyRect) * length
-                    var exitB = length - Geometry.exitParameter(from: end, to: start, leaving: nodeB.bodyRect) * length
+                    // Distances along the cable (from end a) at which it is clear of the two devices.
+                    var exitA = DiagramScene.clearance(from: start, to: end, of: nodeA)
+                    var exitB = length - DiagramScene.clearance(from: end, to: start, of: nodeB)
                     if exitB - exitA < 4 {
                         // Overlapping panels: fall back to thirds of the whole cable.
                         exitA = length * 0.12
