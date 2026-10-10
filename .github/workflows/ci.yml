@@ -24,6 +24,15 @@ jobs:
         run: swift build --build-tests
       - name: Test
         run: swift test
+      - name: Exercises
+        # Builds the lab exercises through the consoles, checks their pings and prints the
+        # files (tar.gz, base64) so they can be copied into examples/.
+        run: |
+          swift run NetSketchExamples /tmp/exercises
+          echo "EXERCISES-BEGIN"
+          tar -C /tmp/exercises -czf - . | base64 -w0
+          echo
+          echo "EXERCISES-END"
 
   macos:
     if: github.event_name == 'workflow_dispatch' && inputs.macos
