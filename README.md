@@ -164,3 +164,9 @@ VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 ## Mimo rozsah
 
 Simulace STP/RSTP/MSTP, LACP, dynamického směrování (OSPF, RIP), DHCP, ACL a NAT, emulace firmware.
+
+## Licence
+
+Kód je pod licencí [MIT](LICENSE): lze ho volně používat, upravovat i šířit, jen je potřeba ponechat
+uvedení autora a text licence. Názvy výrobců a modelů zařízení v katalogu (Cisco, Dell, MikroTik,
+Ubiquiti, Netgear) jsou ochranné známky svých vlastníků a slouží jen k označení zařízení.

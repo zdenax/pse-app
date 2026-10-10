@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "description": "NetSketch for every OS: network topology editor with vendor consoles and a network simulation (TypeScript port of the Swift app).",
+  "license": "MIT",
   "scripts": {
     "start": "vite --open",
     "dev": "vite",
