@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 @testable import NetSketchCore
 
 /// A store on the bundled catalog only; never touches Application Support.

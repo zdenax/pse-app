@@ -57,8 +57,14 @@ extension IOSEngine {
         case .ports:
             mode = .interface(selection)
             return ""
+        case .vlan(let id) where !isDell:
+            // IOS: the switch virtual interface of a switch; routers have none in the diagram.
+            guard let category = access.category, NetworkSimulator.isSwitching(category) else {
+                return Notices.virtualInterface
+            }
+            mode = .vlanInterface(id)
+            return ""
         case .vlan(let id):
-            guard isDell else { return Notices.virtualInterface }
             if id != 1, !access.vlans.contains(where: { $0.id == id }) {
                 access.setVLANs(access.vlans + [VLANEntry(id: id)])
             }

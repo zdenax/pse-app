@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 
 /// Reference to one port of one device.
 public struct PortRef: Codable, Equatable, Hashable, Sendable {

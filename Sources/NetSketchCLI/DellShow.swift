@@ -142,6 +142,7 @@ extension IOSEngine {
         var lines = ["interface \(namer.longName(port.name))"]
         if !port.description.isEmpty { lines.append(" description \(singleLine(port.description))") }
         if port.isSwitchport { lines.append(" switchport") }
+        if let address = addressLine(.port(port.id)) { lines.append(address) }
         if port.switchport == nil { lines.append(" ! \(Notices.customVLANText(singleLine(port.vlanText)))") }
         lines.append(port.adminDown ? " shutdown" : " no shutdown")
         return lines
@@ -156,6 +157,7 @@ extension IOSEngine {
         for row in dellVLANRows {
             lines.append("interface Vlan \(row.id)")
             if !row.name.isEmpty { lines.append(" name \(row.name)") }
+            if let address = addressLine(.vlan(row.id)) { lines.append(address) }
             let members = dellMembers(of: row.id)
             for list in dellPortLists(members.tagged, short: false) { lines.append(" tagged \(list)") }
             for list in dellPortLists(members.untagged, short: false) {
@@ -164,6 +166,14 @@ extension IOSEngine {
             }
             lines.append("!")
         }
+        // An address on a VLAN that is not in the table (the table was edited elsewhere).
+        for entry in access.addresses {
+            guard case .vlan(let number) = entry.interface, !dellVLANRows.contains(where: { $0.id == number }),
+                  let address = addressLine(entry.interface) else { continue }
+            lines.append(contentsOf: ["interface Vlan \(number)", address, "!"])
+        }
+        let global = globalIPLines()
+        if !global.isEmpty { lines.append(contentsOf: global + ["!"]) }
         lines.append("end")
         return dellJoined(lines)
     }

@@ -41,7 +41,7 @@ final class IOSEngine: ConsoleEngine {
         case interface(InterfaceSelection)
         /// IOS `vlan N` configuration.
         case vlan([Int])
-        /// Dell OS9 `interface vlan N` configuration.
+        /// `interface vlan N`: Dell OS9 VLAN membership and address, IOS switch virtual interface.
         case vlanInterface(Int)
         /// Line configuration; accepted formally, nothing is stored.
         case line(String)
@@ -76,6 +76,7 @@ final class IOSEngine: ConsoleEngine {
         case .dellOS9: name = "Dell OS9"
         case .routerOS: name = "RouterOS"
         case .generic: name = "obecný (styl IOS)"
+        case .host: name = "příkazový řádek"
         }
         let model = [access.vendor, access.model].filter { !$0.isEmpty }.joined(separator: " ")
         return Notices.banner(hostname: hostname, model: model, dialect: name, unknownCLI: dialect == .generic)
@@ -103,7 +104,7 @@ final class IOSEngine: ConsoleEngine {
         case .vlan:
             return host + "(config-vlan)#"
         case .vlanInterface(let id):
-            return host + "(conf-if-vl-\(id))#"
+            return host + (isDell ? "(conf-if-vl-\(id))#" : "(config-if)#")
         case .line(let kind):
             return host + (isDell ? "(config-line-\(kind))#" : "(config-line)#")
         }
@@ -130,7 +131,7 @@ final class IOSEngine: ConsoleEngine {
         case .globalConfig: return tables.globalConfig
         case .interface: return tables.interfaceConfig
         case .vlan: return tables.vlanConfig
-        case .vlanInterface: return tables.vlanInterfaceConfig
+        case .vlanInterface: return isDell ? tables.vlanInterfaceConfig : tables.sviConfig
         case .line: return tables.lineConfig
         }
     }
@@ -203,18 +204,20 @@ final class IOSEngine: ConsoleEngine {
         let parser = CommandParser(engine: self)
         var result = parser.parse(input, tree: currentTree)
 
-        // Like IOS, a sub-mode accepts global configuration commands and leaves the sub-mode.
-        if isSubConfigMode, case .invalid(let column) = result, let first = input.tokens.first,
-           column < first.column + first.text.count {
+        // Like IOS, a sub-mode accepts global configuration commands and leaves the sub-mode
+        // ("no vlan 20" inside "interface fa0/1" too). When both fail, the error of the parse
+        // that got further is reported.
+        if isSubConfigMode, case .invalid(let column) = result, let first = input.tokens.first {
+            let firstWordFailed = column < first.column + first.text.count
             let global = parser.parse(input, tree: tables.globalConfig)
             switch global {
             case .run:
                 mode = .globalConfig
                 result = global
             case .incomplete, .ambiguous:
-                result = global
+                if firstWordFailed { result = global }
             case .invalid(let globalColumn):
-                if globalColumn >= first.column + first.text.count { result = global }
+                if globalColumn > column { result = global }
             }
         }
 

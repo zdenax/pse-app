@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 
 /// A catalog entry: a device model with its port groups and front-panel layout.
 ///

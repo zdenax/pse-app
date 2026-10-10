@@ -164,4 +164,46 @@ final class DeviceAccess {
     func setVLANs(_ vlans: [VLANEntry]) -> Bool {
         (try? store.setVLANs(deviceID: deviceID, vlans)) != nil
     }
+
+    // MARK: IP configuration
+
+    var addresses: [InterfaceAddress] { device?.addresses ?? [] }
+    var defaultGateway: String { device?.defaultGateway ?? "" }
+    var staticRoutes: [StaticRoute] { device?.staticRoutes ?? [] }
+
+    /// The address of a layer-3 interface, parsed; nil when none (or a malformed one) is set.
+    func address(of interface: L3InterfaceID) -> IPv4Prefix? {
+        device?.address(of: interface).flatMap { IPv4Prefix(cidr: $0.address) }
+    }
+
+    /// Sets (or with nil removes) the address of an interface.
+    @discardableResult
+    func setAddress(_ prefix: IPv4Prefix?, on interface: L3InterfaceID) -> Bool {
+        (try? store.setAddress(deviceID: deviceID, interface: interface, prefix?.description)) != nil
+    }
+
+    @discardableResult
+    func setDefaultGateway(_ gateway: IPv4?) -> Bool {
+        (try? store.setDefaultGateway(deviceID: deviceID, gateway?.description ?? "")) != nil
+    }
+
+    @discardableResult
+    func setStaticRoutes(_ routes: [StaticRoute]) -> Bool {
+        (try? store.setStaticRoutes(deviceID: deviceID, routes)) != nil
+    }
+
+    /// Another device's interface that already uses `address`, as "hostname interface".
+    func addressConflict(_ address: IPv4, except interface: L3InterfaceID) -> String? {
+        for other in store.project.devices {
+            for entry in other.addresses {
+                guard let prefix = IPv4Prefix(cidr: entry.address), prefix.address == address else { continue }
+                if other.id == deviceID && entry.interface == interface { continue }
+                return other.hostname
+            }
+        }
+        return nil
+    }
+
+    /// The network simulation of the current project.
+    var simulator: NetworkSimulator { NetworkSimulator(project: store.project) }
 }

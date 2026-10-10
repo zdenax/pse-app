@@ -88,7 +88,15 @@ extension IOSEngine {
     func interfaceConfigLines(_ port: PortSnapshot) -> [String] {
         var lines = ["interface \(namer.longName(port.name))"]
         if !port.description.isEmpty { lines.append(" description \(singleLine(port.description))") }
-        if let config = port.switchport {
+        if let address = addressLine(.port(port.id)) {
+            lines.append(address)
+        } else if let category = access.category, !NetworkSimulator.isSwitching(category) {
+            lines.append(" no ip address")
+        }
+        let routed = access.category.map { !NetworkSimulator.isSwitching($0) } ?? false
+        if routed {
+            // Router ports are not switchports; their VLAN text is not configuration.
+        } else if let config = port.switchport {
             if config.accessVLAN != 1 { lines.append(" switchport access vlan \(config.accessVLAN)") }
             if config.nativeVLAN != 1 { lines.append(" switchport trunk native vlan \(config.nativeVLAN)") }
             if let allowed = config.allowedVLANs {
@@ -123,6 +131,12 @@ extension IOSEngine {
             body.append(contentsOf: interfaceConfigLines(port))
             body.append("!")
         }
+        for block in sviConfigBlocks() {
+            body.append(contentsOf: block)
+            body.append("!")
+        }
+        let global = globalIPLines()
+        if !global.isEmpty { body.append(contentsOf: global + ["!"]) }
         body.append("end")
         return withConfigHeader(body)
     }
@@ -276,22 +290,16 @@ extension IOSEngine {
 
     func showIPInterfaceBrief(_ command: ParsedCommand) -> String {
         var lines = ["Interface              IP-Address      OK? Method Status                Protocol"]
-        for port in access.interfaces {
-            let status: String
-            switch port.linkState {
-            case .adminDown: status = "administratively down"
-            case .up: status = "up"
-            case .down: status = "down"
-            }
+        for row in ipInterfaceRows() {
             lines.append(
-                namer.longName(port.name).padded(22) + " "
-                    + "unassigned".padded(15) + " "
-                    + "YES unset  "
-                    + status.padded(21) + " "
-                    + (port.linkState == .up ? "up" : "down")
+                row.name.padded(22) + " "
+                    + row.address.padded(15) + " "
+                    + (row.address == "unassigned" ? "YES unset  " : "YES manual ")
+                    + row.status.padded(21) + " "
+                    + row.proto
             )
         }
-        lines.append(Notices.noAddresses)
+        lines.append(Notices.statusFromDiagram)
         return joined(lines)
     }
 

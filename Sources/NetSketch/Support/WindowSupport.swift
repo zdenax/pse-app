@@ -29,18 +29,17 @@ struct WindowAccessor: NSViewRepresentable {
 
 /// A window delegate that sits in front of the delegate SwiftUI installed and only adds a
 /// "may this window close?" question. Everything else is forwarded untouched.
-final class WindowCloseGuard: NSObject, NSWindowDelegate {
+///
+/// The `NSWindowDelegate` conformance lives in an extension on purpose: declared on the class
+/// it would make the whole class main-actor isolated, and the `NSObject` overrides below
+/// (which are nonisolated) could then not read `original`.
+final class WindowCloseGuard: NSObject {
     private weak var original: NSWindowDelegate?
     private let mayClose: () -> Bool
 
     init(original: NSWindowDelegate?, mayClose: @escaping () -> Bool) {
         self.original = original
         self.mayClose = mayClose
-    }
-
-    func windowShouldClose(_ sender: NSWindow) -> Bool {
-        guard mayClose() else { return false }
-        return original?.windowShouldClose?(sender) ?? true
     }
 
     override func responds(to aSelector: Selector!) -> Bool {
@@ -51,6 +50,14 @@ final class WindowCloseGuard: NSObject, NSWindowDelegate {
     override func forwardingTarget(for aSelector: Selector!) -> Any? {
         if let original, original.responds(to: aSelector) { return original }
         return super.forwardingTarget(for: aSelector)
+    }
+}
+
+extension WindowCloseGuard: NSWindowDelegate {
+    @MainActor
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        guard mayClose() else { return false }
+        return original?.windowShouldClose?(sender) ?? true
     }
 }
 

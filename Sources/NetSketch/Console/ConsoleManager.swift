@@ -54,11 +54,12 @@ final class ConsoleModel {
         case .dellOS9: return "Dell OS9"
         case .routerOS: return "MikroTik RouterOS"
         case .generic: return "obecný"
+        case .host: return "příkazový řádek"
         }
     }
 
     var footerText: String {
-        "Dialekt: \(dialectName)   ·   Tab doplní   ·   ? nápověda   ·   ↑↓ historie   ·   Ctrl-C zruší řádek   ·   Ctrl-Z end   ·   jen konfigurace, bez simulace"
+        "Dialekt: \(dialectName)   ·   Tab doplní   ·   ? nápověda   ·   ↑↓ historie   ·   Ctrl-C zruší řádek   ·   Ctrl-Z end   ·   ping a traceroute podle diagramu"
     }
 
     // MARK: Commands
@@ -81,7 +82,9 @@ final class ConsoleModel {
         let candidates = session.complete(line)
         guard !candidates.isEmpty else { return line }
         if candidates.count == 1 {
-            return Self.applying(completion: candidates[0], to: line) + " "
+            // "address=" waits for its value right after the "=".
+            let separator = candidates[0].hasSuffix("=") ? "" : " "
+            return Self.applying(completion: candidates[0], to: line) + separator
         }
         // Several candidates: list them like IOS does and keep the line.
         append(.echo(prompt: session.prompt), line)

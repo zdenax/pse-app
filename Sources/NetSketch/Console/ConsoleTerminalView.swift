@@ -55,6 +55,8 @@ enum ConsoleKey {
     }
 }
 
+/// Implemented by the console view controller; called from the field editor, both on the main actor.
+@MainActor
 protocol ConsoleKeyHandling: AnyObject {
     /// Returns true when the key was consumed.
     func handleConsoleKey(_ key: ConsoleKey) -> Bool

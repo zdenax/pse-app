@@ -42,37 +42,61 @@ let testingLinkerSettings: [LinkerSetting] = usesCommandLineTools
     ])]
     : []
 
+// SwiftUI/AppKit exist only on macOS. Elsewhere (e.g. a Linux CI job) the package consists of
+// the portable targets only, so `swift build` and `swift test` check the core and the CLI.
+#if os(macOS)
+let appProducts: [Product] = [
+    .library(name: "NetSketchCanvas", targets: ["NetSketchCanvas"]),
+    .executable(name: "NetSketch", targets: ["NetSketch"]),
+]
+let appTargets: [Target] = [
+    .target(
+        name: "NetSketchCanvas",
+        dependencies: ["NetSketchCore"]
+    ),
+    .executableTarget(
+        name: "NetSketch",
+        dependencies: ["NetSketchCore", "NetSketchCanvas", "NetSketchCLI"]
+    ),
+    .executableTarget(
+        name: "NetSketchRender",
+        dependencies: ["NetSketchCore", "NetSketchCanvas"]
+    ),
+]
+#else
+let appProducts: [Product] = []
+let appTargets: [Target] = []
+#endif
+
 let package = Package(
     name: "NetSketch",
     platforms: [.macOS(.v14)],
     products: [
         .library(name: "NetSketchCore", targets: ["NetSketchCore"]),
-        .library(name: "NetSketchCanvas", targets: ["NetSketchCanvas"]),
         .library(name: "NetSketchCLI", targets: ["NetSketchCLI"]),
-        .executable(name: "NetSketch", targets: ["NetSketch"]),
-    ],
+    ] + appProducts,
     targets: [
         .target(
             name: "NetSketchCore",
             resources: [.process("Resources")]
         ),
         .target(
-            name: "NetSketchCanvas",
-            dependencies: ["NetSketchCore"]
-        ),
-        .target(
             name: "NetSketchCLI",
             dependencies: ["NetSketchCore"]
         ),
         .executableTarget(
-            name: "NetSketch",
-            dependencies: ["NetSketchCore", "NetSketchCanvas", "NetSketchCLI"]
+            name: "NetSketchExamples",
+            dependencies: ["NetSketchCore", "NetSketchCLI"]
         ),
         .testTarget(
             name: "NetSketchCoreTests",
             dependencies: ["NetSketchCore"],
             linkerSettings: testingLinkerSettings
         ),
-    ],
+        .testTarget(
+            name: "NetSketchCLITests",
+            dependencies: ["NetSketchCLI", "NetSketchCore"]
+        ),
+    ] + appTargets,
     swiftLanguageModes: [.v5]
 )

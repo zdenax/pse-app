@@ -67,6 +67,9 @@ struct DeviceInspector: View {
                     .textFieldStyle(.roundedBorder)
                 }
                 if !device.vlans.isEmpty { vlanTable }
+                if !device.addresses.isEmpty || !device.defaultGateway.isEmpty || !device.staticRoutes.isEmpty {
+                    ipTable
+                }
 
                 Section {
                     if visible.isEmpty {
@@ -169,6 +172,49 @@ struct DeviceInspector: View {
         }
     }
 
+    private var ipTable: some View {
+        InspectorSection(title: "IP (z konzole)") {
+            VStack(alignment: .leading, spacing: 3) {
+                ForEach(device.addresses, id: \.self) { entry in
+                    ipRow(interfaceName(entry.interface), entry.address)
+                }
+                if !device.defaultGateway.isEmpty {
+                    ipRow("Výchozí brána", device.defaultGateway)
+                }
+                ForEach(device.staticRoutes, id: \.self) { route in
+                    ipRow("Trasa", "\(route.destination) přes \(route.nextHop)")
+                }
+            }
+            Text("Nastavuje se v konzoli (ip address, ip route, netsh). Ping a traceroute v konzoli podle toho hledají cestu.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func ipRow(_ label: String, _ value: String) -> some View {
+        HStack(spacing: 8) {
+            Text(label)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .frame(width: 110, alignment: .leading)
+                .lineLimit(1)
+            Text(value)
+                .font(.system(.callout, design: .monospaced))
+                .textSelection(.enabled)
+                .lineLimit(1)
+        }
+    }
+
+    private func interfaceName(_ interface: L3InterfaceID) -> String {
+        switch interface {
+        case .vlan(let number):
+            return device.vendor.lowercased().contains("mikrotik") ? "bridge" : "Vlan\(number)"
+        case .port(let id):
+            return device.port(id: id)?.name ?? "?"
+        }
+    }
+
     private func portsHeader(total: Int, connected: Int) -> some View {
         HStack(spacing: 8) {
             Text("PORTY")
@@ -194,7 +240,8 @@ struct PortRow: View {
     let connection: PortConnection
 
     private var store: ProjectStore { model.store }
-    private var port: Port { connection.port }
+    // Qualified: a bare `Port` is ambiguous with Foundation.Port (NSPort).
+    private var port: NetSketchCore.Port { connection.port }
     private var ref: PortRef { PortRef(deviceID: deviceID, portID: connection.port.id) }
 
     var body: some View {
@@ -279,7 +326,8 @@ struct PortRow: View {
 
 struct LinkInspector: View {
     let model: AppModel
-    let link: Link
+    // Qualified: a bare `Link` is ambiguous with SwiftUI.Link.
+    let link: NetSketchCore.Link
 
     private var store: ProjectStore { model.store }
 
@@ -431,7 +479,7 @@ struct BundleSection: View {
 
 struct AnnotationInspector: View {
     let model: AppModel
-    let annotation: Annotation
+    let annotation: NetSketchCore.Annotation
 
     var body: some View {
         ScrollView {

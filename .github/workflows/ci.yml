@@ -1,0 +1,83 @@
+name: CI
+
+# Linux: builds and tests the portable targets (NetSketchCore, NetSketchCLI) on every push.
+# macOS: builds the whole package incl. NetSketchCanvas and the app; started by hand
+# (Actions -> CI -> Run workflow), because macOS minutes are expensive on private repos.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      macos:
+        description: "Sestavit a otestovat i na macOS (Canvas + aplikace)"
+        type: boolean
+        default: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    container: swift:6.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build --build-tests
+      - name: Test
+        run: swift test
+      - name: Exercises
+        # Builds the lab exercises through the consoles and checks their pings.
+        run: swift run NetSketchExamples examples
+      - name: Commit regenerated exercises
+        # The files are deterministic: they change only when the exercise code changes.
+        if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          if [ -n "$(git status --porcelain examples)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add examples
+            git commit -m "examples: regenerate lab exercises"
+            git push
+          fi
+
+  screenshots:
+    # macOS: builds the whole package (canvas and app included) and renders the example
+    # projects to PNG. Runs only for commits whose message contains [screenshots].
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[screenshots]')
+    needs: linux
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The branch tip: the linux job may just have committed regenerated exercises.
+          ref: ${{ github.ref_name }}
+      - name: Build (whole package)
+        run: swift build
+      - name: Render examples
+        run: swift run NetSketchRender docs/screenshots examples/*.netsketch
+      - name: Commit screenshots
+        run: |
+          if [ -n "$(git status --porcelain docs/screenshots)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/screenshots
+            git commit -m "docs: render example screenshots"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
+
+  macos:
+    if: github.event_name == 'workflow_dispatch' && inputs.macos
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: swift --version
+      - name: Build
+        run: swift build --build-tests
+      - name: Test
+        run: swift test

@@ -14,6 +14,8 @@ struct CommandTables {
     let vlanConfig: CommandNode
     /// Dell OS9 `interface vlan N` mode.
     let vlanInterfaceConfig: CommandNode
+    /// IOS `interface vlan N` mode (switch virtual interface).
+    let sviConfig: CommandNode
     let lineConfig: CommandNode
 
     init(dialect: CLIDialect) {
@@ -24,6 +26,7 @@ struct CommandTables {
         interfaceConfig = root(CommandTables.interfaceConfigCommands(dell: dell))
         vlanConfig = root(CommandTables.vlanConfigCommands(dell: dell))
         vlanInterfaceConfig = root(CommandTables.vlanInterfaceCommands())
+        sviConfig = root(CommandTables.sviCommands())
         lineConfig = root(CommandTables.lineConfigCommands(dell: dell))
     }
 
@@ -119,7 +122,7 @@ struct CommandTables {
                     kw("brief", "Brief summary of IP status and configuration",
                        run: { engine, command in engine.showIPInterfaceBrief(command) }),
                 ]),
-                simulated("route", "IP routing table"),
+                kw("route", "IP routing table", run: { engine, command in engine.showIPRoute(command) }),
                 simulated("arp", "IP ARP table"),
                 simulated("protocols", "IP routing protocol process parameters and statistics"),
                 simulated("ospf", "OSPF information"),
@@ -129,8 +132,11 @@ struct CommandTables {
             ]))
         } else {
             children.append(kw("ip", "IP information", [
-                simulated("route", "IP routing table"),
-                simulated("interface", "IP interface status"),
+                kw("route", "IP routing table", run: { engine, command in engine.showIPRoute(command) }),
+                kw("interface", "IP interface status", [
+                    kw("brief", "Brief summary of IP status and configuration",
+                       run: { engine, command in engine.showIPInterfaceBrief(command) }),
+                ]),
                 simulated("ospf", "OSPF information"),
             ]))
         }
@@ -183,8 +189,14 @@ struct CommandTables {
 
     private static func simulatedExecCommands() -> [CommandNode] {
         [
-            simulated("ping", "Send echo messages"),
-            simulated("traceroute", "Trace route to destination"),
+            kw("ping", "Send echo messages", [
+                line("target", "Ping destination address", placeholder: "A.B.C.D",
+                     run: { engine, command in engine.ping(command) }),
+            ]),
+            kw("traceroute", "Trace route to destination", [
+                line("target", "Trace route to destination address", placeholder: "A.B.C.D",
+                     run: { engine, command in engine.traceroute(command) }),
+            ]),
             simulated("telnet", "Open a telnet connection"),
             simulated("ssh", "Open a secure shell client connection"),
         ]
@@ -241,7 +253,6 @@ struct CommandTables {
 
     private static func globalConfigCommands(dell: Bool) -> [CommandNode] {
         var unsupported: [(String, String)] = [
-            ("ip", "Global IP configuration subcommands"),
             ("ipv6", "Global IPv6 configuration commands"),
             ("enable", "Modify enable password parameters"),
             ("username", "Establish User Name Authentication"),
@@ -278,6 +289,7 @@ struct CommandTables {
 
         var negated: [CommandNode] = [
             kw("hostname", "Set system's network name", run: { engine, _ in engine.resetHostname() }),
+            globalIPCommand(negated: true),
             kw("interface", "Select an interface to configure", [
                 custom(IOSEngine.interfaceArgument, run: { engine, command in engine.removeInterface(command) }),
             ]),
@@ -286,6 +298,7 @@ struct CommandTables {
             kw("hostname", "Set system's network name", [
                 word("name", "This system's network name", run: { engine, command in engine.setHostname(command) }),
             ]),
+            globalIPCommand(negated: false),
             interfaceCommand(dell: dell),
             kw("line", "Configure a terminal line", [
                 line("rest", "Line to configure (console, vty, aux)", run: { engine, command in engine.enterLine(command) }),
@@ -325,7 +338,6 @@ struct CommandTables {
 
     private static func interfaceConfigCommands(dell: Bool) -> [CommandNode] {
         var unsupported: [(String, String)] = [
-            ("ip", "Interface Internet Protocol config commands"),
             ("ipv6", "IPv6 interface subcommands"),
             ("speed", "Configure speed operation"),
             ("duplex", "Configure duplex operation"),
@@ -357,8 +369,10 @@ struct CommandTables {
                      run: { engine, command in engine.setDescription(command) }),
             ]),
             kw("shutdown", "Shutdown the selected interface", run: { engine, _ in engine.setShutdown(true) }),
+            interfaceIPCommand(negated: false),
         ]
         var negated: [CommandNode] = [
+            interfaceIPCommand(negated: true),
             kw("description", "Interface specific description", [
                 line("text", "Description text (ignored)", run: { engine, _ in engine.clearDescription() }),
             ], run: { engine, _ in engine.clearDescription() }),
@@ -523,15 +537,86 @@ struct CommandTables {
                 kw("untagged", "Remove untagged member interfaces", [
                     custom(range, run: { engine, command in engine.dellChangeMembership(.noUntagged, command) }),
                 ]),
-                notStored("shutdown", "Shutdown the VLAN interface", bare: true),
-                notStored("ip", "Interface Internet Protocol config commands"),
+                // VLAN interfaces are always up in the simulation while a port carries the VLAN.
+                kw("shutdown", "Shutdown the VLAN interface", run: { _, _ in "" }),
+                interfaceIPCommand(negated: true),
                 notStored("description", "VLAN interface description", bare: true),
             ]),
             notStored("shutdown", "Shutdown the VLAN interface", bare: true),
-            notStored("ip", "Interface Internet Protocol config commands"),
+            interfaceIPCommand(negated: false),
             notStored("description", "VLAN interface description"),
             notStored("mtu", "Set the interface Maximum Transmission Unit (MTU)"),
         ] + configNavigation(dell: true)
+    }
+
+    // MARK: IP
+
+    /// What `ip ...` / `no ip ...` says about the subcommands the diagram has no field for.
+    private static let ipNotStored: CommandHandler = { _, command in
+        let first = (command.text("rest") ?? "").split(separator: " ").first.map(String.init) ?? ""
+        return Notices.notStored(first.isEmpty ? "ip" : "ip " + first)
+    }
+
+    /// `ip address A.B.C.D M.M.M.M` (or `A.B.C.D/NN`) of an interface; other `ip` subcommands
+    /// are accepted and not stored.
+    private static func interfaceIPCommand(negated: Bool) -> CommandNode {
+        let address: CommandNode
+        if negated {
+            address = kw("address", "Set the IP address of an interface", [
+                line("rest", "Address (ignored)", run: { engine, _ in engine.clearIPAddress() }),
+            ], run: { engine, _ in engine.clearIPAddress() })
+        } else {
+            address = kw("address", "Set the IP address of an interface", [
+                line("address", "IP address and mask (A.B.C.D M.M.M.M or A.B.C.D/NN)", placeholder: "A.B.C.D",
+                     run: { engine, command in engine.setIPAddress(command) }),
+            ])
+        }
+        return kw("ip", "Interface Internet Protocol config commands", [
+            address,
+            line("rest", "Other IP subcommands (accepted, not stored)", run: ipNotStored),
+        ])
+    }
+
+    /// Global `ip route`, `ip default-gateway`, `ip routing`; the rest is accepted and not stored.
+    private static func globalIPCommand(negated: Bool) -> CommandNode {
+        let route = kw("route", "Establish static routes", [
+            line("route", "Destination prefix, mask and next hop", placeholder: "A.B.C.D",
+                 run: { engine, command in negated ? engine.removeStaticRoute(command) : engine.addStaticRoute(command) }),
+        ])
+        let gateway: CommandNode
+        if negated {
+            gateway = kw("default-gateway", "Specify default gateway (if not routing IP)", [
+                line("rest", "Gateway (ignored)", run: { engine, _ in engine.clearDefaultGateway() }),
+            ], run: { engine, _ in engine.clearDefaultGateway() })
+        } else {
+            gateway = kw("default-gateway", "Specify default gateway (if not routing IP)", [
+                word("gateway", "IP address of default gateway", placeholder: "A.B.C.D",
+                     run: { engine, command in engine.setDefaultGateway(command) }),
+            ])
+        }
+        return kw("ip", "Global IP configuration subcommands", [
+            route,
+            gateway,
+            // Routers and layer-3 switches always route in the simulation.
+            kw("routing", "Enable IP routing", run: { _, _ in "" }),
+            line("rest", "Other IP subcommands (accepted, not stored)", run: ipNotStored),
+        ])
+    }
+
+    /// IOS `interface vlan N`.
+    private static func sviCommands() -> [CommandNode] {
+        [
+            interfaceIPCommand(negated: false),
+            kw("no", "Negate a command or set its defaults", [
+                interfaceIPCommand(negated: true),
+                // VLAN interfaces are always up in the simulation while a port carries the VLAN.
+                kw("shutdown", "Shutdown the selected interface", run: { _, _ in "" }),
+                notStored("description", "Interface specific description", bare: true),
+            ]),
+            notStored("shutdown", "Shutdown the selected interface", bare: true),
+            notStored("description", "Interface specific description"),
+            notStored("mtu", "Set the interface Maximum Transmission Unit (MTU)"),
+        ] + configNavigation(dell: false)
     }
 
     // MARK: Line configuration

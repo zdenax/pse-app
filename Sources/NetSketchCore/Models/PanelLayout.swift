@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(CoreGraphics)
 import CoreGraphics
+#endif
 
 /// How the ports of one panel section are placed.
 public enum PortArrangement: String, Codable, CaseIterable, Hashable, Sendable {
