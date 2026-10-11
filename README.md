@@ -23,7 +23,8 @@ znaku, ověřují to testy).
 > **Nejde o nástroj UJEP.** NetSketch není oficiální aplikace Univerzity J. E. Purkyně v Ústí nad
 > Labem, nevznikl na její zakázku ani s jejím schválením. Je to soukromá cvičná aplikace studenta
 > k procvičování počítačových sítí, inspirovaná vybavením laboratoře a látkou předmětu KI/PSE.
-> Za obsah odpovídá autor.
+> Za obsah odpovídá autor. Není ani spojen s výrobci zařízení (Cisco, Dell, MikroTik, Ubiquiti,
+> Netgear) a není jimi schválen.
 
 > **Využití umělé inteligence.** Projekt vznikl s výrazným využitím nástroje generativní AI
 > **Claude Code** (Anthropic). Prohlášení o využití AI v souladu s
@@ -209,3 +210,5 @@ webové verzi.
 Kód je pod licencí [MIT](LICENSE): lze ho volně používat, upravovat i šířit, jen je potřeba ponechat
 uvedení autora a text licence. Názvy výrobců a modelů zařízení v katalogu (Cisco, Dell, MikroTik,
 Ubiquiti, Netgear) jsou ochranné známky svých vlastníků a slouží jen k označení zařízení.
+NetSketch není spojen s firmami Cisco, Dell, MikroTik, Ubiquiti ani Netgear a není jimi schválen;
+licence MIT se na jejich ochranné známky nevztahuje.
