@@ -6,6 +6,7 @@ import type { Device } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import { ConsoleManager, type Area, type ConsoleBackend } from "./console-manager";
 import { plural, withExtension, withoutExtension } from "./czech";
+import { consoleShortcutLabel } from "./platform";
 import type { ExportKind, ProjectFiles, WritableFileHandle } from "./files";
 import { bundleOfLink, findDevice, freeSpot, selectedIDs } from "./project-helpers";
 import { Viewport } from "./viewport";
@@ -37,7 +38,36 @@ export interface AppModelOptions {
   /** Runs a function after the next layout (the canvas learns its content then). */
   afterLayout?: (fn: () => void) => void;
   viewport?: Viewport;
+  /** Where per-user conveniences are remembered; the browser's local storage by default. */
+  settings?: SettingsStorage;
 }
+
+/** A tiny key-value store for remembered toolbar settings. Reads and writes never throw. */
+export interface SettingsStorage {
+  get(key: string): string | null;
+  set(key: string, value: string): void;
+}
+
+/** Local storage of the page; blocked or missing storage (private window) just forgets. */
+export const browserSettings: SettingsStorage = {
+  get(key) {
+    try {
+      return typeof localStorage === "undefined" ? null : localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(key, value) {
+    try {
+      if (typeof localStorage !== "undefined") localStorage.setItem(key, value);
+    } catch {
+      // Storage full or blocked: the setting lasts until the page is closed.
+    }
+  },
+};
+
+/** Key of the "Animace paketů" toggle in the settings. */
+export const packetAnimationKey = "netsketch.packetAnimation";
 
 const exportTitles: Record<ExportKind, { menu: string; failed: string; empty: string }> = {
   png: {
@@ -74,8 +104,10 @@ export class AppModel {
   private readonly confirmQuestion: (message: string) => boolean;
   private readonly afterLayout: (fn: () => void) => void;
 
+  private readonly settings: SettingsStorage;
   private _inspectorVisible = true;
   private _paletteVisible = true;
+  private _packetAnimation = true;
   private _alert: AppAlert | null = null;
   private _deviceEditorOpen = false;
   private alertCounter = 0;
@@ -92,6 +124,8 @@ export class AppModel {
     this.files = options.files;
     this.exporters = options.exporters ?? {};
     this.consoles = new ConsoleManager(options.store, options.consoles);
+    this.settings = options.settings ?? browserSettings;
+    this._packetAnimation = this.settings.get(packetAnimationKey) !== "off";
     this.confirmQuestion =
       options.confirm ?? ((message) => (typeof window === "undefined" ? true : window.confirm(message)));
     this.afterLayout =
@@ -152,6 +186,18 @@ export class AppModel {
   set paletteVisible(value: boolean) {
     if (value === this._paletteVisible) return;
     this._paletteVisible = value;
+    this.changed();
+  }
+
+  /** Whether packets of ping and traceroute are animated on the canvas (remembered). */
+  get packetAnimation(): boolean {
+    return this._packetAnimation;
+  }
+
+  set packetAnimation(value: boolean) {
+    if (value === this._packetAnimation) return;
+    this._packetAnimation = value;
+    this.settings.set(packetAnimationKey, value ? "on" : "off");
     this.changed();
   }
 
@@ -451,7 +497,7 @@ export class AppModel {
     const device = this.singleSelectedDevice;
     if (!device) return { enabled: false, help: "Otevřít konzoli: nejprve vyberte jedno zařízení" };
     const reason = this.consoleUnavailableReason(device);
-    return reason ? { enabled: false, help: reason } : { enabled: true, help: `Otevřít konzoli zařízení ${device.hostname}` };
+    return reason ? { enabled: false, help: reason } : { enabled: true, help: `Otevřít konzoli zařízení ${device.hostname} (${consoleShortcutLabel()})` };
   }
 
   openConsole(deviceID: string, area?: Area): void {

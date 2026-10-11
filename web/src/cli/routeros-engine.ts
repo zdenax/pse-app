@@ -27,6 +27,7 @@ import { CLILimits, Notices } from "./notices";
 import type { ConsoleEngine } from "./session";
 import { IPv4, IPv4Prefix } from "./sim/ipv4";
 import { collectRouterOSMenus, type RouterOSContext, type RouterOSFeatureMenu } from "./features/routeros-menus";
+import { announcePing, lossNotice, planPing, routerOSTime, wholeMilliseconds } from "./features/realism/timing";
 import { NetworkSimulator } from "./sim/network-simulator";
 
 // MARK: Menu tree (the single definition used by execution, help and completion)
@@ -1101,25 +1102,36 @@ export class RouterOSEngine implements ConsoleEngine {
 
     const simulator = this.access.simulator;
     const result = simulator.ping(this.access.deviceID, destination);
+    const plan = planPing(simulator, this.access.deviceID, destination, result, count);
+    announcePing(this.access.deviceID, result, plan);
     // Every router on the way back lowers the TTL of the reply by one.
-    const ttl = Math.max(1, 64 - Math.max(0, result.hopCount - 1));
+    const ttl = Math.max(1, 64 - (plan.active ? plan.routersOnReturn : Math.max(0, result.hopCount - 1)));
     const host = padded(destination.description, 40);
     const lines = ["  SEQ HOST                                     SIZE TTL TIME       STATUS"];
     for (let sequence = 0; sequence < count; sequence++) {
       const head = leftPadded(`${sequence}`, 5) + " " + host;
-      if (result.success) {
-        lines.push([head, leftPadded("56", 4), leftPadded(`${ttl}`, 3), "0ms"].join(" "));
+      const sample = plan.active ? plan.samples[sequence] : undefined;
+      if (result.success && !sample?.lost) {
+        const time = sample === undefined ? "0ms" : routerOSTime(sample.rtt);
+        lines.push([head, leftPadded("56", 4), leftPadded(`${ttl}`, 3), time].join(" "));
       } else {
         lines.push(head + " ".repeat(19) + "timeout");
       }
     }
-    if (result.success) {
-      lines.push(`    sent=${count} received=${count} packet-loss=0% min-rtt=0ms avg-rtt=0ms max-rtt=0ms`);
+    const received = plan.active ? plan.received : result.success ? count : 0;
+    if (received > 0) {
+      const loss = Math.trunc(((count - received) * 100) / count);
+      const times = plan.active
+        ? `${wholeMilliseconds(plan.minimum)}ms avg-rtt=${wholeMilliseconds(plan.average)}ms max-rtt=${wholeMilliseconds(plan.maximum)}ms`
+        : "0ms avg-rtt=0ms max-rtt=0ms";
+      lines.push(`    sent=${count} received=${received} packet-loss=${loss}% min-rtt=${times}`);
     } else {
       lines.push(`    sent=${count} received=0 packet-loss=100%`);
       const reason = simulator.explain(result);
       if (reason !== "") lines.push(reason);
     }
+    const lostNotice = lossNotice(plan);
+    if (lostNotice !== "") lines.push(lostNotice);
     lines.push(...notes);
     return lines.join("\n");
   }

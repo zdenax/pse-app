@@ -54,6 +54,12 @@ function digitOf(event: ShortcutKeyEvent): string | null {
  * the field, while document commands (save, open, zoom...) still work.
  */
 export function shortcutFor(event: ShortcutKeyEvent, isMac: boolean, editingText: boolean): ShortcutCommand | null {
+  // The console opens with Alt+T (Option+T on the Mac): browsers keep Ctrl/Cmd+T for a new tab and
+  // never see this one. AltGr (reported as Ctrl+Alt) is left alone. In a text field the Mac types a
+  // character with Option+T, so the field keeps it there.
+  if (event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey && letterOf(event) === "t") {
+    return isMac && editingText ? null : "console";
+  }
   const mod = isMac ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
 
   if (!mod) {
@@ -95,8 +101,6 @@ export function shortcutFor(event: ShortcutKeyEvent, isMac: boolean, editingText
     case "y":
       // Ctrl+Y is the usual redo outside the Mac.
       return !isMac && !event.shiftKey && !editingText ? "redo" : null;
-    case "t":
-      return event.shiftKey ? null : "console";
     case "a":
       return editingText || event.shiftKey ? null : "selectAll";
     case "g":

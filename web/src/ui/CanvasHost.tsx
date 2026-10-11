@@ -5,6 +5,8 @@
 import { useMemo } from "react";
 import { CanvasView } from "../canvas/CanvasView";
 import type { CanvasInputHost } from "../canvas/input";
+import type { PacketSource, PortStateMap } from "../canvas/packet-animation";
+import type { Project } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import { templateDragType } from "./Palette";
 import { findDevice } from "./project-helpers";
@@ -14,9 +16,12 @@ import type { Viewport } from "./viewport";
 export interface CanvasHostProps {
   store: ProjectStoreAPI;
   viewport: Viewport;
+  packets?: PacketSource;
+  animatePackets?: boolean;
+  portStates?: (project: Project) => PortStateMap;
 }
 
-export function CanvasHost({ store, viewport }: CanvasHostProps) {
+export function CanvasHost({ store, viewport, packets, animatePackets, portStates }: CanvasHostProps) {
   const app = useApp();
   const host = useMemo<CanvasInputHost>(
     () => ({
@@ -30,7 +35,15 @@ export function CanvasHost({ store, viewport }: CanvasHostProps) {
   );
   return (
     <div className="canvas-host">
-      <CanvasView store={store} viewport={viewport} host={host} templateDragType={templateDragType} />
+      <CanvasView
+        store={store}
+        viewport={viewport}
+        host={host}
+        templateDragType={templateDragType}
+        packets={packets}
+        animatePackets={animatePackets}
+        portStates={portStates}
+      />
     </div>
   );
 }
