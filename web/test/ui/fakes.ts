@@ -18,6 +18,7 @@ import type {
   VLANEntry,
   ViewMode,
 } from "../../src/core/model";
+import type { DeviceProtocols } from "../../src/core/protocols";
 import type {
   CatalogAPI,
   EditErrorCode,
@@ -567,6 +568,24 @@ export class FakeStore implements ProjectStoreAPI {
     const next = order[(order.indexOf(current) + 1) % order.length];
     this.setStatus(linkID, end, next);
     return next;
+  }
+
+  setProtocols(deviceID: string, protocols: DeviceProtocols): void {
+    this.mutate((draft) => {
+      const device = this.device(draft, deviceID);
+      if (Object.keys(protocols).length === 0) delete device.protocols;
+      else device.protocols = clone(protocols);
+    });
+  }
+
+  setLinkQuality(linkID: string, quality: { delay?: number; loss?: number }): void {
+    this.mutate((draft) => {
+      const link = this.link(draft, linkID);
+      delete link.delay;
+      delete link.loss;
+      if ((quality.delay ?? 0) > 0) link.delay = quality.delay;
+      if ((quality.loss ?? 0) > 0) link.loss = Math.min(100, quality.loss ?? 0);
+    });
   }
 
   setLinkNote(linkID: string, note: string): void {

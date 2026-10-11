@@ -23,6 +23,10 @@ import * as Show from "./ios-show";
 import { IOSEngine } from "./ios-engine";
 import { Notices } from "./notices";
 import type { CLIDialect } from "./session-api";
+import { collectIOSFeatures, mergeNodes } from "./features/ios-commands";
+
+/** The commands of the protocol features, by place (see features/ios-commands.ts). */
+type Features = ReturnType<typeof collectIOSFeatures>;
 
 /** A command that would need a running network: accepted, answered with the notice. */
 function simulated(name: string, help: string): CommandNode {
@@ -43,17 +47,17 @@ function notStoredList(entries: [string, string][]): CommandNode[] {
 }
 
 /** `exit`, `end` and `do` of every configuration mode. */
-function configNavigation(dell: boolean): CommandNode[] {
+function configNavigation(dell: boolean, f: Features): CommandNode[] {
   return [
     kw("exit", "Exit from current mode", [], (engine) => Handlers.exitCommand(engine)),
     kw("end", "Exit from configure mode", [], (engine) => Handlers.endConfig(engine)),
-    kw("do", "To run exec commands in config mode", doCommands(dell)),
+    kw("do", "To run exec commands in config mode", doCommands(dell, f)),
   ];
 }
 
 // MARK: show
 
-function showCommand(dell: boolean, privileged: boolean): CommandNode {
+function showCommand(dell: boolean, privileged: boolean, f: Features): CommandNode {
   const interfaceArgument = IOSEngine.interfaceArgument;
   const children: CommandNode[] = [];
 
@@ -146,32 +150,46 @@ function showCommand(dell: boolean, privileged: boolean): CommandNode {
       kw("inventory", "Show the physical inventory", [], (engine, command) => Show.showInventory(engine, command)),
     );
     children.push(
-      kw("ip", "IP information", [
-        kw("interface", "IP interface status and configuration", [
-          kw("brief", "Brief summary of IP status and configuration", [], (engine, command) =>
-            Show.showIPInterfaceBrief(engine, command),
-          ),
-        ]),
-        kw("route", "IP routing table", [], (engine, command) => Network.showIPRoute(engine, command)),
-        simulated("arp", "IP ARP table"),
-        simulated("protocols", "IP routing protocol process parameters and statistics"),
-        simulated("ospf", "OSPF information"),
-        simulated("eigrp", "EIGRP information"),
-        simulated("dhcp", "Show items in the DHCP database"),
-        simulated("nat", "IP NAT information"),
-      ]),
+      kw(
+        "ip",
+        "IP information",
+        mergeNodes(
+          [
+            kw("interface", "IP interface status and configuration", [
+              kw("brief", "Brief summary of IP status and configuration", [], (engine, command) =>
+                Show.showIPInterfaceBrief(engine, command),
+              ),
+            ]),
+            kw("route", "IP routing table", [], (engine, command) => Network.showIPRoute(engine, command)),
+            simulated("arp", "IP ARP table"),
+            simulated("protocols", "IP routing protocol process parameters and statistics"),
+            simulated("ospf", "OSPF information"),
+            simulated("eigrp", "EIGRP information"),
+            simulated("dhcp", "Show items in the DHCP database"),
+            simulated("nat", "IP NAT information"),
+          ],
+          f.showIP,
+        ),
+      ),
     );
   } else {
     children.push(
-      kw("ip", "IP information", [
-        kw("route", "IP routing table", [], (engine, command) => Network.showIPRoute(engine, command)),
-        kw("interface", "IP interface status", [
-          kw("brief", "Brief summary of IP status and configuration", [], (engine, command) =>
-            Show.showIPInterfaceBrief(engine, command),
-          ),
-        ]),
-        simulated("ospf", "OSPF information"),
-      ]),
+      kw(
+        "ip",
+        "IP information",
+        mergeNodes(
+          [
+            kw("route", "IP routing table", [], (engine, command) => Network.showIPRoute(engine, command)),
+            kw("interface", "IP interface status", [
+              kw("brief", "Brief summary of IP status and configuration", [], (engine, command) =>
+                Show.showIPInterfaceBrief(engine, command),
+              ),
+            ]),
+            simulated("ospf", "OSPF information"),
+          ],
+          f.showIP,
+        ),
+      ),
     );
   }
 
@@ -205,7 +223,7 @@ function showCommand(dell: boolean, privileged: boolean): CommandNode {
       simulated("standby", "Hot Standby Router Protocol (HSRP) information"),
     );
   }
-  return kw("show", "Show running system information", children);
+  return kw("show", "Show running system information", mergeNodes(children, f.show));
 }
 
 // MARK: EXEC
@@ -264,13 +282,16 @@ function privilegedOnlyCommands(): CommandNode[] {
 }
 
 /** The commands `do` offers inside configuration modes. */
-function doCommands(dell: boolean): CommandNode[] {
-  return [showCommand(dell, true), ...simulatedExecCommands(), ...privilegedOnlyCommands()];
+function doCommands(dell: boolean, f: Features): CommandNode[] {
+  return mergeNodes([showCommand(dell, true, f), ...simulatedExecCommands(), ...privilegedOnlyCommands()], [
+    ...f.exec,
+    ...f.privileged,
+  ]);
 }
 
-function execCommands(dell: boolean, privileged: boolean): CommandNode[] {
-  const commands: CommandNode[] = [
-    showCommand(dell, privileged),
+function execCommands(dell: boolean, privileged: boolean, f: Features): CommandNode[] {
+  let commands: CommandNode[] = [
+    showCommand(dell, privileged, f),
     kw("enable", "Turn on privileged commands", [], (engine) => Handlers.enterPrivileged(engine)),
     kw("disable", "Turn off privileged commands", [], (engine) => Handlers.leavePrivileged(engine)),
     kw("exit", "Exit from the EXEC", [], (engine) => Handlers.exitCommand(engine)),
@@ -291,6 +312,7 @@ function execCommands(dell: boolean, privileged: boolean): CommandNode[] {
     );
     commands.push(...privilegedOnlyCommands());
   }
+  commands = mergeNodes(commands, privileged ? [...f.exec, ...f.privileged] : f.exec);
   return commands;
 }
 
@@ -305,7 +327,7 @@ function interfaceCommand(): CommandNode {
   ]);
 }
 
-function globalConfigCommands(dell: boolean): CommandNode[] {
+function globalConfigCommands(dell: boolean, f: Features): CommandNode[] {
   const unsupported: [string, string][] = [
     ["ipv6", "Global IPv6 configuration commands"],
     ["enable", "Modify enable password parameters"],
@@ -341,18 +363,18 @@ function globalConfigCommands(dell: boolean): CommandNode[] {
     );
   }
 
-  const negated: CommandNode[] = [
+  let negated: CommandNode[] = [
     kw("hostname", "Set system's network name", [], (engine) => Handlers.resetHostname(engine)),
-    globalIPCommand(true),
+    globalIPCommand(true, f),
     kw("interface", "Select an interface to configure", [
       custom(IOSEngine.interfaceArgument, (engine, command) => Handlers.removeInterface(engine, command)),
     ]),
   ];
-  const commands: CommandNode[] = [
+  let commands: CommandNode[] = [
     kw("hostname", "Set system's network name", [
       word("name", "This system's network name", (engine, command) => Handlers.setHostname(engine, command)),
     ]),
-    globalIPCommand(false),
+    globalIPCommand(false, f),
     interfaceCommand(),
     kw("line", "Configure a terminal line", [
       line("rest", "Line to configure (console, vty, aux)", (engine, command) => Handlers.enterLine(engine, command)),
@@ -390,14 +412,16 @@ function globalConfigCommands(dell: boolean): CommandNode[] {
   commands.push(...notStoredList(unsupported));
   negated.push(...notStoredList(unsupported));
   negated.push(notStored("banner", "Define a login banner"));
+  negated = mergeNodes(negated, f.globalNo);
+  commands = mergeNodes(commands, f.global);
   commands.push(kw("no", "Negate a command or set its defaults", negated));
-  commands.push(...configNavigation(dell));
+  commands.push(...configNavigation(dell, f));
   return commands;
 }
 
 // MARK: Interface configuration
 
-function interfaceConfigCommands(dell: boolean): CommandNode[] {
+function interfaceConfigCommands(dell: boolean, f: Features): CommandNode[] {
   const unsupported: [string, string][] = [
     ["ipv6", "IPv6 interface subcommands"],
     ["speed", "Configure speed operation"],
@@ -424,17 +448,17 @@ function interfaceConfigCommands(dell: boolean): CommandNode[] {
     );
   }
 
-  const commands: CommandNode[] = [
+  let commands: CommandNode[] = [
     kw("description", "Interface specific description", [
       line("text", "Up to 240 characters describing this interface", (engine, command) =>
         Handlers.setDescription(engine, command),
       ),
     ]),
     kw("shutdown", "Shutdown the selected interface", [], (engine) => Handlers.setShutdown(engine, true)),
-    interfaceIPCommand(false),
+    interfaceIPCommand(false, f),
   ];
-  const negated: CommandNode[] = [
-    interfaceIPCommand(true),
+  let negated: CommandNode[] = [
+    interfaceIPCommand(true, f),
     kw(
       "description",
       "Interface specific description",
@@ -477,8 +501,10 @@ function interfaceConfigCommands(dell: boolean): CommandNode[] {
 
   commands.push(...notStoredList(unsupported));
   negated.push(...notStoredList(unsupported));
+  negated = mergeNodes(negated, f.interfaceNo);
+  commands = mergeNodes(commands, f.interface);
   commands.push(kw("no", "Negate a command or set its defaults", negated));
-  commands.push(...configNavigation(dell));
+  commands.push(...configNavigation(dell, f));
   return commands;
 }
 
@@ -613,7 +639,7 @@ function noSwitchportCommand(): CommandNode {
 
 // MARK: VLAN configuration
 
-function vlanConfigCommands(dell: boolean): CommandNode[] {
+function vlanConfigCommands(dell: boolean, f: Features): CommandNode[] {
   return [
     kw("name", "Ascii name of the VLAN", [
       word("name", "The ascii name for the VLAN", (engine, command) => Handlers.setVLANName(engine, command)),
@@ -626,11 +652,11 @@ function vlanConfigCommands(dell: boolean): CommandNode[] {
     notStored("state", "Operational state of the VLAN"),
     notStored("shutdown", "Shutdown VLAN switching", true),
     notStored("mtu", "VLAN Maximum Transmission Unit"),
-    ...configNavigation(dell),
+    ...configNavigation(dell, f),
   ];
 }
 
-function vlanInterfaceCommands(): CommandNode[] {
+function vlanInterfaceCommands(f: Features): CommandNode[] {
   const range = IOSEngine.interfaceRangeArgument;
   return [
     kw("name", "Set the VLAN name", [
@@ -657,14 +683,14 @@ function vlanInterfaceCommands(): CommandNode[] {
       ]),
       // VLAN interfaces are always up in the simulation while a port carries the VLAN.
       kw("shutdown", "Shutdown the VLAN interface", [], () => ""),
-      interfaceIPCommand(true),
+      interfaceIPCommand(true, f),
       notStored("description", "VLAN interface description", true),
     ]),
     notStored("shutdown", "Shutdown the VLAN interface", true),
-    interfaceIPCommand(false),
+    interfaceIPCommand(false, f),
     notStored("description", "VLAN interface description"),
     notStored("mtu", "Set the interface Maximum Transmission Unit (MTU)"),
-    ...configNavigation(true),
+    ...configNavigation(true, f),
   ];
 }
 
@@ -678,7 +704,7 @@ const ipNotStored: CommandHandler = (_engine, command) => {
 
 /** `ip address A.B.C.D M.M.M.M` (or `A.B.C.D/NN`) of an interface; other `ip` subcommands
  * are accepted and not stored. */
-function interfaceIPCommand(negated: boolean): CommandNode {
+function interfaceIPCommand(negated: boolean, f: Features): CommandNode {
   let address: CommandNode;
   if (negated) {
     address = kw(
@@ -697,14 +723,15 @@ function interfaceIPCommand(negated: boolean): CommandNode {
       ),
     ]);
   }
-  return kw("ip", "Interface Internet Protocol config commands", [
-    address,
-    line("rest", "Other IP subcommands (accepted, not stored)", ipNotStored),
-  ]);
+  return kw(
+    "ip",
+    "Interface Internet Protocol config commands",
+    mergeNodes([address, line("rest", "Other IP subcommands (accepted, not stored)", ipNotStored)], negated ? f.interfaceNoIP : f.interfaceIP),
+  );
 }
 
 /** Global `ip route`, `ip default-gateway`, `ip routing`; the rest is accepted and not stored. */
-function globalIPCommand(negated: boolean): CommandNode {
+function globalIPCommand(negated: boolean, f: Features): CommandNode {
   const route = kw("route", "Establish static routes", [
     line(
       "route",
@@ -732,21 +759,28 @@ function globalIPCommand(negated: boolean): CommandNode {
       ),
     ]);
   }
-  return kw("ip", "Global IP configuration subcommands", [
-    route,
-    gateway,
-    // Routers and layer-3 switches always route in the simulation.
-    kw("routing", "Enable IP routing", [], () => ""),
-    line("rest", "Other IP subcommands (accepted, not stored)", ipNotStored),
-  ]);
+  return kw(
+    "ip",
+    "Global IP configuration subcommands",
+    mergeNodes(
+      [
+        route,
+        gateway,
+        // Routers and layer-3 switches always route in the simulation.
+        kw("routing", "Enable IP routing", [], () => ""),
+        line("rest", "Other IP subcommands (accepted, not stored)", ipNotStored),
+      ],
+      negated ? f.globalNoIP : f.globalIP,
+    ),
+  );
 }
 
 /** IOS `interface vlan N`. */
-function sviCommands(): CommandNode[] {
+function sviCommands(f: Features): CommandNode[] {
   return [
-    interfaceIPCommand(false),
+    interfaceIPCommand(false, f),
     kw("no", "Negate a command or set its defaults", [
-      interfaceIPCommand(true),
+      interfaceIPCommand(true, f),
       // VLAN interfaces are always up in the simulation while a port carries the VLAN.
       kw("shutdown", "Shutdown the selected interface", [], () => ""),
       notStored("description", "Interface specific description", true),
@@ -754,15 +788,15 @@ function sviCommands(): CommandNode[] {
     notStored("shutdown", "Shutdown the selected interface", true),
     notStored("description", "Interface specific description"),
     notStored("mtu", "Set the interface Maximum Transmission Unit (MTU)"),
-    ...configNavigation(false),
+    ...configNavigation(false, f),
   ];
 }
 
 // MARK: Line configuration
 
-function lineConfigCommands(dell: boolean): CommandNode[] {
+function lineConfigCommands(dell: boolean, f: Features): CommandNode[] {
   // Entering the mode already said that nothing is stored; the sub-commands stay silent.
-  return [line("rest", "Line configuration command (accepted, not stored)", () => ""), ...configNavigation(dell)];
+  return [line("rest", "Line configuration command (accepted, not stored)", () => ""), ...configNavigation(dell, f)];
 }
 
 /** The command trees of one dialect, one per mode. */
@@ -778,16 +812,22 @@ export class CommandTables {
   /** IOS `interface vlan N` mode (switch virtual interface). */
   readonly sviConfig: CommandNode;
   readonly lineConfig: CommandNode;
+  /** The configuration modes of the protocol features (`router ospf`, `ip dhcp pool`, ...). */
+  readonly featureModes: Map<string, CommandNode>;
 
   constructor(dialect: CLIDialect) {
     const dell = dialect === "dellOS9";
-    this.userExec = root(execCommands(dell, false));
-    this.privilegedExec = root(execCommands(dell, true));
-    this.globalConfig = root(globalConfigCommands(dell));
-    this.interfaceConfig = root(interfaceConfigCommands(dell));
-    this.vlanConfig = root(vlanConfigCommands(dell));
-    this.vlanInterfaceConfig = root(vlanInterfaceCommands());
-    this.sviConfig = root(sviCommands());
-    this.lineConfig = root(lineConfigCommands(dell));
+    const f = collectIOSFeatures(dialect);
+    this.userExec = root(execCommands(dell, false, f));
+    this.privilegedExec = root(execCommands(dell, true, f));
+    this.globalConfig = root(globalConfigCommands(dell, f));
+    this.interfaceConfig = root(interfaceConfigCommands(dell, f));
+    this.vlanConfig = root(vlanConfigCommands(dell, f));
+    this.vlanInterfaceConfig = root(vlanInterfaceCommands(f));
+    this.sviConfig = root(sviCommands(f));
+    this.lineConfig = root(lineConfigCommands(dell, f));
+    this.featureModes = new Map(
+      Object.entries(f.modes).map(([name, nodes]) => [name, root([...nodes, ...configNavigation(dell, f)])]),
+    );
   }
 }

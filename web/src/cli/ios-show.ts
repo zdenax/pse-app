@@ -5,6 +5,7 @@
 // fields a real switch would learn from a running protocol are either left out or replaced by
 // the configured value, and a NetSketch line says so.
 
+import { featureGlobalBlocks, featureInterfaceLines } from "./features/ios-commands";
 import type { DeviceCategory } from "../core/model";
 import {
   charCount,
@@ -162,6 +163,7 @@ export function interfaceConfigLines(engine: IOSEngine, port: PortSnapshot): str
   } else {
     lines.push(` ! ${Notices.customVLANText(singleLine(port.vlanText))}`);
   }
+  lines.push(...featureInterfaceLines(engine, l3Port(port.id)));
   if (port.adminDown) lines.push(" shutdown");
   return lines;
 }
@@ -194,6 +196,7 @@ export function showRunningConfig(engine: IOSEngine, _command: ParsedCommand): s
   }
   const global = globalIPLines(engine);
   if (global.length > 0) body.push(...global, "!");
+  for (const block of featureGlobalBlocks(engine)) body.push(...block, "!");
   body.push("end");
   return withConfigHeader(body);
 }

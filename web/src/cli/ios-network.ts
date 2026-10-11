@@ -4,6 +4,7 @@
 // Addresses, routes and the default gateway are stored in the project; ping and traceroute ask
 // NetworkSimulator, which follows the drawn cabling.
 
+import { featureInterfaceLines } from "./features/ios-commands";
 import type { L3InterfaceID, StaticRoute } from "../core/model";
 import { leftPadded, padded, ParsedCommand, splitSpaces, splitWords, swiftInt, trimmingTrailingWhitespace } from "./command-tree";
 import type { IOSEngine } from "./ios-engine";
@@ -31,10 +32,10 @@ function samePrefix(a: IPv4Prefix, b: IPv4Prefix): boolean {
   return a.address.value === b.address.value && a.length === b.length;
 }
 
-type L3Result = { kind: "success"; interface: L3InterfaceID } | { kind: "failure"; message: string };
+export type L3Result = { kind: "success"; interface: L3InterfaceID } | { kind: "failure"; message: string };
 
 /** The layer-3 interface of the current mode, or a message why there is none. */
-function currentL3Interface(engine: IOSEngine): L3Result {
+export function currentL3Interface(engine: IOSEngine): L3Result {
   const mode = engine.mode;
   switch (mode.kind) {
     case "vlanInterface":
@@ -424,7 +425,11 @@ export function sviConfigBlocks(engine: IOSEngine): string[][] {
     if (parsed === null || parsed.kind !== "vlan") continue;
     const text = addressLine(engine, entry.interface);
     if (text === null) continue;
-    blocks.push([engine.isDell ? `interface Vlan ${parsed.number}` : `interface Vlan${parsed.number}`, text]);
+    blocks.push([
+      engine.isDell ? `interface Vlan ${parsed.number}` : `interface Vlan${parsed.number}`,
+      text,
+      ...featureInterfaceLines(engine, entry.interface),
+    ]);
   }
   return blocks;
 }

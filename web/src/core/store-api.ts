@@ -19,6 +19,7 @@ import type {
   VLANEntry,
   ViewMode,
 } from "./model";
+import type { DeviceProtocols } from "./protocols";
 
 export type SelectionItem =
   | { kind: "device"; id: string }
@@ -106,6 +107,8 @@ export interface ProjectStoreAPI {
   setAddress(deviceID: string, interfaceID: string, address: string | null): void;
   setDefaultGateway(deviceID: string, gateway: string): void;
   setStaticRoutes(deviceID: string, routes: StaticRoute[]): void;
+  /** DHCP, ACL, NAT, OSPF, RIP, STP and LACP configuration; {} removes it. */
+  setProtocols(deviceID: string, protocols: DeviceProtocols): void;
 
   // MARK: Moving
   moveDevices(ids: string[], delta: Point): void;
@@ -126,6 +129,8 @@ export interface ProjectStoreAPI {
   setStatus(linkID: string, end: LinkEnd, status: LinkStatus): void;
   cycleStatus(linkID: string, end: LinkEnd): LinkStatus;
   setLinkNote(linkID: string, note: string): void;
+  /** Simulated one-way delay (ms) and loss (%) of a cable; 0 removes the value. */
+  setLinkQuality(linkID: string, quality: { delay?: number; loss?: number }): void;
 
   // MARK: Bundles (LAG)
   createBundle(linkIDs: string[], label?: string): LinkBundle;

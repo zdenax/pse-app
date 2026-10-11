@@ -5,6 +5,8 @@
 // Decoding is lenient like in Swift: optional fields may be missing in a file and then take the
 // defaults documented here (see project-io.ts, which fills them in).
 
+import type { DeviceProtocols } from "./protocols";
+
 export type ConnectorType = "RJ45" | "SFP" | "SFP+" | "QSFP+" | "console" | "mgmt" | "wireless";
 
 export type DeviceCategory = "switch" | "router" | "L3 switch" | "AP" | "PC" | "server";
@@ -113,6 +115,11 @@ export interface Device {
   defaultGateway: string;
   /** Static routes. Default []; written only when not empty. */
   staticRoutes: StaticRoute[];
+  /**
+   * DHCP, ACL, NAT, OSPF, RIP, STP and LACP configuration (web version only, see protocols.ts).
+   * Absent or {} when nothing is configured; written only when not empty.
+   */
+  protocols?: DeviceProtocols;
 }
 
 export interface PortRef {
@@ -131,6 +138,10 @@ export interface Link {
   note: string;
   /** The bundle (LAG) the link belongs to. Optional. */
   bundleID?: string;
+  /** One-way delay of the cable in milliseconds for the ping simulation (web only). Optional. */
+  delay?: number;
+  /** Packet loss of the cable in percent, 0...100 (web only). Optional. */
+  loss?: number;
 }
 
 export interface LinkBundle {

@@ -7,6 +7,9 @@ Síť se nakreslí ze zařízení z laboratoře (Cisco, Dell, MikroTik, Ubiquiti
 jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` a
 `traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
 
+**Připravuje se (webová verze):** simulace DHCP, ACL, NAT, OSPF a RIP, STP a LACP, časů odezvy a
+ztrátovosti, animace cesty paketu a konzole EdgeOS pro Ubiquiti EdgeRouter a USG.
+
 | Verze | Kde běží | Technologie |
 |---|---|---|
 | **Webová** ([`web/`](web/)) | v prohlížeči na Windows, Linuxu i macOS | TypeScript, React, SVG |
@@ -36,6 +39,10 @@ znaku, ověřují to testy).
 >   jako neověřené, dokud nejsou zkontrolované na skutečném hardwaru.
 > - Části vytvořené s AI jsou v historii repozitáře označené (`Co-Authored-By: Claude`).
 >   Za obsah projektu a jeho použití odpovídá autor.
+
+> **Testování.** Aplikace prošla jen automatickými testy a vyzkoušením autorem. **Nebyl proveden
+> penetrační test** (bezpečnostní testování) **ani testování s uživateli** (studenty nebo vyučujícími).
+> Je to cvičná aplikace bez záruky; chyby a připomínky jsou vítané (GitHub Issues).
 
 **Návod s obrázky:** [docs/NetSketch-navod.pdf](docs/NetSketch-navod.pdf) (spuštění, kreslení, konzole,
 IP adresy, ping a obě cvičení).
@@ -151,7 +158,9 @@ Konzole ukládají IP konfiguraci do projektu, `ping` a `traceroute` ji vyhodnoc
 - L3: adresy na portech routerů, na VLAN rozhraních switchů (SVI, MikroTik `bridge`) a na PC,
   připojené sítě, statické trasy, výchozí brána. Routery a L3 switche směrují, PC a L2 switche ne.
 - Když ping neprojde, konzole česky napíše, kde a proč se paket zastavil.
-- Nesimuluje se: STP, OSPF a jiné dynamické směrování, DHCP, ACL, NAT, časování.
+- Zatím se nesimuluje: STP, LACP, OSPF a jiné dynamické směrování, DHCP, ACL, NAT, časy odezvy a
+  ztrátovost. Na všem se pracuje, a to jen ve webové verzi (macOS aplikace zůstává u současného
+  rozsahu).
 
 | Zařízení | Adresa | Trasy a brána | Test |
 |---|---|---|---|
@@ -163,15 +172,32 @@ Konzole ukládají IP konfiguraci do projektu, `ping` a `traceroute` ji vyhodnoc
 Konzoli otevře Cmd+T (nebo tlačítko na liště či v inspectoru) u vybraného zařízení; nemají ji jen
 access pointy. Inspector u zařízení ukazuje adresy, bránu a trasy nastavené v konzoli.
 
+## Ubiquiti
+
+Zařízení **UniFi** (UDM Pro, UniFi Switch, USG) se ve skutečnosti nenastavují příkazovou řádkou, ale
+ve webovém rozhraní **UniFi Network** (Controller); ruční změny v jejich konzoli Controller při další
+synchronizaci přepíše. Skutečné konfigurační CLI mají jen routery s **EdgeOS** (EdgeRouter, v omezené
+míře USG): `configure`, `set interfaces ethernet eth0 address …`, `commit`, `save`.
+
+| Zařízení | Konzole v NetSketch |
+|---|---|
+| UDM Pro, UniFi Switch 24 | obecná syntaxe ve stylu Cisco IOS: zjednodušení místo Controlleru, používají ji cvičení 1 a 2 |
+| USG Pro 4, EdgeRouter X | zatím obecná syntaxe ve stylu Cisco IOS; konzole EdgeOS (`set` / `commit`) se připravuje pro webovou verzi |
+| Netgear FS726T a ostatní | obecná syntaxe ve stylu Cisco IOS (skutečný přepínač se nastavuje ve webovém rozhraní) |
+
 ## Katalog zařízení
 
-`Sources/NetSketchCore/Resources/devices.json`. Všechny počty a názvy portů mají `"verified": false`
+`Sources/NetSketchCore/Resources/devices.json`. Podle fotky racku v laboratoři přibyly Cisco 2811,
+Catalyst 3550-48 a 3750-48PS, MikroTik CRS326-24G-2S+RM, Ubiquiti USG Pro 4 a Netgear FS726T, navíc
+Ubiquiti EdgeRouter X. Všechny počty a názvy portů mají `"verified": false`
 a je nutné je ověřit podle skutečného hardwaru. Formát katalogu, vlastní zařízení a textový formát
 VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 
 ## Mimo rozsah
 
-Simulace STP/RSTP/MSTP, LACP, dynamického směrování (OSPF, RIP), DHCP, ACL a NAT, emulace firmware.
+Emulace firmware (NetSketch počítá dosažitelnost podle zapojení a konfigurace, nespouští skutečný
+software zařízení). Simulace STP, LACP, OSPF/RIP, DHCP, ACL, NAT a časů odezvy je rozpracovaná ve
+webové verzi.
 
 ## Licence
 

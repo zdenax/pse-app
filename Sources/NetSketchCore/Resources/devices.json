@@ -185,6 +185,153 @@
       }
     },
     {
+      "id": "cisco-2811",
+      "vendor": "Cisco",
+      "model": "2811",
+      "category": "router",
+      "verified": false,
+      "note": "Podle fotky laboratoře (Cisco 2800 Series, R4/R5); může jít i o 2801. Sloty HWIC a NME jsou jen pozice na panelu, moduly nejsou modelovány.",
+      "portGroups": [
+        { "prefix": "Fa0/", "rangeStart": 0, "rangeEnd": 1, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "placeholder": true, "label": "HWIC", "speed": "", "connector": "RJ45", "verified": false },
+        { "placeholder": true, "label": "NME", "speed": "", "connector": "RJ45", "verified": false },
+        { "names": ["Console", "Aux"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow", "placeholderWidth": 6 },
+          { "groups": [2], "arrangement": "singleRow", "placeholderWidth": 4 },
+          { "groups": [3], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "cisco-catalyst-3550-48",
+      "vendor": "Cisco",
+      "model": "Catalyst 3550-48",
+      "category": "L3 switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře. Uplinky Gi0/1-2 jsou sloty GBIC.",
+      "portGroups": [
+        { "prefix": "Fa0/", "rangeStart": 1, "rangeEnd": 48, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "prefix": "Gi0/", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "GBIC" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 12 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "cisco-catalyst-3750-48ps",
+      "vendor": "Cisco",
+      "model": "Catalyst 3750-48PS",
+      "category": "L3 switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře (Catalyst 3750 Series PoE-48).",
+      "portGroups": [
+        { "prefix": "Fa1/0/", "rangeStart": 1, "rangeEnd": 48, "speed": "100M", "connector": "RJ45", "verified": false, "label": "PoE" },
+        { "prefix": "Gi1/0/", "rangeStart": 1, "rangeEnd": 4, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 12 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "mikrotik-crs326-24g-2s",
+      "vendor": "MikroTik",
+      "model": "CRS326-24G-2S+RM",
+      "category": "switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře (Cloud Router Switch CRS326-24G-2S+RM).",
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "sfp-sfpplus", "rangeStart": 1, "rangeEnd": 2, "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 4 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "ubiquiti-usg-pro-4",
+      "vendor": "Ubiquiti",
+      "model": "UniFi Security Gateway Pro (USG-PRO-4)",
+      "category": "router",
+      "verified": false,
+      "note": "Podle fotky laboratoře (dvě bílé brány UniFi bez displeje); model odhadnutý. WAN porty jsou combo RJ45/SFP.",
+      "portGroups": [
+        { "prefix": "LAN ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false, "label": "LAN" },
+        { "prefix": "WAN ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false, "label": "WAN" },
+        { "prefix": "SFP ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2], "arrangement": "singleRow" },
+          { "groups": [3], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "netgear-fs726t",
+      "vendor": "Netgear",
+      "model": "ProSafe FS726T",
+      "category": "switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře (Netgear FS726T, 24x 10/100 + 2x gigabit). Gigabitové porty 25-26 sdílí sloty SFP.",
+      "portGroups": [
+        { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 24, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "prefix": "Port ", "rangeStart": 25, "rangeEnd": 26, "speed": "1G", "connector": "RJ45", "verified": false, "label": "Gigabit" },
+        { "prefix": "SFP ", "rangeStart": 25, "rangeEnd": 26, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "oddTopEvenBottom" }
+        ]
+      }
+    },
+    {
+      "id": "ubiquiti-edgerouter-x",
+      "vendor": "Ubiquiti",
+      "model": "EdgeRouter X (ER-X)",
+      "category": "router",
+      "verified": false,
+      "note": "Router s EdgeOS (konzole configure / set / commit). eth0 slouží i jako vstup PoE napájení, eth4 jako PoE průchod.",
+      "portGroups": [
+        { "prefix": "eth", "rangeStart": 0, "rangeEnd": 4, "speed": "1G", "connector": "RJ45", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
       "id": "generic-pc",
       "vendor": "Generic",
       "model": "PC",

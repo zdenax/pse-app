@@ -93,6 +93,8 @@ export function dialectName(dialect: CLIDialect): string {
       return "obecný";
     case "host":
       return "příkazový řádek";
+    case "edgeOS":
+      return "Ubiquiti EdgeOS";
   }
 }
 

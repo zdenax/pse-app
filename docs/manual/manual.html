@@ -77,12 +77,13 @@
       <li><span>8</span>Cvičení 1: čtyři multivendor switche</li>
       <li><span>9</span>Cvičení 2: čtyři routery</li>
       <li><span>10</span>Soubory a export</li>
-      <li><span>11</span>Co se nesimuluje</li>
+      <li><span>11</span>Ubiquiti a další výrobci</li>
+      <li><span>12</span>Co se zatím nesimuluje a stav projektu</li>
     </ol>
   </div>
   <div>
     <div class="note"><strong>Nejde o nástroj UJEP.</strong> NetSketch není oficiální aplikace Univerzity J. E. Purkyně, nevznikl na její zakázku ani s jejím schválením. Je to soukromá cvičná aplikace studenta k procvičování sítí, inspirovaná vybavením laboratoře a látkou předmětu KI/PSE. Za obsah odpovídá autor.</div>
-    <p class="meta">Verze 10/2026 · repozitář zdenax/pse-app · Projekt vznikl s využitím nástroje generativní AI Claude Code (Anthropic), viz README.</p>
+    <p class="meta">Verze 10/2026 · github.com/zdenax/pse-app · Projekt vznikl s využitím nástroje generativní AI Claude Code (Anthropic), viz README.</p>
   </div>
 </div>
 
@@ -91,10 +92,12 @@
   <p>NetSketch je soukromý kreslicí a cvičný nástroj studenta pro počítačové sítě ve stylu Cisco Packet Tracer (není to nástroj UJEP). Síť se nakreslí ze skutečných zařízení z laboratoře, nastaví se v konzolích jejich vlastními příkazy a ping a traceroute ukážou, jestli je zapojení a konfigurace správně.</p>
   <ul>
     <li><strong>Zařízení s reálnými panely:</strong> Cisco Catalyst a ISR, Dell S3048-ON, MikroTik, Ubiquiti, PC, servery a access pointy. Kabel se zapojuje do konkrétního portu.</li>
+    <li><strong>Zařízení z laboratoře:</strong> podle fotky racku přibyly Cisco 2811, Catalyst 3550-48 a 3750-48PS, MikroTik CRS326-24G-2S+, Ubiquiti USG Pro 4, Netgear FS726T a navíc Ubiquiti EdgeRouter X. Jejich porty ještě nejsou ověřené na skutečném hardwaru.</li>
     <li><strong>Konzole podle výrobce:</strong> Cisco IOS, Dell OS9, MikroTik RouterOS a příkazový řádek PC (<code>C:\&gt;</code>).</li>
     <li><strong>Simulace sítě:</strong> VLAN, access a trunk porty, IP adresy, výchozí brána, statické trasy, <code>ping</code> a <code>traceroute</code>.</li>
     <li><strong>Hotová cvičení</strong> ve složce <code>examples/</code> a export diagramu do PNG, SVG a PDF.</li>
   </ul>
+  <div class="note"><strong>Připravuje se (webová verze):</strong> simulace DHCP, ACL, NAT, dynamického směrování OSPF a RIP, STP a LACP, časů odezvy a ztrátovosti paketů, animace cesty paketu po kabelech a konzole EdgeOS pro Ubiquiti EdgeRouter a USG. Po dokončení se návod aktualizuje.</div>
   <h3>Dvě verze</h3>
   <table>
     <tr><th>Verze</th><th>Kde běží</th><th>Kdy použít</th></tr>
@@ -117,7 +120,7 @@
 <pre><span class="p">$</span> swift run NetSketch          <span class="p"># spustí aplikaci</span>
 <span class="p">$</span> scripts/make-app.sh          <span class="p"># vytvoří build/NetSketch.app</span>
 <span class="p">$</span> open build/NetSketch.app</pre>
-  <div class="note">Kód je na GitHubu v repozitáři <code>zdenax/pse-app</code>. Po <code>git pull</code> stačí znovu spustit stejný příkaz.</div>
+  <div class="note">Kód je na GitHubu: <code>https://github.com/zdenax/pse-app</code>. Stáhnout ho jde přes <code>git clone</code> nebo tlačítkem Code › Download ZIP. Po <code>git pull</code> stačí znovu spustit stejný příkaz.</div>
 </section>
 
 <section>
@@ -168,7 +171,7 @@
     <tr><td>Cisco (Catalyst, ISR)</td><td>Cisco IOS: <code>enable</code>, <code>configure terminal</code>, <code>show …</code></td></tr>
     <tr><td>Dell S3048-ON</td><td>Dell OS9: <code>configure</code>, VLAN přes <code>interface vlan N</code></td></tr>
     <tr><td>MikroTik</td><td>RouterOS: menu <code>/interface</code>, <code>/ip address</code>, <code>/ip route</code></td></tr>
-    <tr><td>Ubiquiti, ostatní</td><td>obecná syntaxe ve stylu Cisco IOS (konzole to při otevření napíše)</td></tr>
+    <tr><td>Ubiquiti, Netgear, ostatní</td><td>obecná syntaxe ve stylu Cisco IOS (konzole to při otevření napíše), důvod viz kapitola 11</td></tr>
     <tr><td>PC, server</td><td>příkazový řádek <code>C:\&gt;</code>: <code>ipconfig</code>, <code>netsh</code>, <code>ping</code>, <code>tracert</code></td></tr>
   </table>
   <p>Všechno, co se v konzoli nastaví, se hned projeví v diagramu a v inspectoru a jde vrátit přes Zpět.</p>
@@ -262,15 +265,27 @@ R1#<span class="p"> show ip route</span></pre>
 </section>
 
 <section>
-  <h2>11 Co se nesimuluje</h2>
-  <p>NetSketch počítá dosažitelnost podle zapojení a konfigurace, není to emulátor firmware. Nesimuluje se:</p>
+  <h2>11 Ubiquiti a další výrobci</h2>
+  <p>Zařízení <strong>UniFi</strong> (UDM Pro, UniFi Switch, USG) se ve skutečnosti nenastavují příkazovou řádkou, ale ve webovém rozhraní <strong>UniFi Network</strong> (Controller). Změny udělané ručně v jejich konzoli Controller při další synchronizaci přepíše. Skutečné konfigurační CLI mají jen routery s <strong>EdgeOS</strong> (EdgeRouter, a v omezené míře USG): <code>configure</code>, <code>set interfaces ethernet eth0 address …</code>, <code>commit</code>, <code>save</code>.</p>
+  <table>
+    <tr><th>Zařízení</th><th>Konzole v NetSketch</th></tr>
+    <tr><td>Ubiquiti UDM Pro, UniFi Switch 24</td><td>obecná syntaxe ve stylu Cisco IOS. Zjednodušení místo nastavení v Controlleru, na kterém stojí i cvičení 1 a 2.</td></tr>
+    <tr><td>Ubiquiti USG Pro 4, EdgeRouter X</td><td>zatím obecná syntaxe ve stylu Cisco IOS. Konzole EdgeOS (<code>set</code> / <code>commit</code>) se připravuje.</td></tr>
+    <tr><td>Netgear FS726T</td><td>obecná syntaxe ve stylu Cisco IOS (skutečný přepínač se nastavuje ve webovém rozhraní).</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>12 Co se zatím nesimuluje a stav projektu</h2>
+  <p>NetSketch počítá dosažitelnost podle zapojení a konfigurace, není to emulátor firmware. Zatím se nesimuluje:</p>
   <ul>
     <li>STP, LACP a PAgP (svazky linek se jen kreslí),</li>
     <li>dynamické směrování (OSPF, RIP, EIGRP), DHCP, NAT a ACL,</li>
     <li>časy odezvy a ztrátovost: ping buď projde, nebo ne.</li>
   </ul>
-  <p>Příkazy, které diagram neumí uložit, konzole přijme a napíše poznámku „NetSketch: …“, že se nic nezměnilo.</p>
-  <div class="note"><strong>Katalog zařízení:</strong> počty a názvy portů jsou podle specifikací výrobců a zatím nejsou ověřené na skutečném hardwaru (žlutý trojúhelník). Před použitím ve výuce je zkontrolujte podle zařízení v laboratoři.</div>
+  <p>Na DHCP, ACL, NAT, OSPF a RIP, STP, LACP a na časech odezvy se pracuje, a to jen ve webové verzi. Příkazy, které diagram zatím neumí uložit, konzole přijme a napíše poznámku „NetSketch: …“, že se nic nezměnilo.</p>
+  <div class="note"><strong>Katalog zařízení:</strong> počty a názvy portů jsou podle specifikací výrobců a fotky laboratoře a zatím nejsou ověřené na skutečném hardwaru (žlutý trojúhelník). Před použitím ve výuce je zkontrolujte podle zařízení v laboratoři.</div>
+  <div class="note"><strong>Testování:</strong> aplikace prošla jen automatickými testy a vyzkoušením autorem. Nebyl proveden <strong>penetrační test</strong> (bezpečnostní testování) ani <strong>testování s uživateli</strong> (studenty nebo vyučujícími). Je to cvičná aplikace bez záruky; chyby a připomínky jsou vítané.</div>
   <h3>Poznámka k využití AI</h3>
   <p>Projekt vznikl s výrazným využitím nástroje generativní AI Claude Code (Anthropic) podle zadání a pokynů autora; podrobné prohlášení je v souboru README v repozitáři.</p>
 </section>

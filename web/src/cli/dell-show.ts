@@ -1,5 +1,6 @@
 // Dell OS9 VLAN membership and `show` output. Port of DellShow.swift (extension of IOSEngine).
 
+import { featureGlobalBlocks, featureInterfaceLines } from "./features/ios-commands";
 import {
   chars,
   column,
@@ -177,6 +178,7 @@ export function dellInterfaceConfigLines(engine: IOSEngine, port: PortSnapshot):
   const address = addressLine(engine, l3Port(port.id));
   if (address !== null) lines.push(address);
   if (port.switchport === null) lines.push(` ! ${Notices.customVLANText(singleLine(port.vlanText))}`);
+  lines.push(...featureInterfaceLines(engine, l3Port(port.id)));
   lines.push(port.adminDown ? " shutdown" : " no shutdown");
   return lines;
 }
@@ -193,6 +195,7 @@ export function dellRunningConfig(engine: IOSEngine): string {
     if (row.name !== "") lines.push(` name ${row.name}`);
     const address = addressLine(engine, l3VLAN(row.id));
     if (address !== null) lines.push(address);
+    lines.push(...featureInterfaceLines(engine, l3VLAN(row.id)));
     const members = dellMembers(engine, row.id);
     for (const list of dellPortLists(engine, members.tagged, false)) lines.push(` tagged ${list}`);
     for (const list of dellPortLists(engine, members.untagged, false)) {
@@ -213,6 +216,7 @@ export function dellRunningConfig(engine: IOSEngine): string {
   }
   const global = globalIPLines(engine);
   if (global.length > 0) lines.push(...global, "!");
+  for (const block of featureGlobalBlocks(engine)) lines.push(...block, "!");
   lines.push("end");
   return dellJoined(lines);
 }
