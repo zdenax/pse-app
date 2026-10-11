@@ -7,7 +7,7 @@
 // Rule for feature modules: use values imported from ../ios-engine, ../command-tables etc. only
 // inside functions, never at module top level (the imports are circular).
 
-import type { CommandNode } from "../command-tree";
+import { CommandNode } from "../command-tree";
 import type { IOSEngine } from "../ios-engine";
 import type { L3InterfaceID } from "../../core/model";
 import type { CLIDialect } from "../session-api";
@@ -91,11 +91,37 @@ export function collectIOSFeatures(dialect: CLIDialect): Required<Omit<IOSFeatur
   return result;
 }
 
+/**
+ * Keyword nodes of the same name become one node with the children of all of them, so two
+ * features that both add e.g. `clear` (or `clear ip ...`) do not hide each other.
+ */
+function combineKeywords(nodes: readonly CommandNode[]): CommandNode[] {
+  const result: CommandNode[] = [];
+  for (const node of nodes) {
+    const name = node.keyword?.toLowerCase();
+    const index = name === undefined ? -1 : result.findIndex((candidate) => candidate.keyword?.toLowerCase() === name);
+    if (index < 0) {
+      result.push(node);
+      continue;
+    }
+    const first = result[index];
+    result[index] = new CommandNode(
+      first.kind,
+      first.help,
+      combineKeywords([...first.children, ...node.children]),
+      first.hidden && node.hidden,
+      first.handler ?? node.handler,
+    );
+  }
+  return result;
+}
+
 /** `base` with `extra` appended; base keywords that `extra` defines again are dropped. */
 export function mergeNodes(base: CommandNode[], extra: readonly CommandNode[]): CommandNode[] {
   if (extra.length === 0) return base;
-  const replaced = new Set(extra.map((node) => node.keyword?.toLowerCase()).filter((name) => name !== undefined));
-  return [...base.filter((node) => node.keyword === null || !replaced.has(node.keyword.toLowerCase())), ...extra];
+  const combined = combineKeywords(extra);
+  const replaced = new Set(combined.map((node) => node.keyword?.toLowerCase()).filter((name) => name !== undefined));
+  return [...base.filter((node) => node.keyword === null || !replaced.has(node.keyword.toLowerCase())), ...combined];
 }
 
 /** Extra `interface` lines of every feature. */
