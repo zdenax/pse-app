@@ -4,6 +4,7 @@
 // Addresses, routes and the default gateway are stored in the project; ping and traceroute ask
 // NetworkSimulator, which follows the drawn cabling.
 
+import { enableDHCPClient } from "./features/dhcp/ios";
 import { featureInterfaceLines } from "./features/ios-commands";
 import {
   announcePing,
@@ -75,7 +76,7 @@ export function currentL3Interface(engine: IOSEngine): L3Result {
 
 export function setIPAddress(engine: IOSEngine, command: ParsedCommand): string {
   const text = command.text("address") ?? "";
-  if (text.toLowerCase().startsWith("dhcp")) return Notices.dhcpNotSimulated;
+  if (text.toLowerCase().startsWith("dhcp")) return enableDHCPClient(engine);
   const prefix = parseAddress(text);
   if (prefix === null) return badAddress(engine);
   if (!prefix.isHostAddress) {
@@ -422,6 +423,8 @@ export function ipInterfaceRows(engine: IOSEngine): IPInterfaceRow[] {
 
 /** " ip address A.B.C.D M.M.M.M" (IOS) or " ip address A.B.C.D/NN" (Dell) for an interface. */
 export function addressLine(engine: IOSEngine, interfaceID: L3InterfaceID): string | null {
+  // An interface that takes its address from DHCP is configured as such, whatever it was leased.
+  if (engine.access.device?.protocols?.dhcp?.clients.includes(interfaceID)) return " ip address dhcp";
   const prefix = engine.access.address(interfaceID);
   if (prefix === null) return null;
   return engine.isDell
