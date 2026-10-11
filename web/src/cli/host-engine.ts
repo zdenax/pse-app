@@ -25,6 +25,18 @@ import { CLILimits, Notices } from "./notices";
 import type { ConsoleEngine } from "./session";
 import { IPv4, IPv4Prefix } from "./sim/ipv4";
 import { collectHostCommands } from "./features/host-commands";
+import {
+  announcePing,
+  announceTraceroute,
+  lossNotice,
+  planPing,
+  planTraceroute,
+  tracerouteAnswered,
+  tracerouteLossNotice,
+  windowsMilliseconds,
+  windowsTime,
+  windowsTraceTime,
+} from "./features/realism/timing";
 
 interface HostCommand {
   readonly name: string;
@@ -318,6 +330,8 @@ export class HostEngine implements ConsoleEngine {
     }
     const simulator = this.access.simulator;
     const result = simulator.ping(this.access.deviceID, destination);
+    const plan = planPing(simulator, this.access.deviceID, destination, result, count);
+    announcePing(this.access.deviceID, result, plan);
     const lines = ["", `Pinging ${destination.description} with 32 bytes of data:`, ""];
     let reply: string;
     const failure = result.forward.failure;
@@ -327,15 +341,21 @@ export class HostEngine implements ConsoleEngine {
       const targetCategory = owner ? simulator.device(owner.deviceID)?.category ?? null : null;
       const isEndDevice = targetCategory === null ? true : targetCategory === "PC" || targetCategory === "server";
       const initial = isEndDevice ? 128 : 255;
-      const ttl = Math.max(1, initial - Math.max(0, result.hopCount - 1));
+      const routers = plan.active ? plan.routersOnReturn : Math.max(0, result.hopCount - 1);
+      const ttl = Math.max(1, initial - routers);
       reply = `Reply from ${destination.description}: bytes=32 time<1ms TTL=${ttl}`;
     } else if (failure?.kind === "noRoute" && failure.deviceID !== this.access.deviceID && lastHop !== null) {
       reply = `Reply from ${lastHop.description}: Destination host unreachable.`;
     } else {
       reply = "Request timed out.";
     }
-    for (let i = 0; i < count; i++) lines.push(reply);
-    const received = result.success ? count : 0;
+    for (let i = 0; i < count; i++) {
+      const sample = plan.active ? plan.samples[i] : undefined;
+      if (sample === undefined) lines.push(reply);
+      else if (sample.lost) lines.push("Request timed out.");
+      else lines.push(reply.replace("time<1ms", windowsTime(sample.rtt)));
+    }
+    const received = plan.active ? plan.received : result.success ? count : 0;
     lines.push("");
     lines.push(`Ping statistics for ${destination.description}:`);
     lines.push(
@@ -343,13 +363,18 @@ export class HostEngine implements ConsoleEngine {
         ((count - received) * 100) / count,
       )}% loss),`,
     );
-    if (result.success) {
+    if (received > 0) {
       lines.push("Approximate round trip times in milli-seconds:");
-      lines.push("    Minimum = 0ms, Maximum = 0ms, Average = 0ms");
+      const ms = plan.active
+        ? [plan.minimum, plan.maximum, plan.average].map(windowsMilliseconds)
+        : [0, 0, 0];
+      lines.push(`    Minimum = ${ms[0]}ms, Maximum = ${ms[1]}ms, Average = ${ms[2]}ms`);
     } else {
       const reason = simulator.explain(result);
       if (reason !== "") lines.push(reason);
     }
+    const lostNotice = lossNotice(plan);
+    if (lostNotice !== "") lines.push(lostNotice);
     return lines.join("\n");
   }
 
@@ -360,18 +385,34 @@ export class HostEngine implements ConsoleEngine {
     if (!destination) return `Unable to resolve target system name ${target}.`;
     const simulator = this.access.simulator;
     const delivery = simulator.deliver(this.access.deviceID, destination);
+    const plan = planTraceroute(simulator, this.access.deviceID, destination, delivery);
+    announceTraceroute(this.access.deviceID, delivery);
     const lines = ["", `Tracing route to ${destination.description} over a maximum of 30 hops:`, ""];
     delivery.hops.forEach((hop, index) => {
-      lines.push(leftPadded(`${index + 1}`, 3) + `   0 ms      0 ms      0 ms      ${hop.description}`);
+      const probes = plan.active ? plan.hops[index] ?? [] : [];
+      if (!plan.active) {
+        lines.push(leftPadded(`${index + 1}`, 3) + `   0 ms      0 ms      0 ms      ${hop.description}`);
+      } else if (probes.every((probe) => probe.rtt === null)) {
+        lines.push(leftPadded(`${index + 1}`, 3) + "   *         *         *         Request timed out.");
+      } else {
+        const columns = probes.map((probe) =>
+          padded(probe.rtt === null ? "*" : windowsTraceTime(probe.rtt), 10),
+        );
+        lines.push(leftPadded(`${index + 1}`, 3) + "   " + columns.join("") + hop.description);
+      }
     });
     if (delivery.delivered) {
-      lines.push("");
-      lines.push("Trace complete.");
+      if (tracerouteAnswered(plan)) {
+        lines.push("");
+        lines.push("Trace complete.");
+      }
     } else {
       lines.push(leftPadded(`${delivery.hops.length + 1}`, 3) + "   *         *         *         Request timed out.");
       const reason = simulator.explain(simulator.ping(this.access.deviceID, destination));
       if (reason !== "") lines.push(reason);
     }
+    const lostNotice = tracerouteLossNotice(plan);
+    if (lostNotice !== "") lines.push(lostNotice);
     return lines.join("\n");
   }
 

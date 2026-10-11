@@ -30,6 +30,8 @@ export interface CommitTextFieldProps {
   title?: string;
   /** Use the monospaced font. */
   mono?: boolean;
+  /** Keyboard hint of touch devices, e.g. "decimal" for numbers. */
+  inputMode?: "text" | "numeric" | "decimal";
 }
 
 /**
@@ -39,7 +41,7 @@ export interface CommitTextFieldProps {
  * Multi-line fields take a new line with Shift+Enter or Alt/Option+Enter.
  */
 export function CommitTextField(props: CommitTextFieldProps) {
-  const { value, placeholder, label, multiline, minRows = 2, maxRows = 8, className, title, mono } = props;
+  const { value, placeholder, label, multiline, minRows = 2, maxRows = 8, className, title, mono, inputMode } = props;
   const [draft, setDraft] = useState(value);
   const draftRef = useRef(draft);
   const valueRef = useRef(value);
@@ -98,6 +100,7 @@ export function CommitTextField(props: CommitTextFieldProps) {
     value: draft,
     placeholder,
     title,
+    inputMode,
     "aria-label": label ?? placeholder,
     spellCheck: false,
     onKeyDown,

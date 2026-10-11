@@ -6,10 +6,11 @@
 // imports no implementation from src/core or src/cli (see ui/wiring.ts).
 
 import { useEffect, useState } from "react";
-import type { Device } from "../core/model";
+import type { Device, Project } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import type { ConsoleSession } from "../cli/session-api";
-import { AppModel, type ExportHandlers } from "./app-model";
+import type { PacketSource, PortStateMap } from "../canvas/packet-animation";
+import { AppModel, type ExportHandlers, type SettingsStorage } from "./app-model";
 import { CanvasHost } from "./CanvasHost";
 import { ConsoleWindows } from "./ConsoleWindows";
 import { AlertHost, DeviceEditorHost } from "./Dialogs";
@@ -35,10 +36,19 @@ export interface AppProps {
   files?: ProjectFiles;
   /** Yes/no question for unsaved changes; defaults to window.confirm. */
   confirm?: (message: string) => boolean;
+  /** Where the toolbar remembers its settings; defaults to the browser's local storage. */
+  settings?: SettingsStorage;
+  /** Packets the consoles send (src/cli trace events), animated on the canvas. */
+  packets?: PacketSource;
+  /** Spanning-tree state of every port (key "deviceID|portID"); blocking ports get a marker. */
+  portStates?: (project: Project) => PortStateMap;
 }
 
 /** What ui/wiring.ts hands to <App>. */
-export type AppWiring = Pick<AppProps, "store" | "createSession" | "supportsConsole" | "exporters">;
+export type AppWiring = Pick<
+  AppProps,
+  "store" | "createSession" | "supportsConsole" | "exporters" | "packets" | "portStates"
+>;
 
 export function App(props: AppProps) {
   const [app] = useState(
@@ -49,6 +59,7 @@ export function App(props: AppProps) {
         exporters: props.exporters,
         files: props.files ?? browserFiles,
         confirm: props.confirm,
+        settings: props.settings,
       }),
   );
 
@@ -59,12 +70,20 @@ export function App(props: AppProps) {
 
   return (
     <AppModelProvider app={app}>
-      <AppShell app={app} />
+      <AppShell app={app} packets={props.packets} portStates={props.portStates} />
     </AppModelProvider>
   );
 }
 
-function AppShell({ app }: { app: AppModel }) {
+function AppShell({
+  app,
+  packets,
+  portStates,
+}: {
+  app: AppModel;
+  packets?: PacketSource;
+  portStates?: (project: Project) => PortStateMap;
+}) {
   useObservable(app);
   const store = app.store;
   const storeVersion = useObservable(store);
@@ -112,7 +131,13 @@ function AppShell({ app }: { app: AppModel }) {
       <Toolbar />
       {app.paletteVisible && <Palette />}
       <main className="canvas-area" aria-label="Plátno">
-        <CanvasHost store={store} viewport={app.viewport} />
+        <CanvasHost
+          store={store}
+          viewport={app.viewport}
+          packets={packets}
+          animatePackets={app.packetAnimation}
+          portStates={portStates}
+        />
       </main>
       {app.inspectorVisible && <Inspector />}
       <ConsoleWindows />

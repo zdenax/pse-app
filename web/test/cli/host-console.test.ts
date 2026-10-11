@@ -204,8 +204,9 @@ describe("host console", () => {
       "NetSketch Command Prompt (Generic PC)\nNetSketch: verze softwaru, sériová čísla ani uptime nejsou v diagramu uloženy.",
     );
     const help = pc.execute("help").split("\n");
-    expect(help[0]).toBe("help      Display the available commands");
-    expect(help.length).toBe(16);
+    // The protocol features add commands (Test-NetConnection, ...): the layout adapts to the longest name.
+    expect(help[0]).toMatch(/^help {2,}Display the available commands$/);
+    expect(help.length).toBeGreaterThanOrEqual(16);
     expect(pc.execute("ipconfig\n\nhostname")).toContain("\nA");
     expect(pc.execute("x".repeat(1001))).toBe(
       "NetSketch: příliš dlouhý řádek (nejvýše 1000 znaků), příkaz nebyl proveden.",

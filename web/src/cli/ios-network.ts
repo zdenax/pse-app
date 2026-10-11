@@ -5,6 +5,16 @@
 // NetworkSimulator, which follows the drawn cabling.
 
 import { featureInterfaceLines } from "./features/ios-commands";
+import {
+  announcePing,
+  announceTraceroute,
+  ciscoRoundTrip,
+  lossNotice,
+  planPing,
+  planTraceroute,
+  tracerouteLossNotice,
+  wholeMilliseconds,
+} from "./features/realism/timing";
 import type { L3InterfaceID, StaticRoute } from "../core/model";
 import { leftPadded, padded, ParsedCommand, splitSpaces, splitWords, swiftInt, trimmingTrailingWhitespace } from "./command-tree";
 import type { IOSEngine } from "./ios-engine";
@@ -213,9 +223,13 @@ export function ping(engine: IOSEngine, command: ParsedCommand): string {
   const access = engine.access;
   const simulator = access.simulator;
   const result = simulator.ping(access.deviceID, destination);
+  const plan = planPing(simulator, access.deviceID, destination, result, count);
+  announcePing(access.deviceID, result, plan);
   const failure = result.forward.failure;
   let marks: string;
-  if (result.success) {
+  if (plan.active) {
+    marks = plan.samples.map((sample) => (sample.lost ? "." : "!")).join("");
+  } else if (result.success) {
     marks = "!".repeat(count);
   } else if (failure != null && failure.kind === "noRoute" && failure.deviceID !== access.deviceID && !result.noSource) {
     // A router on the way answers "destination unreachable".
@@ -223,20 +237,23 @@ export function ping(engine: IOSEngine, command: ParsedCommand): string {
   } else {
     marks = ".".repeat(count);
   }
-  const received = result.success ? count : 0;
+  const received = plan.active ? plan.received : result.success ? count : 0;
   const lines = [
     dell ? "Type Ctrl-C to abort." : "Type escape sequence to abort.",
     `Sending ${count}, 100-byte ICMP Echos to ${destination.description}, timeout is 2 seconds:`,
     marks,
   ];
   const percent = dell ? ((received * 100) / count).toFixed(1) : `${Math.trunc((received * 100) / count)}`;
-  if (result.success) {
-    lines.push(`Success rate is ${percent} percent (${received}/${count}), round-trip min/avg/max = 1/1/1 ms`);
+  if (received > 0) {
+    const times = plan.active ? ciscoRoundTrip(plan) : "1/1/1";
+    lines.push(`Success rate is ${percent} percent (${received}/${count}), round-trip min/avg/max = ${times} ms`);
   } else {
     lines.push(`Success rate is ${percent} percent (${received}/${count})`);
     const reason = simulator.explain(result);
     if (reason !== "") lines.push(reason);
   }
+  const lost = lossNotice(plan);
+  if (lost !== "") lines.push(lost);
   return lines.join("\n");
 }
 
@@ -252,13 +269,23 @@ export function traceroute(engine: IOSEngine, command: ParsedCommand): string {
   const access = engine.access;
   const simulator = access.simulator;
   const delivery = simulator.deliver(access.deviceID, destination);
+  const plan = planTraceroute(simulator, access.deviceID, destination, delivery);
+  announceTraceroute(access.deviceID, delivery);
   const lines = [
     dell ? "Type Ctrl-C to abort." : "Type escape sequence to abort.",
     `Tracing the route to ${destination.description}`,
     "",
   ];
   delivery.hops.forEach((hop, index) => {
-    lines.push(leftPadded(`${index + 1}`, 3) + ` ${hop.description} 0 msec 0 msec 0 msec`);
+    const probes = plan.active ? plan.hops[index] ?? [] : [];
+    if (!plan.active) {
+      lines.push(leftPadded(`${index + 1}`, 3) + ` ${hop.description} 0 msec 0 msec 0 msec`);
+    } else if (probes.every((probe) => probe.rtt === null)) {
+      lines.push(leftPadded(`${index + 1}`, 3) + "  *  *  *");
+    } else {
+      const times = probes.map((probe) => (probe.rtt === null ? "*" : `${wholeMilliseconds(probe.rtt)} msec`));
+      lines.push(leftPadded(`${index + 1}`, 3) + ` ${hop.description} ${times.join(" ")}`);
+    }
   });
   if (!delivery.delivered) {
     const next = delivery.hops.length + 1;
@@ -267,6 +294,8 @@ export function traceroute(engine: IOSEngine, command: ParsedCommand): string {
     const reason = simulator.explain(result);
     if (reason !== "") lines.push(reason);
   }
+  const lostNotice = tracerouteLossNotice(plan);
+  if (lostNotice !== "") lines.push(lostNotice);
   return lines.join("\n");
 }
 
