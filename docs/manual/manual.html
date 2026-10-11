@@ -115,6 +115,15 @@
 <span class="p">$</span> npm install      <span class="p"># jen poprvé</span>
 <span class="p">$</span> npm start        <span class="p"># otevře http://localhost:5173</span></pre>
   <p>Rovnou se cvičením: <code>http://localhost:5173/#cviceni-1</code> nebo <code>#cviceni-2</code>.</p>
+  <h3>Na školních počítačích</h3>
+  <p>Webová verze by měla jít používat i na školních počítačích. Pro bezpečnost to podle jejího návrhu znamená:</p>
+  <ul>
+    <li><strong>Běží jen v prohlížeči</strong> jako běžná webová stránka: nic se neinstaluje do systému, nepotřebuje administrátorská práva ani účet.</li>
+    <li><strong>Neposílá žádná data</strong>: všechno se počítá v prohlížeči. Projekty se ukládají jen do souborů, které uživatel sám uloží, a vlastní zařízení do úložiště prohlížeče.</li>
+    <li><strong>Nepracuje se skutečnou sítí</strong>: <code>ping</code>, <code>traceroute</code> a ostatní příkazy jsou jen simulace nad nakresleným diagramem, do sítě se nic neodesílá.</li>
+  </ul>
+  <p>Ke spuštění z repozitáře je potřeba Node.js a <code>npm install</code>, který stahuje balíčky z registru npm. Kde to na školním počítači nejde, je potřeba verze nahraná na webovém serveru.</p>
+  <div class="note">Jde o vlastnosti podle návrhu aplikace, ne o výsledek bezpečnostního testu. Penetrační test zatím proveden nebyl (viz kapitola 12).</div>
   <h3>macOS aplikace</h3>
   <p>Potřeba jsou Command Line Tools (<code>xcode-select --install</code>), Xcode není nutný.</p>
 <pre><span class="p">$</span> swift run NetSketch          <span class="p"># spustí aplikaci</span>

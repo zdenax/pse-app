@@ -60,6 +60,11 @@ npm start          # otevře aplikaci v prohlížeči (http://localhost:5173)
 Se zvoleným cvičením: http://localhost:5173/#cviceni-1 nebo http://localhost:5173/#cviceni-2.
 Podrobnosti v [web/README.md](web/README.md).
 
+**Na školních počítačích:** webová verze běží jen v prohlížeči. Nic se neinstaluje do systému,
+nepotřebuje administrátorská práva ani účet a neposílá žádná data (všechno se počítá v prohlížeči).
+Nepracuje se skutečnou sítí: `ping` a ostatní příkazy jsou jen simulace nad diagramem. Jde o vlastnosti
+podle návrhu, ne o výsledek bezpečnostního testu (viz poznámka o testování výše).
+
 **macOS aplikace:** potřebuje Command Line Tools (`xcode-select --install`).
 
 ```sh
