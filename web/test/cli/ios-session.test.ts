@@ -265,7 +265,7 @@ describe("IOSConfigTests", () => {
     const before = snapshot(store);
     expect(cli.execute("ip domain-name lab.local").startsWith("NetSketch:")).toBe(true);
     expect(cli.execute("ip routing")).toBe("");
-    expect(cli.execute("do telnet 10.0.0.1")).toBe(Notices.needsSimulation);
+    expect(cli.execute("do ssh 10.0.0.1")).toBe(Notices.needsSimulation);
     expect(cli.execute("do write memory")).toBe(Notices.savedInProject);
     expect(store.project).toEqual(before);
   });
