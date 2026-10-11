@@ -163,6 +163,17 @@ export const Toolbar = memo(function Toolbar() {
           onClick={() => app.bundleSelectedLinks()}
         />
         <ToolButton
+          icon="packet"
+          label="Animace paketů"
+          help={
+            app.packetAnimation
+              ? "Animace paketů je zapnutá: ping a traceroute proběhnou po kabelech na plátně. Kliknutím ji vypnete."
+              : "Animace paketů je vypnutá. Kliknutím ji zapnete."
+          }
+          pressed={app.packetAnimation}
+          onClick={() => (app.packetAnimation = !app.packetAnimation)}
+        />
+        <ToolButton
           icon="terminal"
           label="Konzole"
           help={consoleState.help}

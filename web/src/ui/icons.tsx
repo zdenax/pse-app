@@ -27,7 +27,8 @@ export type IconName =
   | "chevronRight"
   | "chevronDown"
   | "close"
-  | "file";
+  | "file"
+  | "packet";
 
 const paths: Record<IconName, ReactNode> = {
   sidebarLeft: (
@@ -127,6 +128,12 @@ const paths: Record<IconName, ReactNode> = {
   chevronRight: <path d="M8 5l5 5-5 5" strokeWidth="2" />,
   chevronDown: <path d="M5 8l5 5 5-5" strokeWidth="2" />,
   close: <path d="M5.5 5.5l9 9M14.5 5.5l-9 9" />,
+  packet: (
+    <>
+      <rect x="2.5" y="5" width="15" height="10" rx="1.8" />
+      <path d="M3.5 6.2L10 11l6.5-4.8" />
+    </>
+  ),
   file: (
     <>
       <path d="M5 2.5h6.5L15.5 6.5V17.5H5Z" strokeLinejoin="round" />

@@ -18,3 +18,11 @@ export function shortcutLabel(key: string, options: { shift?: boolean; alt?: boo
   if (mac) return `${options.alt ? "⌥" : ""}${options.shift ? "⇧" : ""}⌘${upper}`;
   return ["Ctrl", options.alt ? "Alt" : null, options.shift ? "Shift" : null, upper].filter(Boolean).join("+");
 }
+
+/**
+ * The shortcut that opens the console of the selected device: "Alt+T", or "⌥T" on the Mac.
+ * (Ctrl/Cmd+T would open a browser tab.)
+ */
+export function consoleShortcutLabel(mac = isMac): string {
+  return mac ? "⌥T" : "Alt+T";
+}

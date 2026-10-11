@@ -15,15 +15,17 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import type { PortRef } from "../core/model";
+import type { PortRef, Project } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import type { Point, Rect } from "./geom";
 import { containsPoint } from "./geom";
 import { ClickCounter, CanvasInput, browserScheduler, type CanvasInputHost, type CanvasViewportLike, type MenuEntry } from "./input";
 import { tooltipLayout } from "./overlay";
+import { stpMarkers, type PacketSource, type PortStateMap } from "./packet-animation";
 import { cableStyle, cssColor, resolvePalette } from "./palette";
 import { PendingCable } from "./render/cables";
 import { DiagramLayers, diagramTextAttributes, type RenderOptions } from "./render/DiagramLayers";
+import { PacketLayer, StpMarkers } from "./render/packets";
 import { Banners, ContextMenu, DropGhost, EmptyHint, GridDots, InlineEditor, RubberBand, Tooltip } from "./render/overlays";
 import { SceneCache } from "./scene";
 import { CanvasStrings, tooltipLines } from "./strings";
@@ -51,6 +53,12 @@ export interface CanvasViewProps {
   host?: CanvasInputHost;
   /** dataTransfer type of palette drags. */
   templateDragType?: string;
+  /** Packets the consoles send (ping, traceroute); animated along the cables. */
+  packets?: PacketSource;
+  /** Whether the packets are animated (the toolbar toggle). Default true. */
+  animatePackets?: boolean;
+  /** Spanning-tree state of every port, key "deviceID|portID"; blocking ports get a marker. */
+  portStates?: (project: Project) => PortStateMap;
 }
 
 interface Observable {
@@ -120,7 +128,15 @@ const emptySet: ReadonlySet<string> = new Set();
 // Geometry must measure text with the browser's font engine before the first scene is built.
 installBrowserMeasurer();
 
-export function CanvasView({ store, viewport, host, templateDragType = defaultTemplateDragType }: CanvasViewProps) {
+export function CanvasView({
+  store,
+  viewport,
+  host,
+  templateDragType = defaultTemplateDragType,
+  packets,
+  animatePackets = true,
+  portStates,
+}: CanvasViewProps) {
   useEffect(() => trackTemplateDrags(templateDragType), [templateDragType]);
   useVersion(store);
   useVersion(viewport);
@@ -417,6 +433,16 @@ export function CanvasView({ store, viewport, host, templateDragType = defaultTe
     editingAnnotation: editing?.target.kind === "annotation" ? editing.target.id : null,
   };
 
+  const markers = useMemo(() => {
+    if (!portStates) return [];
+    try {
+      return stpMarkers(scene, project, portStates(project));
+    } catch {
+      // A failing spanning-tree calculation must not take the canvas down.
+      return [];
+    }
+  }, [scene, project, portStates]);
+
   const pendingCable = input.pendingCable();
   const rubberBand = input.rubberBandRect;
   const rubberBandView = rubberBand ? viewport.viewRect(rubberBand) : null;
@@ -462,6 +488,8 @@ export function CanvasView({ store, viewport, host, templateDragType = defaultTe
         <GridDots id={`ns-grid-${gridID}`} gridSize={store.gridSize} zoom={zoom} offset={offset} palette={palette} />
         <g transform={`translate(${offset.x} ${offset.y}) scale(${zoom})`}>
           <DiagramLayers scene={scene} options={options} />
+          <StpMarkers markers={markers} zoom={zoom} />
+          <PacketLayer source={packets} enabled={animatePackets} scene={scene} project={project} zoom={zoom} />
           {dropGhost && <DropGhost ghost={dropGhost} palette={palette} />}
           {pendingCable && (
             <PendingCable

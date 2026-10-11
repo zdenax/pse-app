@@ -6,6 +6,8 @@
 import { Catalog, ProjectStore } from "../core";
 import type { CatalogStorage } from "../core";
 import { CLI, CLISession } from "../cli";
+import { spanningTreePortStates } from "../cli/features/layer2/sim";
+import { onPacketTrace } from "../cli/sim/trace-events";
 import { canvasExporters } from "../canvas/exporters";
 import type { AppWiring } from "./App";
 
@@ -77,5 +79,7 @@ export async function loadWiring(): Promise<AppWiring> {
     createSession: (deviceID) => new CLISession(store, deviceID),
     supportsConsole: (device) => CLI.supportsConsole(device),
     exporters: canvasExporters,
+    packets: { subscribe: (listener) => onPacketTrace(listener) },
+    portStates: (project) => spanningTreePortStates(project),
   };
 }

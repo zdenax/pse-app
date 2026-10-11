@@ -27,8 +27,9 @@ import {
   shortPortName,
 } from "./czech";
 import { DeviceIcon } from "./DeviceIcon";
+import { commitLinkQuality, qualityText } from "./link-quality";
 import { Icon, type IconName } from "./icons";
-import { modName, altName } from "./platform";
+import { consoleShortcutLabel, altName } from "./platform";
 import {
   bundleOfLink,
   connectionsOfDevice,
@@ -45,12 +46,12 @@ import {
 import { useApp, useStore, useStoreVersion } from "./store-context";
 
 /** "Jak začít" hints of the project inspector (InspectorView.swift `hints`). */
-export function projectHints(mod = modName): string[] {
+export function projectHints(consoleShortcut = consoleShortcutLabel()): string[] {
   return [
     "Zařízení přetáhněte z palety na plátno, nebo na něj v paletě dvakrát klikněte.",
     "Kabel vznikne kliknutím na jeden port a potom na druhý. Typ kabelu se volí na liště.",
     "Výběrem zařízení nebo kabelu se tady zobrazí jeho vlastnosti.",
-    `Vybrané zařízení nastavíte v konzoli (${mod}+T): IP adresy, VLAN, trasy. Ping a traceroute ` +
+    `Vybrané zařízení nastavíte v konzoli (${consoleShortcut}): IP adresy, VLAN, trasy. Ping a traceroute ` +
       "projdou podle kabelů, VLAN a tras.",
     "Hotová cvičení jsou ve složce examples (Soubor > Otevřít).",
     "Nesimuluje se STP, LACP, OSPF ani DHCP.",
@@ -153,7 +154,7 @@ function DeviceInspector({ device }: { device: Device }) {
         )}
       </InspectorSection>
 
-      <span className="block-button-wrap" title={reason ?? `Otevře konfigurační konzoli zařízení (${modName}+T)`}>
+      <span className="block-button-wrap" title={reason ?? `Otevře konfigurační konzoli zařízení (${consoleShortcutLabel()})`}>
         <button
           type="button"
           className="push-button large wide"
@@ -332,6 +333,14 @@ function LinkInspector({ link }: { link: Link }) {
   const store = useStore();
   const app = useApp();
   const bundle = bundleOfLink(store.project, link.id);
+  /** The commit handler of a delay / loss field: false (typed text refused) restores the field. */
+  const commitQuality = (field: "delay" | "loss") => (text: string) => {
+    let stored = false;
+    app.perform(field === "delay" ? "Zpoždění nelze nastavit" : "Ztrátovost nelze nastavit", () => {
+      stored = commitLinkQuality(store, link, field, text);
+    });
+    return stored;
+  };
 
   return (
     <div className="inspector-scroll">
@@ -356,6 +365,33 @@ function LinkInspector({ link }: { link: Link }) {
             </option>
           ))}
         </select>
+      </InspectorSection>
+
+      <InspectorSection title="Kvalita spoje">
+        <InspectorRow label="Zpoždění (ms)">
+          <CommitTextField
+            value={qualityText(link.delay)}
+            placeholder="0"
+            label="Zpoždění (ms)"
+            inputMode="decimal"
+            mono
+            onCommit={commitQuality("delay")}
+          />
+        </InspectorRow>
+        <InspectorRow label="Ztrátovost (%)">
+          <CommitTextField
+            value={qualityText(link.loss)}
+            placeholder="0"
+            label="Ztrátovost (%)"
+            inputMode="decimal"
+            mono
+            onCommit={commitQuality("loss")}
+          />
+        </InspectorRow>
+        <Hint>
+          Zpoždění je jednosměrné: ping kabelem projde dvakrát. Ztrátovost zahazuje pakety. Bez obou hodnot
+          vypisují konzole stále 0 ms.
+        </Hint>
       </InspectorSection>
 
       <InspectorSection title="Poznámka">
