@@ -32,10 +32,10 @@ function samePrefix(a: IPv4Prefix, b: IPv4Prefix): boolean {
   return a.address.value === b.address.value && a.length === b.length;
 }
 
-type L3Result = { kind: "success"; interface: L3InterfaceID } | { kind: "failure"; message: string };
+export type L3Result = { kind: "success"; interface: L3InterfaceID } | { kind: "failure"; message: string };
 
 /** The layer-3 interface of the current mode, or a message why there is none. */
-function currentL3Interface(engine: IOSEngine): L3Result {
+export function currentL3Interface(engine: IOSEngine): L3Result {
   const mode = engine.mode;
   switch (mode.kind) {
     case "vlanInterface":
