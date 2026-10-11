@@ -37,6 +37,7 @@ import {
   windowsTime,
   windowsTraceTime,
 } from "./features/realism/timing";
+import { dhcpDetailFields, dhcpIpconfig, disableDHCP, enableDHCP } from "./features/dhcp/host";
 
 interface HostCommand {
   readonly name: string;
@@ -197,7 +198,11 @@ export class HostEngine implements ConsoleEngine {
   private ipconfig(args: string[]): string {
     if (args.length > 0) {
       const option = args[0];
-      if (!["/all", "-all"].includes(option.toLowerCase())) {
+      const lower = option.toLowerCase();
+      if (lower === "/renew" || lower === "/release") {
+        return dhcpIpconfig(this.access, lower, args.slice(1), () => this.ipconfig([]));
+      }
+      if (!["/all", "-all"].includes(lower)) {
         return `Error: unrecognized or incomplete command line option "${option}".`;
       }
     }
@@ -237,6 +242,7 @@ export class HostEngine implements ConsoleEngine {
       if (detailed) {
         lines.push(HostEngine.field("Connector", port.connector));
         if (port.speed !== "") lines.push(HostEngine.field("Speed", port.speed));
+        for (const [name, value] of dhcpDetailFields(this.access, port)) lines.push(HostEngine.field(name, value));
       }
     }
     if (lines.length === 0) lines.push("No network adapters.");
@@ -287,7 +293,7 @@ export class HostEngine implements ConsoleEngine {
       );
     }
     const mode = rest.length > 1 ? rest[1].toLowerCase() : "";
-    if (mode === "dhcp") return Notices.dhcpNotSimulated;
+    if (mode === "dhcp") return enableDHCP(this.access, port);
     if (mode !== "static" || rest.length < 4) return HostEngine.netshUsage;
     const prefix = IPv4Prefix.fromAddressMask(rest[2], rest[3]) ?? IPv4Prefix.fromCIDR(rest[2]);
     if (!prefix || !prefix.isHostAddress) {
@@ -305,6 +311,7 @@ export class HostEngine implements ConsoleEngine {
     this.access.transaction(() => {
       this.access.setAddress(prefix, interfaceID);
       if (rest.length >= 5) this.access.setDefaultGateway(gateway);
+      disableDHCP(this.access, interfaceID);
     });
     const owner = this.access.addressConflict(prefix.address, interfaceID);
     if (owner != null) {

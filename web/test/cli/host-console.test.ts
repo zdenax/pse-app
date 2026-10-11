@@ -160,9 +160,9 @@ describe("host console", () => {
     expect(pc.execute("netsh interface ip set address eth9 static 10.0.0.1 255.0.0.0")).toBe(
       'The interface "eth9" was not found. Adapters: eth0',
     );
-    expect(pc.execute("netsh interface ip set address eth0 dhcp")).toBe(
-      "NetSketch: DHCP se nesimuluje, nastavte adresu ručně. Nic se nezměnilo.",
-    );
+    // DHCP is on, but no server answers in this network (see test/features/dhcp.test.ts).
+    const dhcp = pc.execute("netsh interface ip set address eth0 dhcp");
+    expect(dhcp.startsWith("Ok.\nNetSketch: DHCP je zapnuto")).toBe(true);
     expect(pc.execute("netsh interface ip set address eth0 static 10.0.0.0 255.255.255.0")).toBe(
       "The parameter is incorrect: 10.0.0.0 255.255.255.0",
     );
