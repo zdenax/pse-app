@@ -7,6 +7,9 @@ Síť se nakreslí ze zařízení z laboratoře (Cisco, Dell, MikroTik, Ubiquiti
 jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` a
 `traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
 
+**Připravuje se (webová verze):** simulace DHCP, ACL, NAT, OSPF a RIP, STP a LACP, časů odezvy a
+ztrátovosti, animace cesty paketu a konzole EdgeOS pro Ubiquiti EdgeRouter a USG.
+
 | Verze | Kde běží | Technologie |
 |---|---|---|
 | **Webová** ([`web/`](web/)) | v prohlížeči na Windows, Linuxu i macOS | TypeScript, React, SVG |
