@@ -382,6 +382,80 @@
           { "groups": [1], "arrangement": "singleRow" }
         ]
       }
+    },
+    {
+      "id": "opnsense-vm",
+      "vendor": "OPNsense",
+      "model": "OPNsense (VM)",
+      "category": "router",
+      "verified": false,
+      "note": "Virtuální firewall/router v Hyper-V. Jen kulisa pro náčrt: porty WAN/LAN/OPT1 jako hn0-hn2, bez simulace.",
+      "portGroups": [
+        { "names": ["hn0 WAN"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "WAN" },
+        { "names": ["hn1 LAN"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "LAN" },
+        { "names": ["hn2 OPT1"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "OPT1" }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "apple-macbook",
+      "vendor": "Apple",
+      "model": "MacBook",
+      "category": "PC",
+      "verified": false,
+      "note": "Notebook pro správu. Kulisa pro náčrt: USB LAN adaptér en8 a Wi-Fi en0.",
+      "portGroups": [
+        { "names": ["en8"], "speed": "1G", "connector": "RJ45", "verified": false },
+        { "names": ["en0"], "speed": "Wi-Fi", "connector": "wireless", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "classroom-gateway",
+      "vendor": "Generic",
+      "model": "Router učebny (internet)",
+      "category": "router",
+      "verified": false,
+      "note": "Kulisa pro náčrt: brána do internetu v učebně (10.200.200.0/23).",
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "hyperv-vswitch",
+      "vendor": "Microsoft",
+      "model": "Hyper-V vSwitch (privátní)",
+      "category": "switch",
+      "verified": false,
+      "note": "Virtuální přepínač v Hyper-V. Kulisa pro náčrt: 4 virtuální porty.",
+      "portGroups": [
+        { "prefix": "vport", "rangeStart": 1, "rangeEnd": 4, "speed": "1G", "connector": "RJ45", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" }
+        ]
+      }
     }
   ]
 }

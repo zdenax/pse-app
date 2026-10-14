@@ -1,0 +1,789 @@
+{
+  "annotations" : [
+    {
+      "id" : "01BFD506-8C4E-4CE3-85E9-B805AC946926",
+      "position" : {
+        "x" : 120,
+        "y" : -70
+      },
+      "text" : "OPNsense + Linux Mint v Hyper-V (BTE, zadání 2). Jen náčrt, nesimuluje se.\nWAN = učebna, LAN = privátní vSwitch (DHCP smí do labu, NE do Serverovny), OPT1 = management pro notebook přes Cisco."
+    },
+    {
+      "id" : "AA1258B8-F6A6-41E6-9EFC-57B8A31E9C15",
+      "position" : {
+        "x" : 780,
+        "y" : 620
+      },
+      "text" : "Cisco 2960: port-security (1 MAC), config jen v running-config (po výpadku napájení zmizí), bez hesla."
+    },
+    {
+      "id" : "71B26505-5CA4-44F1-A702-591C7B1511B2",
+      "position" : {
+        "x" : 60,
+        "y" : 620
+      },
+      "text" : "Izolovaný lab: Mint nemá jinou cestu ven než přes OPNsense."
+    }
+  ],
+  "bundles" : [
+
+  ],
+  "devices" : [
+    {
+      "addresses" : [
+        {
+          "address" : "10.200.200.1/23",
+          "interface" : "port:07B8C420-CC47-45E1-A0FE-D1AD4EFF2E6B"
+        }
+      ],
+      "category" : "router",
+      "hostname" : "UCEBNA-GW",
+      "id" : "09DD6B9E-1C8A-4BF2-A32C-821FDCF5E7E4",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          }
+        ]
+      },
+      "model" : "Router učebny (internet)",
+      "note" : "Internet učebny, 10.200.200.0/23",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "07B8C420-CC47-45E1-A0FE-D1AD4EFF2E6B",
+          "name" : "ether1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "A4E9B647-87FD-4FAC-9E0B-28534AC59DC5",
+          "name" : "ether2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 640,
+        "y" : 60
+      },
+      "templateID" : "classroom-gateway",
+      "vendor" : "Generic",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.50.1/24",
+          "interface" : "port:BBE701D0-2A4F-4C24-BB2D-7917FA39EE31"
+        },
+        {
+          "address" : "192.168.60.1/24",
+          "interface" : "port:8C0670A6-5CCD-49C0-AC96-F71A58AB4AE9"
+        },
+        {
+          "address" : "10.200.201.50/23",
+          "interface" : "port:A3CF08CA-FD81-42E3-A427-956473C54663"
+        }
+      ],
+      "category" : "router",
+      "defaultGateway" : "10.200.200.1",
+      "hostname" : "OPNSENSE",
+      "id" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ]
+          }
+        ]
+      },
+      "model" : "OPNsense (VM)",
+      "note" : "Hyper-V VM OPNSENSE-TOUŠKA-NEMAZAT",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "A3CF08CA-FD81-42E3-A427-956473C54663",
+          "name" : "hn0 WAN",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "BBE701D0-2A4F-4C24-BB2D-7917FA39EE31",
+          "name" : "hn1 LAN",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "8C0670A6-5CCD-49C0-AC96-F71A58AB4AE9",
+          "name" : "hn2 OPT1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 640,
+        "y" : 260
+      },
+      "templateID" : "opnsense-vm",
+      "vendor" : "OPNsense",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "category" : "switch",
+      "hostname" : "vSW-OPNSENSE-TOUSKA",
+      "id" : "806496B8-8327-4423-BC79-F20AAB23EDCB",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          }
+        ]
+      },
+      "model" : "Hyper-V vSwitch (privátní)",
+      "note" : "Privátní vSwitch OPNSENSE-TOUŠKA (izolovaný lab)",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8D49F49E-F903-492E-9E20-36C396B4D444",
+          "name" : "vport1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "034773C8-0CDE-4121-BBD0-A45B79D35BEA",
+          "name" : "vport2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "300ADBF5-A4AD-48BE-B935-7B3BB0A4B6AA",
+          "name" : "vport3",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "199F39A7-80FC-4399-957E-046AD089EB61",
+          "name" : "vport4",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 240,
+        "y" : 260
+      },
+      "templateID" : "hyperv-vswitch",
+      "vendor" : "Microsoft",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.50.137/24",
+          "interface" : "port:CD2F3695-FE0E-42F4-AFBE-D1240784C330"
+        }
+      ],
+      "category" : "PC",
+      "defaultGateway" : "192.168.50.1",
+      "hostname" : "MINT",
+      "id" : "D5A48C1E-DD95-413B-A14B-ECB5636C30A4",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          }
+        ]
+      },
+      "model" : "PC",
+      "note" : "Linux Mint, klient za OPNsense",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "CD2F3695-FE0E-42F4-AFBE-D1240784C330",
+          "name" : "eth0",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 240,
+        "y" : 470
+      },
+      "templateID" : "generic-pc",
+      "vendor" : "Generic",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "category" : "switch",
+      "hostname" : "LAB-SW",
+      "id" : "5EA66DA9-2BE6-4E2D-9DAE-EE184C893768",
+      "layout" : {
+        "rows" : 2,
+        "sections" : [
+          {
+            "arrangement" : "oddTopEvenBottom",
+            "blockColumns" : 6,
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              2
+            ],
+            "row" : 0
+          }
+        ]
+      },
+      "model" : "Catalyst 2960-24",
+      "note" : "Laboratorní switch, nezaheslovat",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "362B18E1-2F59-4FA7-B36E-4348365EDFDD",
+          "name" : "Fa0/1",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "3AE6B7CE-BF54-4357-B1C3-AE3A0E1362AD",
+          "name" : "Fa0/2",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "0F0DC16E-6D59-44A8-A955-C77FE259F8D6",
+          "name" : "Fa0/3",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "4B88BE1B-C174-415C-9D8C-65F11BFC06CF",
+          "name" : "Fa0/4",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C3FBED30-BBF3-417B-B459-F8343335C35A",
+          "name" : "Fa0/5",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "DB16EFFB-9A59-4C3D-9E75-C2931D3681FC",
+          "name" : "Fa0/6",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "1DADAC33-44CF-472E-915F-27E03AC61F70",
+          "name" : "Fa0/7",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "324546E8-697A-4643-B5A1-1D86572A09D0",
+          "name" : "Fa0/8",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "C91EA64F-1331-42CC-8C59-64B45C8CB4CD",
+          "name" : "Fa0/9",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "BF0F970F-D1AC-4D7C-ACEA-799FCCE53F09",
+          "name" : "Fa0/10",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "6BE3C5DD-999B-4852-97BA-2BD6E8FBC828",
+          "name" : "Fa0/11",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "ECEDECB8-9EBF-439B-A23E-1F0CCA018BE0",
+          "name" : "Fa0/12",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "ABD92DC5-B44F-4B3F-A413-1CD987B8E51C",
+          "name" : "Fa0/13",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "B16CA08E-1B33-4058-8EDD-758B12405981",
+          "name" : "Fa0/14",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8B611983-C38E-49D5-A32F-CD7725566A4D",
+          "name" : "Fa0/15",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "B6F7C795-116A-4052-B0E7-A6BA2C47C337",
+          "name" : "Fa0/16",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "1BF92E52-8662-459E-8E05-5B509D70B9E9",
+          "name" : "Fa0/17",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "B2F9894E-F2F4-48A6-9ED2-4F514C7DC6A3",
+          "name" : "Fa0/18",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "5F18DF42-8D78-4DF7-9198-A2933C5FFCDE",
+          "name" : "Fa0/19",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "656FC7FA-1F41-42C9-83E0-8C068B1C5630",
+          "name" : "Fa0/20",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "0AA52C77-AEF4-4986-92C9-B958B0F05F71",
+          "name" : "Fa0/21",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "368F90AF-F79B-418F-B126-C95544D52430",
+          "name" : "Fa0/22",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "CD444123-A2E2-4479-B324-68DD46EC90E4",
+          "name" : "Fa0/23",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "58104C45-0AC7-4820-A071-5AF720BEA711",
+          "name" : "Fa0/24",
+          "speed" : "100M",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "00F85919-0207-4E8E-B4D8-AC9501F44D3E",
+          "name" : "Gi0/1",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "4BB39F93-8F35-40D4-925A-AA2DDE4C3098",
+          "name" : "Gi0/2",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "console",
+          "description" : "",
+          "groupIndex" : 2,
+          "id" : "3AB29282-DB61-4A91-8A5D-17E28FF2E929",
+          "name" : "Console",
+          "speed" : "",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 1040,
+        "y" : 260
+      },
+      "templateID" : "cisco-catalyst-2960-24",
+      "vendor" : "Cisco",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    },
+    {
+      "addresses" : [
+        {
+          "address" : "192.168.60.50/24",
+          "interface" : "port:8C45F58E-B0F4-4D21-8DF6-C684467B7D92"
+        }
+      ],
+      "category" : "PC",
+      "defaultGateway" : "192.168.60.1",
+      "hostname" : "MACBOOK",
+      "id" : "8F145C20-5DC6-46D1-A3BC-6CE0569DF007",
+      "layout" : {
+        "rows" : 1,
+        "sections" : [
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              0
+            ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ]
+          }
+        ]
+      },
+      "model" : "MacBook",
+      "note" : "Management notebook",
+      "ports" : [
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 0,
+          "id" : "8C45F58E-B0F4-4D21-8DF6-C684467B7D92",
+          "name" : "en8",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "wireless",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "ECC30552-0901-44BD-A2A5-0BD4307E134C",
+          "name" : "en0",
+          "speed" : "Wi-Fi",
+          "verified" : false,
+          "vlan" : ""
+        }
+      ],
+      "position" : {
+        "x" : 1040,
+        "y" : 470
+      },
+      "templateID" : "apple-macbook",
+      "vendor" : "Apple",
+      "verified" : false,
+      "vlans" : [
+
+      ]
+    }
+  ],
+  "formatVersion" : 1,
+  "links" : [
+    {
+      "a" : {
+        "deviceID" : "09DD6B9E-1C8A-4BF2-A32C-821FDCF5E7E4",
+        "portID" : "A4E9B647-87FD-4FAC-9E0B-28534AC59DC5"
+      },
+      "b" : {
+        "deviceID" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
+        "portID" : "A3CF08CA-FD81-42E3-A427-956473C54663"
+      },
+      "cableType" : "straight",
+      "id" : "7899B3A0-B2D2-4A1B-9D04-682789951584",
+      "note" : "vSwitch Internet",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
+        "portID" : "BBE701D0-2A4F-4C24-BB2D-7917FA39EE31"
+      },
+      "b" : {
+        "deviceID" : "806496B8-8327-4423-BC79-F20AAB23EDCB",
+        "portID" : "8D49F49E-F903-492E-9E20-36C396B4D444"
+      },
+      "cableType" : "straight",
+      "id" : "2CBBC151-1043-42A0-AFCC-F918B729C079",
+      "note" : "LAN 192.168.50.0/24, DHCP",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "806496B8-8327-4423-BC79-F20AAB23EDCB",
+        "portID" : "034773C8-0CDE-4121-BBD0-A45B79D35BEA"
+      },
+      "b" : {
+        "deviceID" : "D5A48C1E-DD95-413B-A14B-ECB5636C30A4",
+        "portID" : "CD2F3695-FE0E-42F4-AFBE-D1240784C330"
+      },
+      "cableType" : "straight",
+      "id" : "B86FCF8F-37ED-4496-9531-04576A5C72CB",
+      "note" : "",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
+        "portID" : "8C0670A6-5CCD-49C0-AC96-F71A58AB4AE9"
+      },
+      "b" : {
+        "deviceID" : "5EA66DA9-2BE6-4E2D-9DAE-EE184C893768",
+        "portID" : "362B18E1-2F59-4FA7-B36E-4348365EDFDD"
+      },
+      "cableType" : "straight",
+      "id" : "D3A65518-91F1-4D45-AFD0-CE00E76DBEF6",
+      "note" : "vSwitch Rack, MGMT 192.168.60.0/24",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "5EA66DA9-2BE6-4E2D-9DAE-EE184C893768",
+        "portID" : "3AE6B7CE-BF54-4357-B1C3-AE3A0E1362AD"
+      },
+      "b" : {
+        "deviceID" : "8F145C20-5DC6-46D1-A3BC-6CE0569DF007",
+        "portID" : "8C45F58E-B0F4-4D21-8DF6-C684467B7D92"
+      },
+      "cableType" : "straight",
+      "id" : "E44885CE-DF92-4763-9945-A49E7B0ACCBA",
+      "note" : "port-security jen pro MAC notebooku",
+      "statusA" : "none",
+      "statusB" : "none"
+    }
+  ],
+  "name" : "OPNsense + Mint lab (BTE)",
+  "viewMode" : "physical"
+}

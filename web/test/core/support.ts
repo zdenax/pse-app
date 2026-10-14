@@ -35,6 +35,10 @@ export const TemplateID = {
   usgPro4: "ubiquiti-usg-pro-4",
   fs726t: "netgear-fs726t",
   edgeRouterX: "ubiquiti-edgerouter-x",
+  opnsenseVm: "opnsense-vm",
+  macbook: "apple-macbook",
+  classroomGateway: "classroom-gateway",
+  hypervVswitch: "hyperv-vswitch",
 } as const;
 
 export const allTemplateIDs: string[] = Object.values(TemplateID);
