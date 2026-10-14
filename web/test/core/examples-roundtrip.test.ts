@@ -17,6 +17,7 @@ describe("example files", () => {
     expect(entries.map(([path]) => path.split("/").pop()).sort()).toEqual([
       "cviceni-1-multivendor-switche.netsketch",
       "cviceni-2-ctyri-routery.netsketch",
+      "opnsense-mint-lab.netsketch",
       "trojuhelnik.netsketch",
     ]);
   });
