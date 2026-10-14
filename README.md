@@ -7,8 +7,9 @@ Síť se nakreslí ze zařízení z laboratoře (Cisco, Dell, MikroTik, Ubiquiti
 jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` a
 `traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
 
-**Připravuje se (webová verze):** simulace DHCP, ACL, NAT, OSPF a RIP, STP a LACP, časů odezvy a
-ztrátovosti, animace cesty paketu a konzole EdgeOS pro Ubiquiti EdgeRouter a USG.
+**Co a do jaké míry se simuluje**, viz [Rozsah simulace](#rozsah-simulace). Ve stručnosti: VLAN, IP
+a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů; STP, LACP, OSPF, RIP
+a konzole EdgeOS se zatím nesimulují.
 
 | Verze | Kde běží | Technologie |
 |---|---|---|
@@ -164,9 +165,7 @@ Konzole ukládají IP konfiguraci do projektu, `ping` a `traceroute` ji vyhodnoc
 - L3: adresy na portech routerů, na VLAN rozhraních switchů (SVI, MikroTik `bridge`) a na PC,
   připojené sítě, statické trasy, výchozí brána. Routery a L3 switche směrují, PC a L2 switche ne.
 - Když ping neprojde, konzole česky napíše, kde a proč se paket zastavil.
-- Zatím se nesimuluje: STP, LACP, OSPF a jiné dynamické směrování, DHCP, ACL, NAT, časy odezvy a
-  ztrátovost. Na všem se pracuje, a to jen ve webové verzi (macOS aplikace zůstává u současného
-  rozsahu).
+- Co všechno se simuluje a co ne, shrnuje [Rozsah simulace](#rozsah-simulace) níže.
 
 | Zařízení | Adresa | Trasy a brána | Test |
 |---|---|---|---|
@@ -178,6 +177,72 @@ Konzole ukládají IP konfiguraci do projektu, `ping` a `traceroute` ji vyhodnoc
 Konzoli otevře Cmd+T (nebo tlačítko na liště či v inspectoru) u vybraného zařízení; nemají ji jen
 access pointy. Inspector u zařízení ukazuje adresy, bránu a trasy nastavené v konzoli.
 
+## Rozsah simulace
+
+NetSketch **není emulátor firmwaru**: nespouští skutečný software zařízení (žádný IOS, RouterOS ani
+Linux). Konzole jsou věrné napodobeniny příkazového řádku a výsledky (`ping`, `traceroute`, `show ...`)
+se počítají z diagramu a uložené konfigurace. Cílem je procvičit zapojení a příkazy, ne reprodukovat
+každý detail skutečného zařízení.
+
+Značení: **ano** = funguje a má testy, **zjednodušeně** = funguje, ale s uvedenými omezeními,
+**jen data** = konfigurace se ukládá a kreslí, ale nemá žádný vliv na provoz, **ne** = nepodporováno.
+Sloupec „Web“ platí pro webovou verzi, sloupec „macOS“ pro nativní aplikaci.
+
+### Konzole
+
+| Zařízení | Web | macOS | Co umí |
+|---|---|---|---|
+| Cisco IOS | ano | ano | režimy user / privileged / config / interface (i `range`) / vlan / SVI; `show` (running-config, interfaces, vlan, ip route, ip interface brief, ...), `ping`, `traceroute`, konfigurace VLAN, switchportů, IP, tras |
+| Dell OS9 | ano | ano | vlastní syntaxe a hlášky (`interface vlan`, `untagged` / `tagged`, `ip address A/NN`), `show` výpisy ve stylu OS9 |
+| MikroTik RouterOS | zjednodušeně | zjednodušeně | `/interface ethernet`, `/ip address`, `/ip route`, `/system identity`, `/ping`, `/export`; ve webu navíc DHCP, firewall a NAT. Chybí `/interface vlan`, `bridge`, `bonding` a `/routing` |
+| PC, server (Windows styl) | ano | ano | `ipconfig` (`/all`, `/renew`, `/release`), `netsh interface ip set address`, `ping`, `tracert`; web navíc `Test-NetConnection` a `telnet IP port` |
+| Ubiquiti UniFi, Netgear, ostatní | zjednodušeně | zjednodušeně | obecná syntaxe ve stylu IOS (skutečné zařízení se nastavuje ve webovém rozhraní) |
+| Ubiquiti EdgeOS | ne | ne | prompt a `exit`, jinak jen hláška „konzole EdgeOS se připravuje“ |
+
+Společné vlastnosti konzolí: zkratky příkazů (`conf t`, `sh run`), `?` nápověda, `Tab` doplňování,
+historie šipkami a `show history`, typické chyby (`% Invalid input detected at '^' marker.`,
+`% Incomplete command.`, `% Ambiguous command`, u RouterOS `bad command name ...`), `exit` / `end` /
+`Ctrl-Z`. Každý příkaz je jeden krok Undo. Konfigurace se ukládá do projektu (souboru `.netsketch`),
+ne do relace.
+
+Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`show mac address-table`, `show spanning-tree`,
+`show arp`, `telnet`, `ssh`, `reload`, `debug`, `nslookup`, `netstat`, ...), se rozpoznají a odpoví
+vysvětlením, ale nic neprovedou. Nastavení, které se jen přijme (`banner`, `line`, `mtu`, port-security),
+se neukládá a konzole to řekne.
+
+### Síť
+
+| Oblast | Web | macOS | Rozsah |
+|---|---|---|---|
+| VLAN, access / trunk, allowed a native VLAN | ano | ano | kabel spojí to, co nesou oba konce; `shutdown` a chybějící kabel port vypnou; chybějící VLAN v tabulce se hlásí |
+| Přepínání (switch, AP) | zjednodušeně | zjednodušeně | počítá se dosažitelnost v L2 doméně; **neexistují tabulky MAC ani ARP**, nic se nelearninguje ani neflooduje |
+| IP adresy, připojené a statické trasy, výchozí brána | ano | ano | routery a L3 switche směrují, PC a L2 switche ne; inter-VLAN přes SVI nebo router; hlídá duplicitní adresy a neaktivní trasy; jedna adresa na rozhraní, **bez IPv6** |
+| Proč ping neprošel | ano | ano | česká věta, kde a proč se paket zastavil |
+| DHCP (server, relay, klient) | zjednodušeně | ne | Cisco, Dell, MikroTik; přidělí se nejnižší volná adresa a zapíše se jako jeden krok Undo; **neplyne čas**, zápůjčka nevyprší; chybí options, rezervace podle MAC a více podsítí v jednom poolu |
+| ACL / firewall | zjednodušeně | ne | Cisco standardní, rozšířené a pojmenované ACL, Dell ACL, MikroTik `/ip firewall filter`; ip / icmp / tcp / udp, `eq` `gt` `lt` `range`, implicitní deny, `established` (heuristikou, **spojení se nesleduje**); chybí `time-range`, počítadla zásahů, `jump` |
+| NAT / PAT | zjednodušeně | ne | Cisco statický, dynamický a `overload`, MikroTik `masquerade` / `src-nat` / `dst-nat`; překladová tabulka je jen běhový stav a nevyprší; chybí `outside source`, statický překlad portů a NAT na Dell OS9 |
+| Čas odezvy a ztrátovost | zjednodušeně | ne | zpoždění (ms) a ztrátovost (%) se nastavují na kabelu; jitter a ztráty jsou **deterministické**, ne náhodné; bez šířky pásma a front |
+| Animace paketů | ano | ne | cesta žádosti a odpovědi po kabelech, zahozený paket skončí červeným křížkem; animuje se jen první echo příkazu |
+| STP | jen data | ne | nastavení se ukládá v datovém modelu, žádné chování; `show spanning-tree` je placeholder |
+| Port-channel, LACP, PAgP | jen data | jen data | svazek je jen kresba v diagramu (`channel-group` se přijme s oznámením); neovlivňuje provoz |
+| OSPF, RIP | jen data | ne | datový model je hotový, ale příkazy `router ospf` / `/routing ospf` nic nenastaví a dynamické trasy nevznikají |
+| VTP, DTP, port-security, HSRP, EIGRP, QoS, VRF, DNS, SNMP | ne | ne | |
+
+### Co si z toho odnést
+
+- Spolehlivě lze procvičit: zapojení a kabeláž, VLAN a trunky, adresaci, statické směrování,
+  inter-VLAN routing, DHCP, filtrování pomocí ACL a NAT, a hlavně **psaní příkazů** několika výrobců.
+- Nelze procvičit: chování protokolů v čase (STP, dynamické směrování, LACP), diagnostiku přes tabulky
+  MAC a ARP, výkon (šířka pásma, přetížení) a vše, co spoléhá na skutečný firmware.
+- Výstupy výpisů jsou psané tak, aby se podobaly skutečným zařízením, ale **nejsou s nimi porovnané**
+  na hardwaru (porty v katalogu jsou označené jako neověřené). Neberte je jako referenci pro
+  zkoušku nebo ostrý provoz.
+- Web a macOS se liší: macOS aplikace zůstává u základu (VLAN, IP, statické trasy, `ping`,
+  `traceroute`), DHCP, ACL, NAT, zpoždění a animace paketů jsou jen ve webové verzi. Soubor
+  `.netsketch` otevřou obě verze, ale konfiguraci protokolů uloženou webem macOS ignoruje a při uložení ji
+  ztratí.
+- Podrobnosti a zjednodušení jednotlivých funkcí: [docs/protokoly/](docs/protokoly/).
+
 ## Ubiquiti
 
 Zařízení **UniFi** (UDM Pro, UniFi Switch, USG) se ve skutečnosti nenastavují příkazovou řádkou, ale
@@ -188,7 +253,7 @@ míře USG): `configure`, `set interfaces ethernet eth0 address …`, `commit`, 
 | Zařízení | Konzole v NetSketch |
 |---|---|
 | UDM Pro, UniFi Switch 24 | obecná syntaxe ve stylu Cisco IOS: zjednodušení místo Controlleru, používají ji cvičení 1 a 2 |
-| USG Pro 4, EdgeRouter X | zatím obecná syntaxe ve stylu Cisco IOS; konzole EdgeOS (`set` / `commit`) se připravuje pro webovou verzi |
+| USG Pro 4, EdgeRouter X | zatím obecná syntaxe ve stylu Cisco IOS (konzole `ubnt@…` s EdgeOS ve webu je zatím jen prázdný stub bez příkazů `set` / `commit`) |
 | Netgear FS726T a ostatní | obecná syntaxe ve stylu Cisco IOS (skutečný přepínač se nastavuje ve webovém rozhraní) |
 
 ## Katalog zařízení
@@ -201,9 +266,8 @@ VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 
 ## Mimo rozsah
 
-Emulace firmware (NetSketch počítá dosažitelnost podle zapojení a konfigurace, nespouští skutečný
-software zařízení). Simulace STP, LACP, OSPF/RIP, DHCP, ACL, NAT a časů odezvy je rozpracovaná ve
-webové verzi.
+Emulace firmware (NetSketch nespouští skutečný software zařízení) a vše, co je v tabulkách výše
+označené „ne“. STP, LACP, OSPF a RIP mají zatím jen datový model, bez simulace chování.
 
 ## Licence
 

@@ -408,12 +408,15 @@ export function Modal({
   onClose,
   actions,
   role = "dialog",
+  className,
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
   actions?: ReactNode;
   role?: "dialog" | "alertdialog";
+  /** Extra class of the dialog box (e.g. "wide"). */
+  className?: string;
 }) {
   const titleID = useId();
   const bodyID = useId();
@@ -463,7 +466,7 @@ export function Modal({
   return (
     <div className="modal-backdrop">
       <div
-        className="modal"
+        className={className ? `modal ${className}` : "modal"}
         role={role}
         aria-modal="true"
         aria-labelledby={titleID}
