@@ -1510,3 +1510,174 @@ textarea.text-field {
 .wiring-failed-card p {
   margin: 0 0 8px;
 }
+
+/* MARK: Device editor */
+
+.modal.wide {
+  width: min(820px, calc(100vw - 32px));
+  max-height: calc(100vh - 8vh - 24px);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal.wide .modal-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+.modal.wide .modal-actions {
+  align-items: center;
+}
+
+.muted {
+  color: var(--text-secondary);
+}
+
+.editor-form {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.editor-field {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.editor-label {
+  text-align: right;
+  color: var(--text-secondary);
+}
+
+.editor-control .select-field {
+  width: auto;
+  min-width: 160px;
+}
+
+.editor-groups-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.editor-groups-head h3,
+.editor-preview h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.editor-group {
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--control-hover);
+}
+
+.editor-group-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.editor-small {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.editor-small.grow {
+  flex: 1 1 220px;
+}
+
+.editor-small .select-field {
+  width: auto;
+}
+
+.editor-group-note {
+  margin-top: 4px;
+  font: 11.5px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-group-note.error,
+.editor-status.error {
+  color: var(--danger);
+}
+
+.editor-status {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-add {
+  margin-bottom: 14px;
+}
+
+.editor-preview-scroll {
+  overflow-x: auto;
+  border-radius: 8px;
+  background: var(--canvas-bg);
+}
+
+.preview-port {
+  fill: var(--teal);
+  opacity: 0.85;
+}
+
+.preview-bay {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-dasharray: 3 3;
+}
+
+.preview-label {
+  font-size: 10px;
+  fill: var(--text-secondary);
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.icon-button:hover {
+  background: var(--control-hover);
+  color: var(--danger);
+}
+
+.palette-row-actions {
+  display: none;
+  gap: 2px;
+}
+
+.palette-row:hover .palette-row-actions,
+.palette-row:focus-within .palette-row-actions {
+  display: flex;
+}
+
+.icon-button.neutral:hover {
+  color: var(--text-primary, inherit);
+}

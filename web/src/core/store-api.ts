@@ -162,4 +162,10 @@ export interface CatalogAPI {
   readonly groups: { category: Device["category"]; templates: DeviceTemplate[] }[];
   /** Problems found while loading, as Czech sentences. */
   readonly loadIssues: string[];
+  /** A free id derived from vendor and model. Present on catalogs that accept custom templates. */
+  uniqueID?(vendor: string, model: string): string;
+  /** Custom templates; each throws `CatalogError`. Absent on read-only catalogs. */
+  addCustom?(template: DeviceTemplate): DeviceTemplate;
+  updateCustom?(template: DeviceTemplate): DeviceTemplate;
+  removeCustom?(id: string): void;
 }

@@ -76,6 +76,15 @@ export const Palette = memo(function Palette() {
   const groups = useMemo(() => filterGroups(allGroups, searchText), [allGroups, searchText]);
   const isSearching = searchText.trim() !== "";
 
+  const removeCustom = (template: DeviceTemplate) => {
+    if (!window.confirm(`Smazat vlastní zařízení „${displayName(template.vendor, template.model)}“ z katalogu?\nZařízení už umístěná v projektu zůstanou.`)) return;
+    try {
+      catalog.removeCustom?.(template.id);
+    } catch (error) {
+      app.present(error, "Zařízení nelze smazat");
+    }
+  };
+
   const toggle = (category: DeviceCategory) => {
     setCollapsed((current) => {
       const next = new Set(current);
@@ -143,7 +152,14 @@ export const Palette = memo(function Palette() {
               {!isCollapsed && (
                 <ul className="palette-rows" id={listID}>
                   {group.templates.map((template) => (
-                    <PaletteRow key={template.id} template={template} onAdd={() => app.addDevice(template.id)} />
+                    <PaletteRow
+                      key={template.id}
+                      template={template}
+                      onAdd={() => app.addDevice(template.id)}
+                      onEdit={() => app.openDeviceEditor({ kind: "edit", template })}
+                      onDuplicate={() => app.openDeviceEditor({ kind: "duplicate", template })}
+                      onRemove={() => removeCustom(template)}
+                    />
                   ))}
                 </ul>
               )}
@@ -157,7 +173,7 @@ export const Palette = memo(function Palette() {
           type="button"
           className="push-button wide"
           title="Přidat do katalogu vlastní zařízení s vlastními porty"
-          onClick={() => (app.deviceEditorOpen = true)}
+          onClick={() => app.openDeviceEditor({ kind: "new" })}
         >
           <Icon name="plus" size={15} />
           Nové zařízení…
@@ -168,7 +184,19 @@ export const Palette = memo(function Palette() {
 });
 
 /** One catalog entry: icon, model, vendor, port summary, "verify" marker. */
-function PaletteRow({ template, onAdd }: { template: DeviceTemplate; onAdd: () => void }) {
+function PaletteRow({
+  template,
+  onAdd,
+  onEdit,
+  onDuplicate,
+  onRemove,
+}: {
+  template: DeviceTemplate;
+  onAdd: () => void;
+  onEdit: () => void;
+  onDuplicate: () => void;
+  onRemove: () => void;
+}) {
   const needsVerification = templateNeedsVerification(template);
   const summary = portSummary(template);
   const tooltip = [
@@ -218,6 +246,27 @@ function PaletteRow({ template, onAdd }: { template: DeviceTemplate; onAdd: () =
         <div className="palette-row-detail">{summary}</div>
       </div>
       {needsVerification && <VerifyBadge />}
+      <div className="palette-row-actions">
+        {template.isCustom && (
+          <button type="button" className="icon-button neutral" title="Upravit zařízení" aria-label="Upravit zařízení" onClick={onEdit}>
+            <Icon name="note" size={14} />
+          </button>
+        )}
+        <button
+          type="button"
+          className="icon-button neutral"
+          title="Vytvořit vlastní kopii"
+          aria-label="Vytvořit vlastní kopii"
+          onClick={onDuplicate}
+        >
+          <Icon name="noteAdd" size={14} />
+        </button>
+        {template.isCustom && (
+          <button type="button" className="icon-button" title="Smazat zařízení z katalogu" aria-label="Smazat zařízení z katalogu" onClick={onRemove}>
+            <Icon name="trash" size={14} />
+          </button>
+        )}
+      </div>
     </li>
   );
 }

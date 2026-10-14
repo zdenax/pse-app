@@ -2,6 +2,7 @@
 // shortcuts and the console windows. The document itself lives in the store; this class only
 // adds what the shell needs around it. Framework-free port of Sources/NetSketch/AppModel.swift.
 
+import type { DeviceEditorRequest } from "./device-editor-model";
 import type { Device } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import { ConsoleManager, type Area, type ConsoleBackend } from "./console-manager";
@@ -109,7 +110,7 @@ export class AppModel {
   private _paletteVisible = true;
   private _packetAnimation = true;
   private _alert: AppAlert | null = null;
-  private _deviceEditorOpen = false;
+  private _deviceEditor: DeviceEditorRequest | null = null;
   private alertCounter = 0;
   /** Where "Uložit" writes without asking; null when the browser gave us no writable handle. */
   private fileHandle: WritableFileHandle | null = null;
@@ -201,13 +202,19 @@ export class AppModel {
     this.changed();
   }
 
-  get deviceEditorOpen(): boolean {
-    return this._deviceEditorOpen;
+  /** What the custom-device editor is open for; null while it is closed. */
+  get deviceEditor(): DeviceEditorRequest | null {
+    return this._deviceEditor;
   }
 
-  set deviceEditorOpen(value: boolean) {
-    if (value === this._deviceEditorOpen) return;
-    this._deviceEditorOpen = value;
+  openDeviceEditor(request: DeviceEditorRequest = { kind: "new" }): void {
+    this._deviceEditor = request;
+    this.changed();
+  }
+
+  closeDeviceEditor(): void {
+    if (this._deviceEditor === null) return;
+    this._deviceEditor = null;
     this.changed();
   }
 
@@ -229,7 +236,7 @@ export class AppModel {
 
   /** True while a modal (alert or dialog) is shown; global shortcuts pause then. */
   get isModalOpen(): boolean {
-    return this._alert !== null || this._deviceEditorOpen;
+    return this._alert !== null || this._deviceEditor !== null;
   }
 
   // MARK: Errors
