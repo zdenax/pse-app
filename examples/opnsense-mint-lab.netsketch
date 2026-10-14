@@ -1,15 +1,23 @@
 {
   "annotations" : [
     {
-      "id" : "01BFD506-8C4E-4CE3-85E9-B805AC946926",
+      "id" : "A60FBF21-09EE-4A9A-AC3D-2C8C0AD96F0F",
+      "position" : {
+        "x" : -80,
+        "y" : 170
+      },
+      "text" : "Virtuální (uvnitř Hyper-V hostitele): OPNsense-VM, vSwitch privátní, Mint-VM"
+    },
+    {
+      "id" : "D0B2AC93-B8FB-4708-AE71-6FC8B8516851",
       "position" : {
         "x" : 120,
         "y" : -70
       },
-      "text" : "OPNsense + Linux Mint v Hyper-V (BTE, zadání 2). Jen náčrt, nesimuluje se.\nWAN = učebna, LAN = privátní vSwitch (DHCP smí do labu, NE do Serverovny), OPT1 = management pro notebook přes Cisco."
+      "text" : "OPNsense + Linux Mint v Hyper-V (BTE, zadání 2). Jen náčrt, nesimuluje se.\nWAN = přívod internetu z učebny přes hostitele Hyper-V, LAN = privátní vSwitch (DHCP smí do labu, NE do Serverovny), OPT1 = management pro notebook přes Cisco."
     },
     {
-      "id" : "AA1258B8-F6A6-41E6-9EFC-57B8A31E9C15",
+      "id" : "43895651-10EB-4DFE-A1EE-5A1101C7C6E3",
       "position" : {
         "x" : 780,
         "y" : 620
@@ -17,7 +25,7 @@
       "text" : "Cisco 2960: port-security (1 MAC), config jen v running-config (po výpadku napájení zmizí), bez hesla."
     },
     {
-      "id" : "71B26505-5CA4-44F1-A702-591C7B1511B2",
+      "id" : "9A761EBB-9EA5-4D4B-977D-3D902CDF7727",
       "position" : {
         "x" : 60,
         "y" : 620
@@ -30,15 +38,9 @@
   ],
   "devices" : [
     {
-      "addresses" : [
-        {
-          "address" : "10.200.200.1/23",
-          "interface" : "port:07B8C420-CC47-45E1-A0FE-D1AD4EFF2E6B"
-        }
-      ],
-      "category" : "router",
-      "hostname" : "UCEBNA-GW",
-      "id" : "09DD6B9E-1C8A-4BF2-A32C-821FDCF5E7E4",
+      "category" : "server",
+      "hostname" : "HYPERV-HOST",
+      "id" : "351FF448-644E-4ED3-A205-EFAEA02E61BD",
       "layout" : {
         "rows" : 1,
         "sections" : [
@@ -47,19 +49,25 @@
             "groups" : [
               0
             ]
+          },
+          {
+            "arrangement" : "singleRow",
+            "groups" : [
+              1
+            ]
           }
         ]
       },
-      "model" : "Router učebny (internet)",
-      "note" : "Internet učebny, 10.200.200.0/23",
+      "model" : "Hyper-V hostitel (počítač v učebně)",
+      "note" : "CPTO-707-02: přívod internetu z učebny (10.200.200.0/23) a karta do Racku",
       "ports" : [
         {
           "adminDown" : false,
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "07B8C420-CC47-45E1-A0FE-D1AD4EFF2E6B",
-          "name" : "ether1",
+          "id" : "D304F140-58C1-4905-A5D0-172564B88098",
+          "name" : "NIC Internet",
           "speed" : "1G",
           "verified" : false,
           "vlan" : ""
@@ -69,8 +77,30 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "A4E9B647-87FD-4FAC-9E0B-28534AC59DC5",
-          "name" : "ether2",
+          "id" : "BBCF4A8D-72A9-4693-9468-036B3F2E0F55",
+          "name" : "NIC Rack",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "98665CF1-2EB6-4712-99E1-2E3FBBCBE4BE",
+          "name" : "vSwitch Internet",
+          "speed" : "1G",
+          "verified" : false,
+          "vlan" : ""
+        },
+        {
+          "adminDown" : false,
+          "connector" : "RJ45",
+          "description" : "",
+          "groupIndex" : 1,
+          "id" : "32C20509-C731-49B2-9C6A-9148F9D29AE5",
+          "name" : "vSwitch Rack",
           "speed" : "1G",
           "verified" : false,
           "vlan" : ""
@@ -78,10 +108,10 @@
       ],
       "position" : {
         "x" : 640,
-        "y" : 60
+        "y" : 40
       },
-      "templateID" : "classroom-gateway",
-      "vendor" : "Generic",
+      "templateID" : "hyperv-host",
+      "vendor" : "Microsoft",
       "verified" : false,
       "vlans" : [
 
@@ -91,21 +121,21 @@
       "addresses" : [
         {
           "address" : "192.168.50.1/24",
-          "interface" : "port:BBE701D0-2A4F-4C24-BB2D-7917FA39EE31"
+          "interface" : "port:3BDFA7C3-8096-479C-897C-41BEA6CFCEEE"
         },
         {
           "address" : "192.168.60.1/24",
-          "interface" : "port:8C0670A6-5CCD-49C0-AC96-F71A58AB4AE9"
+          "interface" : "port:215E13B2-D4D6-4B67-A254-D738CED4A0F6"
         },
         {
           "address" : "10.200.201.50/23",
-          "interface" : "port:A3CF08CA-FD81-42E3-A427-956473C54663"
+          "interface" : "port:33082ACA-C235-4C59-AC62-5233DBC79534"
         }
       ],
       "category" : "router",
       "defaultGateway" : "10.200.200.1",
-      "hostname" : "OPNSENSE",
-      "id" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
+      "hostname" : "OPNSENSE-VM",
+      "id" : "F650571C-9C23-4491-9D6B-625A85960BF2",
       "layout" : {
         "rows" : 1,
         "sections" : [
@@ -130,14 +160,14 @@
         ]
       },
       "model" : "OPNsense (VM)",
-      "note" : "Hyper-V VM OPNSENSE-TOUŠKA-NEMAZAT",
+      "note" : "Virtuálka OPNSENSE-TOUŠKA-NEMAZAT (Hyper-V)",
       "ports" : [
         {
           "adminDown" : false,
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "A3CF08CA-FD81-42E3-A427-956473C54663",
+          "id" : "33082ACA-C235-4C59-AC62-5233DBC79534",
           "name" : "hn0 WAN",
           "speed" : "1G",
           "verified" : false,
@@ -148,7 +178,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 1,
-          "id" : "BBE701D0-2A4F-4C24-BB2D-7917FA39EE31",
+          "id" : "3BDFA7C3-8096-479C-897C-41BEA6CFCEEE",
           "name" : "hn1 LAN",
           "speed" : "1G",
           "verified" : false,
@@ -159,7 +189,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 2,
-          "id" : "8C0670A6-5CCD-49C0-AC96-F71A58AB4AE9",
+          "id" : "215E13B2-D4D6-4B67-A254-D738CED4A0F6",
           "name" : "hn2 OPT1",
           "speed" : "1G",
           "verified" : false,
@@ -179,8 +209,8 @@
     },
     {
       "category" : "switch",
-      "hostname" : "vSW-OPNSENSE-TOUSKA",
-      "id" : "806496B8-8327-4423-BC79-F20AAB23EDCB",
+      "hostname" : "vSW-PRIVATNI",
+      "id" : "0C04A42C-C980-4FDE-8681-CC09CAB51868",
       "layout" : {
         "rows" : 1,
         "sections" : [
@@ -200,7 +230,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "8D49F49E-F903-492E-9E20-36C396B4D444",
+          "id" : "EC4B4043-A500-4651-924C-CFB0F11F0DDB",
           "name" : "vport1",
           "speed" : "1G",
           "verified" : false,
@@ -211,7 +241,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "034773C8-0CDE-4121-BBD0-A45B79D35BEA",
+          "id" : "1AB151A4-7F81-46A3-A3C1-30861CEC770D",
           "name" : "vport2",
           "speed" : "1G",
           "verified" : false,
@@ -222,7 +252,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "300ADBF5-A4AD-48BE-B935-7B3BB0A4B6AA",
+          "id" : "C7553F95-4EB7-4C14-B4A4-6D0C75B2F50B",
           "name" : "vport3",
           "speed" : "1G",
           "verified" : false,
@@ -233,7 +263,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "199F39A7-80FC-4399-957E-046AD089EB61",
+          "id" : "2E0A3114-002A-4936-BDAE-8D786BE7C8C8",
           "name" : "vport4",
           "speed" : "1G",
           "verified" : false,
@@ -255,13 +285,13 @@
       "addresses" : [
         {
           "address" : "192.168.50.137/24",
-          "interface" : "port:CD2F3695-FE0E-42F4-AFBE-D1240784C330"
+          "interface" : "port:224F66D8-616B-4740-9DE7-A4E975B1C6C7"
         }
       ],
       "category" : "PC",
       "defaultGateway" : "192.168.50.1",
-      "hostname" : "MINT",
-      "id" : "D5A48C1E-DD95-413B-A14B-ECB5636C30A4",
+      "hostname" : "MINT-VM",
+      "id" : "A7674172-291A-4FAC-8486-9261D0AA0A69",
       "layout" : {
         "rows" : 1,
         "sections" : [
@@ -274,14 +304,14 @@
         ]
       },
       "model" : "PC",
-      "note" : "Linux Mint, klient za OPNsense",
+      "note" : "Virtuálka Linux Mint (Hyper-V), klient za OPNsense",
       "ports" : [
         {
           "adminDown" : false,
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "CD2F3695-FE0E-42F4-AFBE-D1240784C330",
+          "id" : "224F66D8-616B-4740-9DE7-A4E975B1C6C7",
           "name" : "eth0",
           "speed" : "1G",
           "verified" : false,
@@ -302,7 +332,7 @@
     {
       "category" : "switch",
       "hostname" : "LAB-SW",
-      "id" : "5EA66DA9-2BE6-4E2D-9DAE-EE184C893768",
+      "id" : "FE5DAB00-2732-43B1-8BD1-100B45898D0F",
       "layout" : {
         "rows" : 2,
         "sections" : [
@@ -336,7 +366,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "362B18E1-2F59-4FA7-B36E-4348365EDFDD",
+          "id" : "639892EB-64EA-4C75-B1B5-8B3C27DE1753",
           "name" : "Fa0/1",
           "speed" : "100M",
           "verified" : false,
@@ -347,7 +377,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "3AE6B7CE-BF54-4357-B1C3-AE3A0E1362AD",
+          "id" : "D6624057-1A79-447E-8415-FD5C69C4044E",
           "name" : "Fa0/2",
           "speed" : "100M",
           "verified" : false,
@@ -358,7 +388,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "0F0DC16E-6D59-44A8-A955-C77FE259F8D6",
+          "id" : "F8A82525-E548-4E02-87E4-1383671B36BB",
           "name" : "Fa0/3",
           "speed" : "100M",
           "verified" : false,
@@ -369,7 +399,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "4B88BE1B-C174-415C-9D8C-65F11BFC06CF",
+          "id" : "70C0BDF8-3D86-438F-BAD3-8D1F39E2A878",
           "name" : "Fa0/4",
           "speed" : "100M",
           "verified" : false,
@@ -380,7 +410,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "C3FBED30-BBF3-417B-B459-F8343335C35A",
+          "id" : "E7C1DC90-4F5A-44D8-A1A1-A63F7E89EC78",
           "name" : "Fa0/5",
           "speed" : "100M",
           "verified" : false,
@@ -391,7 +421,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "DB16EFFB-9A59-4C3D-9E75-C2931D3681FC",
+          "id" : "12FE3038-8757-46F6-9E16-C8A655AE47E3",
           "name" : "Fa0/6",
           "speed" : "100M",
           "verified" : false,
@@ -402,7 +432,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "1DADAC33-44CF-472E-915F-27E03AC61F70",
+          "id" : "24EF4D58-8388-4580-BB5B-0A96C80DE4FA",
           "name" : "Fa0/7",
           "speed" : "100M",
           "verified" : false,
@@ -413,7 +443,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "324546E8-697A-4643-B5A1-1D86572A09D0",
+          "id" : "FD969DB3-FE7A-4F9C-B994-44F5D9873980",
           "name" : "Fa0/8",
           "speed" : "100M",
           "verified" : false,
@@ -424,7 +454,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "C91EA64F-1331-42CC-8C59-64B45C8CB4CD",
+          "id" : "E1AEB59E-AC6F-4E32-904C-1F382979881E",
           "name" : "Fa0/9",
           "speed" : "100M",
           "verified" : false,
@@ -435,7 +465,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "BF0F970F-D1AC-4D7C-ACEA-799FCCE53F09",
+          "id" : "1EA1A108-A151-48EC-A6DD-29768EDC2073",
           "name" : "Fa0/10",
           "speed" : "100M",
           "verified" : false,
@@ -446,7 +476,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "6BE3C5DD-999B-4852-97BA-2BD6E8FBC828",
+          "id" : "F139E4F5-EA99-4A61-87A6-B9396B6ECE3E",
           "name" : "Fa0/11",
           "speed" : "100M",
           "verified" : false,
@@ -457,7 +487,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "ECEDECB8-9EBF-439B-A23E-1F0CCA018BE0",
+          "id" : "9B947251-F4CA-48C1-90CD-4D6A8DB72084",
           "name" : "Fa0/12",
           "speed" : "100M",
           "verified" : false,
@@ -468,7 +498,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "ABD92DC5-B44F-4B3F-A413-1CD987B8E51C",
+          "id" : "8B54911E-01CF-4BF2-ACD5-1F7E5A78032C",
           "name" : "Fa0/13",
           "speed" : "100M",
           "verified" : false,
@@ -479,7 +509,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "B16CA08E-1B33-4058-8EDD-758B12405981",
+          "id" : "F8A08AC5-2088-476E-A0A3-3A6B3DAB78D4",
           "name" : "Fa0/14",
           "speed" : "100M",
           "verified" : false,
@@ -490,7 +520,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "8B611983-C38E-49D5-A32F-CD7725566A4D",
+          "id" : "66A1785C-D890-4F32-8A3E-A3A3D8679D79",
           "name" : "Fa0/15",
           "speed" : "100M",
           "verified" : false,
@@ -501,7 +531,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "B6F7C795-116A-4052-B0E7-A6BA2C47C337",
+          "id" : "8E3ADADC-9E9F-4DA9-9366-B487E83A359B",
           "name" : "Fa0/16",
           "speed" : "100M",
           "verified" : false,
@@ -512,7 +542,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "1BF92E52-8662-459E-8E05-5B509D70B9E9",
+          "id" : "4C23219D-29E6-49CC-8EAC-5A4634C9B74F",
           "name" : "Fa0/17",
           "speed" : "100M",
           "verified" : false,
@@ -523,7 +553,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "B2F9894E-F2F4-48A6-9ED2-4F514C7DC6A3",
+          "id" : "406ABC9A-28B5-415F-9045-7E929A485DC5",
           "name" : "Fa0/18",
           "speed" : "100M",
           "verified" : false,
@@ -534,7 +564,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "5F18DF42-8D78-4DF7-9198-A2933C5FFCDE",
+          "id" : "126F7A70-F811-41AE-A3A5-3D224E22AC64",
           "name" : "Fa0/19",
           "speed" : "100M",
           "verified" : false,
@@ -545,7 +575,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "656FC7FA-1F41-42C9-83E0-8C068B1C5630",
+          "id" : "8B4A8B8C-AD31-43CB-9580-E3D34553614F",
           "name" : "Fa0/20",
           "speed" : "100M",
           "verified" : false,
@@ -556,7 +586,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "0AA52C77-AEF4-4986-92C9-B958B0F05F71",
+          "id" : "CCBBAB94-B6A1-4005-B52A-71E4AA1F4D20",
           "name" : "Fa0/21",
           "speed" : "100M",
           "verified" : false,
@@ -567,7 +597,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "368F90AF-F79B-418F-B126-C95544D52430",
+          "id" : "1E7CF01B-34FE-4484-8657-2926AEAAE566",
           "name" : "Fa0/22",
           "speed" : "100M",
           "verified" : false,
@@ -578,7 +608,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "CD444123-A2E2-4479-B324-68DD46EC90E4",
+          "id" : "5699E8C7-D9AF-49B6-8C3C-B2939BB83C29",
           "name" : "Fa0/23",
           "speed" : "100M",
           "verified" : false,
@@ -589,7 +619,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "58104C45-0AC7-4820-A071-5AF720BEA711",
+          "id" : "FDFA8D15-93EA-4397-948C-5A57353D1C7B",
           "name" : "Fa0/24",
           "speed" : "100M",
           "verified" : false,
@@ -600,7 +630,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 1,
-          "id" : "00F85919-0207-4E8E-B4D8-AC9501F44D3E",
+          "id" : "A1C46BFD-E613-4772-9DE7-C33E336DA69E",
           "name" : "Gi0/1",
           "speed" : "1G",
           "verified" : false,
@@ -611,7 +641,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 1,
-          "id" : "4BB39F93-8F35-40D4-925A-AA2DDE4C3098",
+          "id" : "367C4346-6153-46F8-BE32-6689FF408720",
           "name" : "Gi0/2",
           "speed" : "1G",
           "verified" : false,
@@ -622,7 +652,7 @@
           "connector" : "console",
           "description" : "",
           "groupIndex" : 2,
-          "id" : "3AB29282-DB61-4A91-8A5D-17E28FF2E929",
+          "id" : "C118D830-EAAE-470E-8E6A-562394C356A4",
           "name" : "Console",
           "speed" : "",
           "verified" : false,
@@ -644,13 +674,13 @@
       "addresses" : [
         {
           "address" : "192.168.60.50/24",
-          "interface" : "port:8C45F58E-B0F4-4D21-8DF6-C684467B7D92"
+          "interface" : "port:99541A5A-82E4-4934-BED2-2F7D0B422628"
         }
       ],
       "category" : "PC",
       "defaultGateway" : "192.168.60.1",
       "hostname" : "MACBOOK",
-      "id" : "8F145C20-5DC6-46D1-A3BC-6CE0569DF007",
+      "id" : "C9872F41-7160-4049-8FA8-564989BFB778",
       "layout" : {
         "rows" : 1,
         "sections" : [
@@ -676,7 +706,7 @@
           "connector" : "RJ45",
           "description" : "",
           "groupIndex" : 0,
-          "id" : "8C45F58E-B0F4-4D21-8DF6-C684467B7D92",
+          "id" : "99541A5A-82E4-4934-BED2-2F7D0B422628",
           "name" : "en8",
           "speed" : "1G",
           "verified" : false,
@@ -687,7 +717,7 @@
           "connector" : "wireless",
           "description" : "",
           "groupIndex" : 1,
-          "id" : "ECC30552-0901-44BD-A2A5-0BD4307E134C",
+          "id" : "2FC4E7A1-2CF8-45AE-BCA5-4D93981EE3E4",
           "name" : "en0",
           "speed" : "Wi-Fi",
           "verified" : false,
@@ -710,75 +740,90 @@
   "links" : [
     {
       "a" : {
-        "deviceID" : "09DD6B9E-1C8A-4BF2-A32C-821FDCF5E7E4",
-        "portID" : "A4E9B647-87FD-4FAC-9E0B-28534AC59DC5"
+        "deviceID" : "351FF448-644E-4ED3-A205-EFAEA02E61BD",
+        "portID" : "98665CF1-2EB6-4712-99E1-2E3FBBCBE4BE"
       },
       "b" : {
-        "deviceID" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
-        "portID" : "A3CF08CA-FD81-42E3-A427-956473C54663"
+        "deviceID" : "F650571C-9C23-4491-9D6B-625A85960BF2",
+        "portID" : "33082ACA-C235-4C59-AC62-5233DBC79534"
       },
       "cableType" : "straight",
-      "id" : "7899B3A0-B2D2-4A1B-9D04-682789951584",
+      "id" : "E2327F26-2E58-445B-9BF4-8BC05F4CB79D",
       "note" : "vSwitch Internet",
       "statusA" : "none",
       "statusB" : "none"
     },
     {
       "a" : {
-        "deviceID" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
-        "portID" : "BBE701D0-2A4F-4C24-BB2D-7917FA39EE31"
+        "deviceID" : "F650571C-9C23-4491-9D6B-625A85960BF2",
+        "portID" : "3BDFA7C3-8096-479C-897C-41BEA6CFCEEE"
       },
       "b" : {
-        "deviceID" : "806496B8-8327-4423-BC79-F20AAB23EDCB",
-        "portID" : "8D49F49E-F903-492E-9E20-36C396B4D444"
+        "deviceID" : "0C04A42C-C980-4FDE-8681-CC09CAB51868",
+        "portID" : "EC4B4043-A500-4651-924C-CFB0F11F0DDB"
       },
       "cableType" : "straight",
-      "id" : "2CBBC151-1043-42A0-AFCC-F918B729C079",
+      "id" : "4EB83663-C461-4436-8532-90B83FBCA925",
       "note" : "LAN 192.168.50.0/24, DHCP",
       "statusA" : "none",
       "statusB" : "none"
     },
     {
       "a" : {
-        "deviceID" : "806496B8-8327-4423-BC79-F20AAB23EDCB",
-        "portID" : "034773C8-0CDE-4121-BBD0-A45B79D35BEA"
+        "deviceID" : "0C04A42C-C980-4FDE-8681-CC09CAB51868",
+        "portID" : "1AB151A4-7F81-46A3-A3C1-30861CEC770D"
       },
       "b" : {
-        "deviceID" : "D5A48C1E-DD95-413B-A14B-ECB5636C30A4",
-        "portID" : "CD2F3695-FE0E-42F4-AFBE-D1240784C330"
+        "deviceID" : "A7674172-291A-4FAC-8486-9261D0AA0A69",
+        "portID" : "224F66D8-616B-4740-9DE7-A4E975B1C6C7"
       },
       "cableType" : "straight",
-      "id" : "B86FCF8F-37ED-4496-9531-04576A5C72CB",
+      "id" : "86AF795D-BEC9-4E3B-9894-909085E3AC5A",
       "note" : "",
       "statusA" : "none",
       "statusB" : "none"
     },
     {
       "a" : {
-        "deviceID" : "AD984DB3-C23C-4543-8AB6-DC76B1E94E94",
-        "portID" : "8C0670A6-5CCD-49C0-AC96-F71A58AB4AE9"
+        "deviceID" : "F650571C-9C23-4491-9D6B-625A85960BF2",
+        "portID" : "215E13B2-D4D6-4B67-A254-D738CED4A0F6"
       },
       "b" : {
-        "deviceID" : "5EA66DA9-2BE6-4E2D-9DAE-EE184C893768",
-        "portID" : "362B18E1-2F59-4FA7-B36E-4348365EDFDD"
+        "deviceID" : "351FF448-644E-4ED3-A205-EFAEA02E61BD",
+        "portID" : "32C20509-C731-49B2-9C6A-9148F9D29AE5"
       },
       "cableType" : "straight",
-      "id" : "D3A65518-91F1-4D45-AFD0-CE00E76DBEF6",
-      "note" : "vSwitch Rack, MGMT 192.168.60.0/24",
+      "id" : "A27CAE1D-0705-4A21-A69F-B63BD2FB7EBF",
+      "note" : "MGMT 192.168.60.0/24",
       "statusA" : "none",
       "statusB" : "none"
     },
     {
       "a" : {
-        "deviceID" : "5EA66DA9-2BE6-4E2D-9DAE-EE184C893768",
-        "portID" : "3AE6B7CE-BF54-4357-B1C3-AE3A0E1362AD"
+        "deviceID" : "351FF448-644E-4ED3-A205-EFAEA02E61BD",
+        "portID" : "BBCF4A8D-72A9-4693-9468-036B3F2E0F55"
       },
       "b" : {
-        "deviceID" : "8F145C20-5DC6-46D1-A3BC-6CE0569DF007",
-        "portID" : "8C45F58E-B0F4-4D21-8DF6-C684467B7D92"
+        "deviceID" : "FE5DAB00-2732-43B1-8BD1-100B45898D0F",
+        "portID" : "639892EB-64EA-4C75-B1B5-8B3C27DE1753"
       },
       "cableType" : "straight",
-      "id" : "E44885CE-DF92-4763-9945-A49E7B0ACCBA",
+      "id" : "03971012-2A71-468A-9716-4ACFD430AC64",
+      "note" : "externí vSwitch Rack, fyzická karta D-Link",
+      "statusA" : "none",
+      "statusB" : "none"
+    },
+    {
+      "a" : {
+        "deviceID" : "FE5DAB00-2732-43B1-8BD1-100B45898D0F",
+        "portID" : "D6624057-1A79-447E-8415-FD5C69C4044E"
+      },
+      "b" : {
+        "deviceID" : "C9872F41-7160-4049-8FA8-564989BFB778",
+        "portID" : "99541A5A-82E4-4934-BED2-2F7D0B422628"
+      },
+      "cableType" : "straight",
+      "id" : "398804F3-7BC5-4F21-A938-3C8DE739768C",
       "note" : "port-security jen pro MAC notebooku",
       "statusA" : "none",
       "statusB" : "none"

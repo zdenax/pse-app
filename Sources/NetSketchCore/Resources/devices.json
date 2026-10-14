@@ -424,19 +424,21 @@
       }
     },
     {
-      "id": "classroom-gateway",
-      "vendor": "Generic",
-      "model": "Router učebny (internet)",
-      "category": "router",
+      "id": "hyperv-host",
+      "vendor": "Microsoft",
+      "model": "Hyper-V hostitel (počítač v učebně)",
+      "category": "server",
       "verified": false,
-      "note": "Kulisa pro náčrt: brána do internetu v učebně (10.200.200.0/23).",
+      "note": "Kulisa pro náčrt: počítač s Hyper-V. Přívod internetu z učebny (NIC Internet) a síťová karta do Racku (NIC Rack); vSwitch Internet/Rack jsou jeho vnitřní strana.",
       "portGroups": [
-        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false }
+        { "names": ["NIC Internet", "NIC Rack"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "Fyzické karty" },
+        { "names": ["vSwitch Internet", "vSwitch Rack"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "Virtuální" }
       ],
       "layout": {
         "rows": 1,
         "sections": [
-          { "groups": [0], "arrangement": "singleRow" }
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" }
         ]
       }
     },

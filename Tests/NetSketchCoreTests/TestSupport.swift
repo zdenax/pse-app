@@ -51,14 +51,14 @@ enum TemplateID {
     // BTE: OPNsense / Hyper-V sketch.
     static let opnsenseVm = "opnsense-vm"
     static let macbook = "apple-macbook"
-    static let classroomGateway = "classroom-gateway"
+    static let hypervHost = "hyperv-host"
     static let hypervVswitch = "hyperv-vswitch"
 
     static let all = [
         c2960_24, c2960_48, c3650, isr4321, dellS3048, hapLite, crs, udmPro, unifi24,
         c2811, c3550, c3750, crs326, usgPro4, fs726t, edgeRouterX,
         pc, server, accessPoint,
-        opnsenseVm, macbook, classroomGateway, hypervVswitch,
+        opnsenseVm, macbook, hypervHost, hypervVswitch,
     ]
 }
 

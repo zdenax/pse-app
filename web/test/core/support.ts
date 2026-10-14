@@ -37,7 +37,7 @@ export const TemplateID = {
   edgeRouterX: "ubiquiti-edgerouter-x",
   opnsenseVm: "opnsense-vm",
   macbook: "apple-macbook",
-  classroomGateway: "classroom-gateway",
+  hypervHost: "hyperv-host",
   hypervVswitch: "hyperv-vswitch",
 } as const;
 
