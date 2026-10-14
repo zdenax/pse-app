@@ -48,6 +48,11 @@ enum TemplateID {
     static let usgPro4 = "ubiquiti-usg-pro-4"
     static let fs726t = "netgear-fs726t"
     static let edgeRouterX = "ubiquiti-edgerouter-x"
+    static let hp2524 = "hp-procurve-2524"
+    static let n1124t = "dell-emc-n1124t-on"
+    static let rb3011 = "mikrotik-rb3011uias-rm"
+    static let ccr1009 = "mikrotik-ccr1009-7g-1c-1s"
+    static let unifi48 = "ubiquiti-unifi-switch-48"
     // BTE: OPNsense / Hyper-V sketch.
     static let opnsenseVm = "opnsense-vm"
     static let macbook = "apple-macbook"
@@ -57,6 +62,7 @@ enum TemplateID {
     static let all = [
         c2960_24, c2960_48, c3650, isr4321, dellS3048, hapLite, crs, udmPro, unifi24,
         c2811, c3550, c3750, crs326, usgPro4, fs726t, edgeRouterX,
+        hp2524, n1124t, rb3011, ccr1009, unifi48,
         pc, server, accessPoint,
         opnsenseVm, macbook, hypervHost, hypervVswitch,
     ]

@@ -47,6 +47,7 @@
       "model": "Catalyst 3650-24PS",
       "category": "L3 switch",
       "verified": false,
+      "note": "Na fotkách laboratoře (IDF70.1 a IDF70.3) nenalezen; v racích zatím není vidět. Ověřit, kde fyzicky je.",
       "portGroups": [
         { "prefix": "Gi1/0/", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false, "label": "PoE+" },
         { "prefix": "Gi1/1/", "rangeStart": 1, "rangeEnd": 4, "speed": "1G", "connector": "SFP", "verified": false, "label": "Uplink" },
@@ -171,7 +172,7 @@
       "model": "UniFi Switch 24 (generic)",
       "category": "switch",
       "verified": false,
-      "note": "Obecný UniFi switch: 24x RJ45 + 2x SFP.",
+      "note": "Obecný UniFi switch: 24x RJ45 + 2x SFP. V labu (IDF70.1) je typ Switch 24 250W (PoE).",
       "portGroups": [
         { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false },
         { "prefix": "SFP ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" }
@@ -276,7 +277,7 @@
       "model": "UniFi Security Gateway Pro (USG-PRO-4)",
       "category": "router",
       "verified": false,
-      "note": "Podle fotky laboratoře (dvě bílé brány UniFi bez displeje); model odhadnutý. WAN porty jsou combo RJ45/SFP.",
+      "note": "Podle fotky laboratoře (IDF70.3): UniFi Security Gateway Pro, porty LAN1-2, WAN1-2, SFP1-2 a konzole. WAN porty jsou combo RJ45/SFP.",
       "portGroups": [
         { "prefix": "LAN ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false, "label": "LAN" },
         { "prefix": "WAN ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "RJ45", "verified": false, "label": "WAN" },
@@ -328,6 +329,112 @@
         "rows": 1,
         "sections": [
           { "groups": [0], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "hp-procurve-2524",
+      "vendor": "HP",
+      "model": "ProCurve Switch 2524",
+      "category": "switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře (IDF70.1): 24x 10/100 + 2 sloty pro transceivery (mini-GBIC) 25-26. Nevyjasněno, zda jde o J4813A.",
+      "portGroups": [
+        { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 24, "speed": "100M", "connector": "RJ45", "verified": false },
+        { "prefix": "Port ", "rangeStart": 25, "rangeEnd": 26, "speed": "1G", "connector": "SFP", "verified": false, "label": "Mini-GBIC" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "dell-emc-n1124t-on",
+      "vendor": "Dell EMC",
+      "model": "N1124T-ON",
+      "category": "switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře (IDF70.1): 24x 1G RJ45 + 4x SFP+. Běží na Dell OS6, ne OS9 jako S3048-ON; konzole ale používá dialekt OS9, syntaxe se může lišit. L3 funkce (statické směrování) ověřit.",
+      "portGroups": [
+        { "prefix": "Gi1/0/", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "Te1/0/", "rangeStart": 1, "rangeEnd": 4, "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
+      "id": "mikrotik-rb3011uias-rm",
+      "vendor": "MikroTik",
+      "model": "RB3011UiAS-RM",
+      "category": "router",
+      "verified": false,
+      "note": "Podle fotky laboratoře (IDF70.1): 10x gigabit ether1-10 + 1x SFP. ether1 slouží i jako PoE vstup.",
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 10, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "names": ["sfp1"], "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "mikrotik-ccr1009-7g-1c-1s",
+      "vendor": "MikroTik",
+      "model": "CCR1009-7G-1C-1S+",
+      "category": "router",
+      "verified": false,
+      "note": "Podle fotky laboratoře (IDF70.1, Cloud Core Router): 7x gigabit ether1-7, 1x combo (RJ45/SFP) a 1x SFP+.",
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 7, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "names": ["combo1"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "Combo" },
+        { "names": ["sfp-sfpplus1"], "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" },
+          { "groups": [1], "arrangement": "singleRow" },
+          { "groups": [2], "arrangement": "singleRow" },
+          { "groups": [3], "arrangement": "singleRow" }
+        ]
+      }
+    },
+    {
+      "id": "ubiquiti-unifi-switch-48",
+      "vendor": "Ubiquiti",
+      "model": "UniFi Switch 48 (generic)",
+      "category": "switch",
+      "verified": false,
+      "note": "Podle fotky laboratoře (IDF70.1): 48x RJ45 + 2x SFP + 2x SFP+. Přesná varianta (PoE nebo ne) nevyčtena.",
+      "portGroups": [
+        { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 48, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "SFP ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" },
+        { "prefix": "SFP+ ", "rangeStart": 1, "rangeEnd": 2, "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1, 2], "arrangement": "oddTopEvenBottom" }
         ]
       }
     },
