@@ -53,6 +53,9 @@ enum TemplateID {
     static let rb3011 = "mikrotik-rb3011uias-rm"
     static let ccr1009 = "mikrotik-ccr1009-7g-1c-1s"
     static let unifi48 = "ubiquiti-unifi-switch-48"
+    // Lab 15. 10. 2026 (trojúhelník): the hardware actually used.
+    static let n3024 = "dell-emc-n3024"
+    static let usw48g1 = "ubiquiti-us-48-g1"
     // BTE: OPNsense / Hyper-V sketch.
     static let opnsenseVm = "opnsense-vm"
     static let macbook = "apple-macbook"
@@ -62,7 +65,7 @@ enum TemplateID {
     static let all = [
         c2960_24, c2960_48, c3650, isr4321, dellS3048, hapLite, crs, udmPro, unifi24,
         c2811, c3550, c3750, crs326, usgPro4, fs726t, edgeRouterX,
-        hp2524, n1124t, rb3011, ccr1009, unifi48,
+        hp2524, n1124t, n3024, rb3011, ccr1009, unifi48, usw48g1,
         pc, server, accessPoint,
         opnsenseVm, macbook, hypervHost, hypervVswitch,
     ]

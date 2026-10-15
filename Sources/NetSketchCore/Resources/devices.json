@@ -375,6 +375,27 @@
       }
     },
     {
+      "id": "dell-emc-n3024",
+      "vendor": "Dell EMC",
+      "model": "N3024",
+      "category": "switch",
+      "verified": false,
+      "note": "Z labu 15. 10. 2026 (DNOS 6.5.4.23, Dell OS6). Porty Gi1/0/1-24 a Te1/0/1-2 ověřeny výpisem show vlan. Rozmístění panelu, poloha konzole, OOB port a případné combo SFP porty neověřeny.",
+      "portGroups": [
+        { "prefix": "Gi1/0/", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "Te1/0/", "rangeStart": 1, "rangeEnd": 2, "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
       "id": "mikrotik-rb3011uias-rm",
       "vendor": "MikroTik",
       "model": "RB3011UiAS-RM",
@@ -425,6 +446,26 @@
       "category": "switch",
       "verified": false,
       "note": "Podle fotky laboratoře (IDF70.1): 48x RJ45 + 2x SFP + 2x SFP+. Přesná varianta (PoE nebo ne) nevyčtena.",
+      "portGroups": [
+        { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 48, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "SFP ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" },
+        { "prefix": "SFP+ ", "rangeStart": 1, "rangeEnd": 2, "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 6 },
+          { "groups": [1, 2], "arrangement": "oddTopEvenBottom" }
+        ]
+      }
+    },
+    {
+      "id": "ubiquiti-us-48-g1",
+      "vendor": "Ubiquiti",
+      "model": "UniFi Switch 48 (US-48-G1)",
+      "category": "switch",
+      "verified": false,
+      "note": "Z labu 15. 10. 2026 (firmware 7.2.123). CLI (telnet localhost) označuje porty 0/1-0/52; v katalogu jako Port 1-48 + SFP/SFP+. Porty 1-48 ověřeny výpisem show port all; rozdělení portů 49-52 na SFP a SFP+, konzole a PoE neověřeno.",
       "portGroups": [
         { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 48, "speed": "1G", "connector": "RJ45", "verified": false },
         { "prefix": "SFP ", "rangeStart": 1, "rangeEnd": 2, "speed": "1G", "connector": "SFP", "verified": false, "label": "SFP" },

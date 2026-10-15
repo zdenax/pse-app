@@ -40,6 +40,9 @@ export const TemplateID = {
   rb3011: "mikrotik-rb3011uias-rm",
   ccr1009: "mikrotik-ccr1009-7g-1c-1s",
   unifi48: "ubiquiti-unifi-switch-48",
+  // Lab 15. 10. 2026 (trojúhelník): the hardware actually used.
+  n3024: "dell-emc-n3024",
+  usw48g1: "ubiquiti-us-48-g1",
   opnsenseVm: "opnsense-vm",
   macbook: "apple-macbook",
   hypervHost: "hyperv-host",
