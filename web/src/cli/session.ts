@@ -6,8 +6,10 @@ import type { ProjectStoreAPI } from "../core/store-api";
 import { EdgeOSEngine } from "./edgeos-engine";
 import { HostEngine } from "./host-engine";
 import { IOSEngine } from "./ios-engine";
+import { DellOS6Engine } from "./dell-os6-engine";
 import { DeviceAccess } from "./model-access";
 import { RouterOSEngine } from "./routeros-engine";
+import { UniFiSwitchEngine } from "./unifi-switch-engine";
 import type { CLIDialect, ConsoleSession } from "./session-api";
 
 export type { CLIDialect, ConsoleSession } from "./session-api";
@@ -23,16 +25,18 @@ export interface ConsoleEngine {
 }
 
 /** All dialects, in the order of the Swift enum (CLIDialect.allCases), then the web-only ones. */
-export const allDialects: readonly CLIDialect[] = ["ios", "dellOS9", "routerOS", "generic", "host", "edgeOS"];
+export const allDialects: readonly CLIDialect[] = ["ios", "dellOS9", "dellOS6", "routerOS", "generic", "host", "edgeOS", "unifiSwitch"];
 
 function dialectOfVendor(vendor: string, model: string, category: DeviceCategory): CLIDialect {
   if (category === "PC" || category === "server") return "host";
   const lower = vendor.toLowerCase();
   if (lower.includes("cisco")) return "ios";
-  if (lower.includes("dell")) return "dellOS9";
+  // N-series (N1100, N2000, N3000, N4000) run DNOS 6.x; the S-series and Z-series run OS9.
+  if (lower.includes("dell")) return /^n[1-4]\d{3}/i.test(model.trim()) ? "dellOS6" : "dellOS9";
   if (lower.includes("mikrotik")) return "routerOS";
   // Ubiquiti routers with a real configuration CLI (EdgeOS); UniFi devices are configured in
   // the UniFi controller and keep the generic IOS-style console (exercises 1 and 2 use it).
+  if (lower.includes("ubiquiti") && /us-48-g1/i.test(model)) return "unifiSwitch";
   if (lower.includes("ubiquiti") && category === "router" && /edgerouter|\busg\b|usg-|edgeos/i.test(model)) {
     return "edgeOS";
   }
@@ -106,6 +110,12 @@ export class CLISession implements ConsoleSession {
         break;
       case "edgeOS":
         this.engine = new EdgeOSEngine(access);
+        break;
+      case "dellOS6":
+        this.engine = new DellOS6Engine(access);
+        break;
+      case "unifiSwitch":
+        this.engine = new UniFiSwitchEngine(access);
         break;
       default:
         this.engine = new IOSEngine(access, chosen);

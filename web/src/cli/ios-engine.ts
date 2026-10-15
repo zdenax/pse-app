@@ -128,6 +128,9 @@ export class IOSEngine implements ConsoleEngine {
       case "dellOS9":
         name = "Dell OS9";
         break;
+      case "dellOS6":
+        name = "Dell OS6";
+        break;
       case "routerOS":
         name = "RouterOS";
         break;
@@ -139,6 +142,9 @@ export class IOSEngine implements ConsoleEngine {
         break;
       case "edgeOS":
         name = "Ubiquiti EdgeOS";
+        break;
+      case "unifiSwitch":
+        name = "UniFi Switch";
         break;
     }
     const model = [this.access.vendor, this.access.model].filter((part) => part !== "").join(" ");

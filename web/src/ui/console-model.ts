@@ -87,6 +87,8 @@ export function dialectName(dialect: CLIDialect): string {
       return "Cisco IOS";
     case "dellOS9":
       return "Dell OS9";
+    case "dellOS6":
+      return "Dell OS6";
     case "routerOS":
       return "MikroTik RouterOS";
     case "generic":
@@ -95,6 +97,8 @@ export function dialectName(dialect: CLIDialect): string {
       return "příkazový řádek";
     case "edgeOS":
       return "Ubiquiti EdgeOS";
+    case "unifiSwitch":
+      return "UniFi Switch";
   }
 }
 
