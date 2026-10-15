@@ -208,7 +208,6 @@ function showCommand(dell: boolean, privileged: boolean, f: Features): CommandNo
   );
 
   children.push(
-    simulated("spanning-tree", "Spanning tree topology"),
     simulated("mac", "MAC configuration"),
     simulated("mac-address-table", "MAC forwarding table"),
     simulated("lacp", "Port channel information"),
@@ -343,14 +342,12 @@ function globalConfigCommands(dell: boolean, f: Features): CommandNode[] {
   ];
   if (dell) {
     unsupported.push(
-      ["protocol", "Enter protocol configuration mode"],
       ["management", "Management interface commands"],
       ["stack-unit", "Stack unit configuration"],
       ["boot", "Modify system boot parameters"],
     );
   } else {
     unsupported.push(
-      ["spanning-tree", "Spanning Tree Subsystem"],
       ["access-list", "Add an access list entry"],
       ["vtp", "Configure global VTP state"],
       ["cdp", "Global CDP configuration subcommands"],
@@ -434,11 +431,9 @@ function interfaceConfigCommands(dell: boolean, f: Features): CommandNode[] {
       ["portmode", "Set port mode (hybrid)"],
       ["flowcontrol", "Configure flow control"],
       ["negotiation", "Select autonegotiation mode"],
-      ["spanning-tree", "Spanning Tree subsystem"],
     );
   } else {
     unsupported.push(
-      ["spanning-tree", "Spanning Tree Subsystem"],
       ["mdix", "Set Media Dependent Interface with Crossover"],
       ["cdp", "CDP interface subcommands"],
       ["storm-control", "storm configuration"],
