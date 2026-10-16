@@ -244,8 +244,10 @@ describe("IOSConfigTests", () => {
 
   test("virtual interfaces", () => {
     const [, , cli] = configured();
-    expect(cli.execute("interface port-channel 1")).toBe(Notices.lagIsDrawn);
-    expect(cli.prompt).toBe("SW1(config)#");
+    // The port-channel is a real logical interface now (test/features/etherchannel.test.ts).
+    expect(cli.execute("interface port-channel 1")).toBe("");
+    expect(cli.prompt).toBe("SW1(config-if)#");
+    cli.execute("exit");
     // A switch has VLAN interfaces (SVI), a router has none in the diagram.
     expect(cli.execute("interface vlan 10")).toBe("");
     expect(cli.prompt).toBe("SW1(config-if)#");
