@@ -24,6 +24,8 @@ import type { IOSEngine } from "./ios-engine";
 import { InterfaceNamer } from "./interface-naming";
 import { addressLine, globalIPLines, ipInterfaceRows, sviConfigBlocks } from "./ios-network";
 import { l3Port, PeerSnapshot, PortSnapshot } from "./model-access";
+import { channelInterfaceLines, noChannelYet, portChannelSnapshot } from "./features/layer2/etherchannel-ios";
+import { groupOfPortID } from "./features/layer2/etherchannel-store";
 import { Notices } from "./notices";
 import { NetworkSimulator } from "./sim/network-simulator";
 import type { SwitchportConfig } from "./switchport";
@@ -114,6 +116,10 @@ function joined(lines: string[]): string {
 function portsOf(engine: IOSEngine, command: ParsedCommand): PortSnapshot[] | null {
   const selection = command.interfaces("interface");
   if (selection === null) return engine.access.interfaces;
+  if (selection.target.kind === "portChannel" && !engine.isDell) {
+    const channel = portChannelSnapshot(engine.access, selection.target.number);
+    return channel ? [channel] : [];
+  }
   if (selection.target.kind !== "ports") return null;
   const live = engine.access.interfaces;
   const result: PortSnapshot[] = [];
@@ -275,6 +281,8 @@ export function showInterfacesDescription(engine: IOSEngine, command: ParsedComm
 export function showInterfaces(engine: IOSEngine, command: ParsedCommand): string {
   const ports = portsOf(engine, command);
   if (ports === null) return Notices.virtualInterface;
+  const asked = command.interfaces("interface")?.target;
+  if (ports.length === 0 && asked?.kind === "portChannel") return noChannelYet(asked.number);
   const dell = engine.isDell;
   const lines: string[] = [];
   for (const port of ports) {
@@ -291,6 +299,8 @@ export function showInterfaces(engine: IOSEngine, command: ParsedCommand): strin
         break;
     }
     if (port.description !== "") lines.push(`  Description: ${singleLine(port.description)}`);
+    const group = groupOfPortID(port.id);
+    if (group !== null) lines.push(...channelInterfaceLines(engine, group));
   }
   lines.push(Notices.interfaceStatic);
   return joined(lines);

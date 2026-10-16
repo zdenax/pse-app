@@ -6,6 +6,7 @@
 
 import { enableDHCPClient } from "./features/dhcp/ios";
 import { featureInterfaceLines } from "./features/ios-commands";
+import { groupOfPortID, leadPort } from "./features/layer2/etherchannel-store";
 import {
   announcePing,
   announceTraceroute,
@@ -64,6 +65,14 @@ export function currentL3Interface(engine: IOSEngine): L3Result {
       const category = engine.access.category;
       if (category !== null && NetworkSimulator.isSwitching(category) && port.isSwitchport) {
         return { kind: "failure", message: Notices.switchPortHasNoAddress };
+      }
+      // The address of a port-channel (routers) is kept on its first member.
+      const channel = groupOfPortID(port.id);
+      if (channel !== null) {
+        const device = engine.access.device;
+        const lead = device ? leadPort(device, channel) : undefined;
+        if (!lead) return { kind: "failure", message: Notices.channelNeedsMember };
+        return { kind: "success", interface: l3Port(lead.id) };
       }
       return { kind: "success", interface: l3Port(port.id) };
     }

@@ -10,6 +10,7 @@ Webová verze NetSketch simuluje protokol kostry sítě: z přepínačů propoje
 - **Alternate / backup port.** Konec kabelu, který není ani root, ani designated. **Blokuje** provoz (`blocking`). Backup se objeví jen u kabelu mezi dvěma porty téhož přepínače.
 - **Disabled.** Port vypnutý příkazem `shutdown` nebo kabel, jehož druhý konec je vypnutý.
 - **Cena portu.** Odvozená z rychlosti kabelu (pomalejší konec rozhoduje), dlouhá škála IEEE 802.1D-2004: 10M = 2000000, 100M = 200000, 1G = 20000, 10G = 2000. Lze ji přepsat (`spanning-tree cost N`). Priorita portu je výchozích 128 (`spanning-tree port-priority`).
+- **Port-channel.** Zařazené členy jednoho EtherChannelu počítá strom jako jeden port se součtem rychlostí (viz [etherchannel.md](etherchannel.md)).
 - **Edge porty.** Port s PortFast a port směřující k zařízení, které STP nepoužívá (PC, server, router), je edge a vždy forwarding.
 - **Režim `none`.** Přepínač s vypnutým STP BPDU ani neposílá, ani nepřeposílá, do stromu nepatří a nic neblokuje; smyčka přes takové přepínače zůstává.
 

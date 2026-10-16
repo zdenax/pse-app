@@ -84,12 +84,15 @@ function protocolName(mode: string): string {
 }
 
 function interfaceRows(engine: IOSEngine, view: View, ports: STPPortInfo[]): string[] {
+  // The members of a port-channel are one port of the tree: one row, named Po<N>.
+  const seen = new Set<number>();
   return ports
     .filter((port) => port.role !== "disabled")
+    .filter((port) => port.channel === undefined || (!seen.has(port.channel) && seen.add(port.channel)))
     .map((port) => {
       const type = "P2p" + (port.edge ? " Edge" : "");
       return (
-        padded(portName(engine, view.device, port), 20) +
+        padded(port.channel === undefined ? portName(engine, view.device, port) : `Po${port.channel}`, 20) +
         padded(roleText[port.role], 5) +
         padded(stateText[port.state], 4) +
         padded(`${port.cost}`, 10) +

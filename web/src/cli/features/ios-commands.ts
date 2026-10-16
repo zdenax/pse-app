@@ -13,6 +13,7 @@ import type { L3InterfaceID } from "../../core/model";
 import type { CLIDialect } from "../session-api";
 import { aclIOS } from "./acl/ios";
 import { dhcpIOS } from "./dhcp/ios";
+import { etherchannelIOS } from "./layer2/etherchannel-ios";
 import { layer2IOS } from "./layer2/ios";
 import { macarpIOS } from "./macarp/ios";
 import { natIOS } from "./nat/ios";
@@ -60,7 +61,7 @@ export interface IOSConfigLines {
 
 export type IOSFeature = (dialect: CLIDialect) => IOSFeatureCommands;
 
-export const iosFeatures: readonly IOSFeature[] = [layer2IOS, macarpIOS, routingIOS, dhcpIOS, aclIOS, natIOS, realismIOS];
+export const iosFeatures: readonly IOSFeature[] = [layer2IOS, etherchannelIOS, macarpIOS, routingIOS, dhcpIOS, aclIOS, natIOS, realismIOS];
 
 /** All features' commands of a dialect, concatenated. */
 export function collectIOSFeatures(dialect: CLIDialect): Required<Omit<IOSFeatureCommands, "config">> {

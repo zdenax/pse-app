@@ -487,7 +487,7 @@ function BundleSection({ bundle }: { bundle: LinkBundle }) {
           onCommit={(text) => app.perform("Svazek nelze přejmenovat", () => store.renameBundle(bundle.id, text))}
         />
       </InspectorRow>
-      <Hint>{`Ve svazku: ${cablesText(bundle.linkIDs.length)}. Svazek je jen kresba, LACP se nesimuluje.`}</Hint>
+      <Hint>{`Ve svazku: ${cablesText(bundle.linkIDs.length)}. Svazek je jen kresba; EtherChannel se nastavuje v konzoli Cisco (channel-group).`}</Hint>
       <div className="button-row">
         <button
           type="button"

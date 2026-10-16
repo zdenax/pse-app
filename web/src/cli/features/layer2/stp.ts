@@ -18,6 +18,10 @@
 // Only switches take part (`NetworkSimulator.isSwitching`). A switch with mode "none" neither
 // sends nor relays BPDUs, so it is left out of the tree and none of its ports ever blocks.
 //
+// EtherChannel (etherchannel.ts): the bundled members of a port-channel are ONE port of the tree:
+// one slot with the summed speed (2 x 1G costs 10000), one role and state for all members, and a
+// failing member only lowers the cost. A suspended static member is a cable that is down.
+//
 // Simplifications: BPDUs cross every trunk and access link regardless of VLANs; port costs always
 // use the long (RSTP) scale, because the labs expect 20000 for gigabit; ports change state at
 // once (no listening/learning delay); only cabled ports are reported.
@@ -25,6 +29,7 @@
 import type { Device, Port, Project } from "../../../core/model";
 import { readSTPConfig, type STPConfig, type STPMode } from "../../../core/protocols/layer2";
 import { bridgeMAC, macBytes } from "../../sim/mac";
+import { channelPortDown, channelsOfDevice } from "./etherchannel";
 import { NetworkSimulator } from "../../sim/network-simulator";
 import type { STPPortState } from "./sim";
 
@@ -39,6 +44,8 @@ export interface STPPortInfo {
   priority: number;
   /** PortFast, or a leaf port towards a device that does not run STP. */
   edge: boolean;
+  /** The port-channel group when the port is a bundled member (all members share one tree port). */
+  channel?: number;
 }
 
 export interface STPBridgeInfo {
@@ -80,6 +87,22 @@ function linkCost(a: Port, b: Port): number {
   return defaultPortCost(speedValue(a.speed) <= speedValue(b.speed) ? a.speed : b.speed);
 }
 
+/** A port-channel costs as one link of the summed speed (the slower end of each cable counts). */
+function bundleCost(
+  _project: Project,
+  slot: Slot,
+  devices: Map<string, Device>,
+  farEnd: Map<string, { deviceID: string; portID: string }>,
+): number {
+  let total = 0;
+  for (const member of slot.members) {
+    const far = farEnd.get(`${slot.bridge.device.id}|${member.id}`);
+    const farPort = far ? devices.get(far.deviceID)?.ports.find((item) => item.id === far.portID) : undefined;
+    total += farPort ? Math.min(speedValue(member.speed), speedValue(farPort.speed)) : speedValue(member.speed);
+  }
+  return total > 0 ? Math.max(1, Math.min(200000000, Math.round(20000000 / total))) : 20000;
+}
+
 function isStpPort(port: Port): boolean {
   return port.connector !== "console" && port.connector !== "mgmt" && port.connector !== "wireless";
 }
@@ -111,10 +134,15 @@ interface Bridge {
   ports: Slot[];
 }
 
-/** One cabled port of a switch. */
+/** One cabled port of a switch (or all bundled members of one port-channel). */
 interface Slot {
   bridge: Bridge;
+  /** The port (the first member of a port-channel) that stands for the slot. */
   port: Port;
+  /** All ports of the slot: one, or the bundled members of a port-channel. */
+  members: Port[];
+  /** The port-channel group of a bundle slot. */
+  channel?: number;
   index: number;
   cost: number;
   priority: number;
@@ -180,24 +208,50 @@ export function computeSpanningTree(project: Project): Map<string, STPBridgeInfo
       ports: [],
     };
     bridges.set(device.id, bridge);
+    // Bundled members of the same port-channel share one slot.
+    const bundles = new Map<string, number>();
+    const bundleSlots = new Map<number, Slot>();
+    for (const info of channelsOfDevice(project, device)) {
+      for (const member of info.members) if (member.state === "bundled") bundles.set(member.portID, info.group);
+    }
     device.ports.forEach((port, index) => {
       const key = `${device.id}|${port.id}`;
       if (!isStpPort(port) || !farEnd.has(key)) return;
-      const slot: Slot = { bridge, port, index, cost: 0, priority: defaultPortPriority, peer: null, up: false };
+      const group = bundles.get(port.id);
+      const shared = group === undefined ? undefined : bundleSlots.get(group);
+      if (shared) {
+        shared.members.push(port);
+        slots.set(key, shared);
+        return;
+      }
+      const slot: Slot = { bridge, port, members: [port], channel: group, index, cost: 0, priority: defaultPortPriority, peer: null, up: false };
+      if (group !== undefined) bundleSlots.set(group, slot);
       bridge.ports.push(slot);
       slots.set(key, slot);
     });
   }
   const participates = (bridge: Bridge): boolean => bridge.config.mode !== "none";
-  for (const slot of slots.values()) {
+  for (const slot of new Set(slots.values())) {
     const far = farEnd.get(`${slot.bridge.device.id}|${slot.port.id}`) as { deviceID: string; portID: string };
-    const farPort = devices.get(far.deviceID)?.ports.find((item) => item.id === far.portID);
-    slot.up = !!farPort && !slot.port.adminDown && !farPort.adminDown;
+    const farDevice = devices.get(far.deviceID);
+    const farPort = farDevice?.ports.find((item) => item.id === far.portID);
+    slot.up =
+      !!farPort &&
+      !slot.port.adminDown &&
+      !farPort.adminDown &&
+      channelPortDown(project, slot.bridge.device, slot.port) === null &&
+      (farDevice === undefined || channelPortDown(project, farDevice, farPort) === null);
     const peer = slots.get(`${far.deviceID}|${far.portID}`) ?? null;
     slot.peer = peer && participates(peer.bridge) && participates(slot.bridge) ? peer : null;
     const id = slot.port.id;
     const cost = perPort(slot.bridge.config.costs, (entry) => entry.port === id);
-    slot.cost = cost ? Math.max(1, cost.cost) : farPort ? linkCost(slot.port, farPort) : defaultPortCost(slot.port.speed);
+    slot.cost = cost
+      ? Math.max(1, cost.cost)
+      : slot.channel !== undefined
+        ? bundleCost(project, slot, devices, farEnd)
+        : farPort
+          ? linkCost(slot.port, farPort)
+          : defaultPortCost(slot.port.speed);
     const priority = perPort(slot.bridge.config.portPriorities, (entry) => entry.port === id);
     slot.priority = priority ? Math.max(0, Math.min(240, priority.priority)) : defaultPortPriority;
   }
@@ -285,17 +339,21 @@ export function computeSpanningTree(project: Project): Map<string, STPBridgeInfo
 
   for (const bridge of bridges.values()) {
     const root = rootOf.get(bridge) ?? bridge;
-    const ports: STPPortInfo[] = bridge.ports.map((slot) => {
+    const ports: STPPortInfo[] = bridge.ports.flatMap((slot) => {
       const role = roles.get(slot) as STPRole;
-      return {
-        deviceID: bridge.device.id,
-        portID: slot.port.id,
-        role,
-        state: role === "disabled" ? "disabled" : role === "alternate" || role === "backup" ? "blocking" : "forwarding",
-        cost: slot.cost,
-        priority: slot.priority,
-        edge: !slot.peer || bridge.config.portfast.includes(slot.port.id),
-      };
+      return slot.members.map((member): STPPortInfo => {
+        const info: STPPortInfo = {
+          deviceID: bridge.device.id,
+          portID: member.id,
+          role,
+          state: role === "disabled" ? "disabled" : role === "alternate" || role === "backup" ? "blocking" : "forwarding",
+          cost: slot.cost,
+          priority: slot.priority,
+          edge: !slot.peer || bridge.config.portfast.includes(member.id),
+        };
+        if (slot.channel !== undefined) info.channel = slot.channel;
+        return info;
+      });
     });
     const info: STPBridgeInfo = {
       deviceID: bridge.device.id,

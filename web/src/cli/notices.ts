@@ -31,6 +31,9 @@ export class Notices {
     "NetSketch: agregace linek (LAG) se kreslí v diagramu jako svazek linek. " +
     "Z CLI ji zatím nastavit nelze, nic se nezměnilo.";
 
+  static readonly channelNeedsMember =
+    "NetSketch: port-channel zatím nemá žádný člen (channel-group), IP adresa se ukládá na prvního člena. Nic se nezměnilo.";
+
   static readonly virtualInterface =
     "NetSketch: virtuální rozhraní (Vlan/SVI, Port-channel, Loopback) diagram neukládá. " +
     "Konfigurovat lze jen fyzické porty zařízení.";

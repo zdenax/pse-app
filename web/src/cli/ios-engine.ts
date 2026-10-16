@@ -28,6 +28,7 @@ import {
   trimWhitespaces,
 } from "./command-tree";
 import { CommandTables } from "./command-tables";
+import { portChannelSnapshot } from "./features/layer2/etherchannel-ios";
 import { InterfaceNameParts, InterfaceNamer, InterfaceResolver } from "./interface-naming";
 import type { DeviceAccess, PortSnapshot } from "./model-access";
 import { CLILimits, Notices } from "./notices";
@@ -423,6 +424,10 @@ export class IOSEngine implements ConsoleEngine {
   /** The live ports of the interface mode. When they are gone the mode is left. */
   selectedPorts(): PortSnapshot[] {
     const mode = this.mode;
+    if (mode.kind === "interface" && mode.selection.target.kind === "portChannel") {
+      const channel = portChannelSnapshot(this.access, mode.selection.target.number);
+      return channel ? [channel] : [];
+    }
     if (mode.kind !== "interface" || mode.selection.target.kind !== "ports") return [];
     const live = this.access.interfaces;
     const result: PortSnapshot[] = [];

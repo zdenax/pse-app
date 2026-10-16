@@ -5,6 +5,7 @@
 import type { VLANEntry } from "../core/model";
 import { chars, ParsedCommand, trimWhitespaces } from "./command-tree";
 import { dellVLANRows, DellMembership } from "./dell-show";
+import { enterPortChannel, removePortChannel } from "./features/layer2/etherchannel-ios";
 import type { IOSEngine } from "./ios-engine";
 import { singleLine } from "./ios-show";
 import type { PortSnapshot } from "./model-access";
@@ -83,7 +84,7 @@ export function enterInterface(engine: IOSEngine, command: ParsedCommand): strin
       return "";
     }
     case "portChannel":
-      return Notices.lagIsDrawn;
+      return engine.isDell ? Notices.lagIsDrawn : enterPortChannel(engine, target.number);
     case "loopback":
       return Notices.virtualInterface;
   }
@@ -99,7 +100,7 @@ export function removeInterface(engine: IOSEngine, command: ParsedCommand): stri
     case "ports":
       return "NetSketch: fyzický port nelze z CLI odstranit, patří k modelu zařízení. Nic se nezměnilo.";
     case "portChannel":
-      return Notices.lagIsDrawn;
+      return engine.isDell ? Notices.lagIsDrawn : removePortChannel(engine, target.number);
     default:
       return Notices.virtualInterface;
   }

@@ -6,6 +6,7 @@
 import type { Project } from "../../../core/model";
 import type { NetworkSimulator } from "../../sim/network-simulator";
 import type { SimFeature } from "../../sim/packet";
+import { channelPortDown } from "./etherchannel";
 import { computeSpanningTree } from "./stp";
 
 /** STP state of every switch port of the project, for the canvas: key "deviceID|portID". */
@@ -24,6 +25,11 @@ const cache = new WeakMap<NetworkSimulator, Map<string, STPPortState>>();
 
 export const layer2SimFeature: SimFeature = {
   name: "layer2",
+
+  /** A static (`on`) EtherChannel member whose bundle did not form carries nothing. */
+  portDown(project, device, port) {
+    return channelPortDown(project, device, port);
+  },
 
   portForwards(sim, device, port) {
     let states = cache.get(sim);

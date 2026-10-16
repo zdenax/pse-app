@@ -15,6 +15,13 @@ import type {
 } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import { cloneProtocols, type DeviceProtocols } from "../core/protocols";
+import {
+  groupOfPortID,
+  leadPort,
+  setChannelAdminDown,
+  setChannelDescription,
+  setChannelVLAN,
+} from "./features/layer2/etherchannel-store";
 import { IPv4, IPv4Prefix } from "./sim/ipv4";
 import { NetworkSimulator } from "./sim/network-simulator";
 import { SwitchportConfig } from "./switchport";
@@ -275,14 +282,21 @@ export class DeviceAccess {
   }
 
   setDescription(text: string, port: string): boolean {
+    // "po:N" is the pseudo-port of `interface port-channel N` (features/layer2/etherchannel-store.ts).
+    const group = groupOfPortID(port);
+    if (group !== null) return this.attempt(() => setChannelDescription(this.store, this.deviceID, group, text));
     return this.attempt(() => this.store.setPortDescription(this.ref(port), text));
   }
 
   setVLANText(text: string, port: string): boolean {
+    const group = groupOfPortID(port);
+    if (group !== null) return this.attempt(() => setChannelVLAN(this.store, this.deviceID, group, text));
     return this.attempt(() => this.store.setPortVLAN(this.ref(port), text));
   }
 
   setAdminDown(down: boolean, port: string): boolean {
+    const group = groupOfPortID(port);
+    if (group !== null) return this.attempt(() => setChannelAdminDown(this.store, this.deviceID, group, down));
     return this.attempt(() => this.store.setPortAdminDown(this.ref(port), down));
   }
 
@@ -306,6 +320,12 @@ export class DeviceAccess {
 
   /** The address of a layer-3 interface, parsed; null when none (or a malformed one) is set. */
   address(interfaceID: L3InterfaceID): IPv4Prefix | null {
+    // The address of a port-channel is stored on its first member (see leadPort).
+    const channel = interfaceID.startsWith("port:") ? groupOfPortID(interfaceID.slice(5)) : null;
+    if (channel !== null) {
+      const lead = this.device ? leadPort(this.device, channel) : undefined;
+      return lead ? this.address(l3Port(lead.id)) : null;
+    }
     const entry = this.device?.addresses.find((candidate) => candidate.interface === interfaceID);
     return entry ? IPv4Prefix.fromCIDR(entry.address) : null;
   }
