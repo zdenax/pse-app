@@ -40,6 +40,8 @@ export interface RIPConfig {
   /** Interfaces enabled directly (MikroTik/EdgeOS interface lists). */
   interfaces: L3InterfaceID[];
   passive: L3InterfaceID[];
+  /** `passive-interface default`; `passive` then lists the exceptions. */
+  passiveDefault: boolean;
   autoSummary: boolean;
   defaultOriginate: boolean;
   redistributeStatic: boolean;
@@ -76,6 +78,7 @@ export function readRIPConfig(raw: unknown): RIPConfig | undefined {
     networks: Array.isArray(value.networks) ? value.networks : [],
     interfaces: Array.isArray(value.interfaces) ? value.interfaces : [],
     passive: Array.isArray(value.passive) ? value.passive : [],
+    passiveDefault: value.passiveDefault === true,
     autoSummary: value.autoSummary !== false,
     defaultOriginate: value.defaultOriginate === true,
     redistributeStatic: value.redistributeStatic === true,
