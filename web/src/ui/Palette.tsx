@@ -62,18 +62,62 @@ export function filterGroups(groups: TemplateGroup[], searchText: string): Templ
   return result;
 }
 
+export interface VendorGroup {
+  /** Empty when the template has no vendor. */
+  vendor: string;
+  categories: TemplateGroup[];
+}
+
+/** Vendors alphabetically (no vendor last), each with its templates grouped by category in palette order. */
+export function groupByVendor(groups: TemplateGroup[]): VendorGroup[] {
+  const byVendor = new Map<string, TemplateGroup[]>();
+  for (const group of groups) {
+    for (const template of group.templates) {
+      const key = template.vendor.trim();
+      const categories = byVendor.get(key) ?? [];
+      const category = categories.find((entry) => entry.category === group.category);
+      if (category) category.templates.push(template);
+      else categories.push({ category: group.category, templates: [template] });
+      byVendor.set(key, categories);
+    }
+  }
+  return [...byVendor.entries()]
+    .sort(([a], [b]) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b, "cs")))
+    .map(([vendor, categories]) => ({ vendor, categories }));
+}
+
+/** Vendors narrowed down by a search query (a vendor name matches the whole vendor). */
+export function filterVendorGroups(groups: VendorGroup[], searchText: string): VendorGroup[] {
+  const query = searchText.trim();
+  if (query === "") return groups;
+  const result: VendorGroup[] = [];
+  for (const group of groups) {
+    if (containsText(group.vendor, query)) {
+      result.push(group);
+      continue;
+    }
+    const categories = filterGroups(group.categories, searchText);
+    if (categories.length > 0) result.push({ vendor: group.vendor, categories });
+  }
+  return result;
+}
+
+const noVendorTitle = "Bez výrobce";
+
 export const Palette = memo(function Palette() {
   useStoreVersion();
   const store = useStore();
   const app = useApp();
   const [searchText, setSearchText] = useState("");
-  const [collapsed, setCollapsed] = useState<ReadonlySet<DeviceCategory>>(new Set());
+  // Keys: the vendor for a vendor section, "vendor/category" for a category inside it.
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
 
   const catalog = store.catalog;
   // Custom templates can change the catalog without a project change.
   useMaybeObservable(catalog);
   const allGroups = catalog.groups;
-  const groups = useMemo(() => filterGroups(allGroups, searchText), [allGroups, searchText]);
+  const vendorGroups = useMemo(() => groupByVendor(allGroups), [allGroups]);
+  const groups = useMemo(() => filterVendorGroups(vendorGroups, searchText), [vendorGroups, searchText]);
   const isSearching = searchText.trim() !== "";
 
   const removeCustom = (template: DeviceTemplate) => {
@@ -85,11 +129,11 @@ export const Palette = memo(function Palette() {
     }
   };
 
-  const toggle = (category: DeviceCategory) => {
+  const toggle = (key: string) => {
     setCollapsed((current) => {
       const next = new Set(current);
-      if (next.has(category)) next.delete(category);
-      else next.add(category);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   };
@@ -132,36 +176,63 @@ export const Palette = memo(function Palette() {
             <span>{catalog.templates.length === 0 ? "Katalog je prázdný" : "Nic nenalezeno"}</span>
           </div>
         )}
-        {groups.map((group) => {
-          const isCollapsed = collapsed.has(group.category) && !isSearching;
-          const listID = `palette-group-${group.category.replace(/\s+/g, "-")}`;
+        {groups.map((vendorGroup) => {
+          const vendorKey = vendorGroup.vendor;
+          const vendorCollapsed = collapsed.has(vendorKey) && !isSearching;
+          const vendorListID = `palette-vendor-${vendorKey.replace(/\s+/g, "-") || "none"}`;
+          const vendorCount = vendorGroup.categories.reduce((sum, entry) => sum + entry.templates.length, 0);
           return (
-            <section key={group.category} className="palette-group">
+            <section key={vendorKey} className="palette-vendor">
               <button
                 type="button"
-                className="palette-group-header"
-                aria-expanded={!isCollapsed}
-                aria-controls={listID}
+                className="palette-vendor-header"
+                aria-expanded={!vendorCollapsed}
+                aria-controls={vendorListID}
                 disabled={isSearching}
-                onClick={() => toggle(group.category)}
+                onClick={() => toggle(vendorKey)}
               >
-                <Icon name="chevronRight" size={10} className={isCollapsed ? "chevron" : "chevron open"} />
-                <span className="palette-group-title">{categoryPlural(group.category).toLocaleUpperCase("cs")}</span>
-                <span className="palette-group-count">{group.templates.length}</span>
+                <Icon name="chevronRight" size={10} className={vendorCollapsed ? "chevron" : "chevron open"} />
+                <span className="palette-vendor-title">{vendorKey === "" ? noVendorTitle : vendorKey}</span>
+                <span className="palette-group-count">{vendorCount}</span>
               </button>
-              {!isCollapsed && (
-                <ul className="palette-rows" id={listID}>
-                  {group.templates.map((template) => (
-                    <PaletteRow
-                      key={template.id}
-                      template={template}
-                      onAdd={() => app.addDevice(template.id)}
-                      onEdit={() => app.openDeviceEditor({ kind: "edit", template })}
-                      onDuplicate={() => app.openDeviceEditor({ kind: "duplicate", template })}
-                      onRemove={() => removeCustom(template)}
-                    />
-                  ))}
-                </ul>
+              {!vendorCollapsed && (
+                <div id={vendorListID}>
+                  {vendorGroup.categories.map((group) => {
+                    const categoryKey = `${vendorKey}/${group.category}`;
+                    const isCollapsed = collapsed.has(categoryKey) && !isSearching;
+                    const listID = `palette-group-${vendorListID}-${group.category.replace(/\s+/g, "-")}`;
+                    return (
+                      <section key={group.category} className="palette-group">
+                        <button
+                          type="button"
+                          className="palette-group-header"
+                          aria-expanded={!isCollapsed}
+                          aria-controls={listID}
+                          disabled={isSearching}
+                          onClick={() => toggle(categoryKey)}
+                        >
+                          <Icon name="chevronRight" size={10} className={isCollapsed ? "chevron" : "chevron open"} />
+                          <span className="palette-group-title">{categoryPlural(group.category).toLocaleUpperCase("cs")}</span>
+                          <span className="palette-group-count">{group.templates.length}</span>
+                        </button>
+                        {!isCollapsed && (
+                          <ul className="palette-rows" id={listID}>
+                            {group.templates.map((template) => (
+                              <PaletteRow
+                                key={template.id}
+                                template={template}
+                                onAdd={() => app.addDevice(template.id)}
+                                onEdit={() => app.openDeviceEditor({ kind: "edit", template })}
+                                onDuplicate={() => app.openDeviceEditor({ kind: "duplicate", template })}
+                                onRemove={() => removeCustom(template)}
+                              />
+                            ))}
+                          </ul>
+                        )}
+                      </section>
+                    );
+                  })}
+                </div>
               )}
             </section>
           );
@@ -242,7 +313,6 @@ function PaletteRow({
           <span className="palette-model-name">{template.model}</span>
           {template.isCustom && <Chip text="vlastní" tone="teal" />}
         </div>
-        <div className="palette-row-detail">{template.vendor === "" ? "výrobce neuveden" : template.vendor}</div>
         <div className="palette-row-detail">{summary}</div>
       </div>
       {needsVerification && <VerifyBadge />}
