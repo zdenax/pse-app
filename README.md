@@ -8,7 +8,7 @@ jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazov�
 `traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
 
 **Co a do jaké míry se simuluje**, viz [Rozsah simulace](#rozsah-simulace). Ve stručnosti: VLAN, IP
-a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů a STP/RSTP/MST; LACP, OSPF, RIP
+a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů, STP/RSTP/MST a (v konzoli Cisco IOS) OSPF a RIP; LACP
 a konzole EdgeOS se zatím nesimulují.
 
 | Verze | Kde běží | Technologie |
@@ -206,8 +206,7 @@ historie šipkami a `show history`, typické chyby (`% Invalid input detected at
 `Ctrl-Z`. Každý příkaz je jeden krok Undo. Konfigurace se ukládá do projektu (souboru `.netsketch`),
 ne do relace.
 
-Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`show mac address-table`,
-`show arp`, `telnet`, `ssh`, `reload`, `debug`, `nslookup`, `netstat`, ...), se rozpoznají a odpoví
+Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`telnet`, `ssh`, `reload`, `debug`, `nslookup`, `netstat`, ...), se rozpoznají a odpoví
 vysvětlením, ale nic neprovedou. Nastavení, které se jen přijme (`banner`, `line`, `mtu`, port-security),
 se neukládá a konzole to řekne.
 
@@ -216,7 +215,7 @@ se neukládá a konzole to řekne.
 | Oblast | Web | macOS | Rozsah |
 |---|---|---|---|
 | VLAN, access / trunk, allowed a native VLAN | ano | ano | kabel spojí to, co nesou oba konce; `shutdown` a chybějící kabel port vypnou; chybějící VLAN v tabulce se hlásí |
-| Přepínání (switch, AP) | zjednodušeně | zjednodušeně | počítá se dosažitelnost v L2 doméně; **neexistují tabulky MAC ani ARP**, nic se nelearninguje ani neflooduje |
+| Přepínání (switch, AP) | zjednodušeně | zjednodušeně | počítá se dosažitelnost v L2 doméně; neflooduje se. Jen web: Cisco IOS má `show mac address-table` a `show arp` / `show ip arp` s tabulkami plněnými provozem (ping), bez stárnutí, `clear mac address-table dynamic`, `clear arp-cache`; ostatní výrobci a macOS tabulky MAC ani ARP nemají; viz [docs/protokoly/mac-arp.md](docs/protokoly/mac-arp.md) |
 | IP adresy, připojené a statické trasy, výchozí brána | ano | ano | routery a L3 switche směrují, PC a L2 switche ne; inter-VLAN přes SVI nebo router; hlídá duplicitní adresy a neaktivní trasy; jedna adresa na rozhraní, **bez IPv6** |
 | Proč ping neprošel | ano | ano | česká věta, kde a proč se paket zastavil |
 | DHCP (server, relay, klient) | zjednodušeně | ne | Cisco, Dell, MikroTik; přidělí se nejnižší volná adresa a zapíše se jako jeden krok Undo; **neplyne čas**, zápůjčka nevyprší; chybí options, rezervace podle MAC a více podsítí v jednom poolu |
@@ -226,7 +225,7 @@ se neukládá a konzole to řekne.
 | Animace paketů | ano | ne | cesta žádosti a odpovědi po kabelech, zahozený paket skončí červeným křížkem; animuje se jen první echo příkazu |
 | STP / RSTP / MST | zjednodušeně | ne | jeden strom pro celou L2 doménu (MST instance 0 a rapid-pvst se chovají stejně), volba rootu, role a stavy portů, zablokovaný port zahodí provoz, failover po odpojení kabelu; Cisco, Dell OS9 a OS6, MikroTik a UniFi. Chybí strom na VLAN (priorita a cena na VLAN se jen ukládají), více MST instancí, časovače a BPDU guard v chování; ceny vždy podle dlouhé škály; viz [docs/protokoly/stp.md](docs/protokoly/stp.md) |
 | Port-channel, LACP, PAgP | zjednodušeně (jen Cisco IOS) | jen data | Cisco: `interface port-channel N` (switchport, trunk, popis, `shutdown`, na routeru `ip address`), `channel-group N mode active/passive/on/desirable/auto`, `show etherchannel summary`, `show interfaces port-channel N`; svazek se chová jako jeden spoj (člen dole = zbytek nese provoz, všichni dole = svazek dole), kontrola shody módů obou konců, v STP jako jeden port (cena podle součtu rychlostí). Chybí load-balancing, `min-links`, `lacp port-priority`, kontrola shody rychlosti a duplexu členů, L3 port-channel na přepínači; ostatní výrobci zůstávají jen kresba; viz [docs/protokoly/etherchannel.md](docs/protokoly/etherchannel.md) |
-| OSPF, RIP | jen data | ne | datový model je hotový, ale příkazy `router ospf` / `/routing ospf` nic nenastaví a dynamické trasy nevznikají |
+| OSPF, RIP | zjednodušeně (jen webová verze, jen Cisco IOS) | ne | `router ospf` / `router rip`, `network`, `router-id`, `passive-interface`, `ip ospf cost`; sousedé na propojených rozhraních, trasy `O` / `O IA` / `R` v `show ip route`, `show ip ospf neighbor`, `show ip protocols`, ping přes naučené trasy, po odpojení kabelu nebo `shutdown` trasy zmizí. OSPF: jeden proces, cena podle šířky pásma, Dijkstra bez LSA databáze, bez ECMP; RIP: počet skoků, split horizon, auto-summary. Chybí redistribuce, `default-information originate`, autentizace, časovače; MikroTik, Dell a EdgeOS zatím jen data; viz [docs/protokoly/ospf-rip.md](docs/protokoly/ospf-rip.md) |
 | VTP, DTP, port-security, HSRP, EIGRP, QoS, VRF, DNS, SNMP | ne | ne | |
 
 ### Co si z toho odnést
@@ -234,7 +233,7 @@ se neukládá a konzole to řekne.
 - Spolehlivě lze procvičit: zapojení a kabeláž, VLAN a trunky, adresaci, statické směrování,
   inter-VLAN routing, DHCP, filtrování pomocí ACL a NAT, a hlavně **psaní příkazů** několika výrobců.
 - Nelze procvičit: chování protokolů v čase (dynamické směrování, LACP), diagnostiku přes tabulky
-  MAC a ARP, výkon (šířka pásma, přetížení) a vše, co spoléhá na skutečný firmware.
+  MAC a ARP u jiných než Cisco IOS (a vše v čase: stárnutí záznamů), výkon (šířka pásma, přetížení) a vše, co spoléhá na skutečný firmware.
 - Výstupy výpisů jsou psané tak, aby se podobaly skutečným zařízením, ale **nejsou s nimi porovnané**
   na hardwaru (porty v katalogu jsou označené jako neověřené). Neberte je jako referenci pro
   zkoušku nebo ostrý provoz.
@@ -268,7 +267,7 @@ VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 ## Mimo rozsah
 
 Emulace firmware (NetSketch nespouští skutečný software zařízení) a vše, co je v tabulkách výše
-označené „ne“. LACP, OSPF a RIP mají zatím jen datový model, bez simulace chování.
+označené „ne“. LACP má zatím jen datový model, bez simulace chování; OSPF a RIP se simulují jen v konzoli Cisco IOS webové verze.
 
 ## Licence
 

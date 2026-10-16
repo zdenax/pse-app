@@ -199,7 +199,7 @@ describe("Cisco IOS: configuration", () => {
     expect(r1.help("show ip nat ")).toContain("translations");
     expect(r1.help("show ip nat ")).toContain("statistics");
     expect(r1.help("clear ip nat translation ")).toContain("*");
-    expect(r1.execute("clear arp-cache")).toContain("NetSketch:");
+    expect(r1.execute("clear arp-cache")).toBe("");
     run(r1, "configure terminal");
     expect(r1.help("ip nat ")).toContain("pool");
     expect(r1.help("ip nat inside source ")).toContain("static");

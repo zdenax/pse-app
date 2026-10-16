@@ -339,7 +339,12 @@ export function showIPRoute(engine: IOSEngine, _command: ParsedCommand): string 
       );
     }
   } else {
-    lines.push("Codes: L - local, C - connected, S - static");
+    // Without dynamic routes the header is exactly that of the Swift app (golden transcripts).
+    lines.push(
+      routes.some((route) => route.kind === "dynamic")
+        ? "Codes: L - local, C - connected, S - static, R - RIP, O - OSPF"
+        : "Codes: L - local, C - connected, S - static",
+    );
     lines.push("");
     const gateway = routes.find((route) => route.destination.length === 0)?.nextHop ?? null;
     lines.push(
@@ -359,6 +364,15 @@ export function showIPRoute(engine: IOSEngine, _command: ParsedCommand): string 
         case "staticRoute": {
           const code = route.destination.length === 0 ? "S*" : "S ";
           lines.push(`${code}       ${route.destination.description} [1/0] via ${route.nextHop?.description ?? "?"}`);
+          break;
+        }
+        case "dynamic": {
+          // O / R from the routing feature: "O        10.0.2.0/24 [110/2] via 10.0.12.2, 00:00:05, Gi0/0/1"
+          const code = (route.code ?? "?").padEnd(9);
+          lines.push(
+            `${code}${route.destination.description} [${route.distance}/${route.metric}] via ` +
+              `${route.nextHop?.description ?? "?"}, 00:00:05, ${l3Name(engine, route.interface.id)}`,
+          );
           break;
         }
       }
