@@ -714,6 +714,32 @@ textarea.text-field {
   color: var(--text-secondary);
 }
 
+.palette-vendor-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 12px 6px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--separator, rgba(128, 128, 128, 0.25));
+  background: transparent;
+  color: var(--text-primary, inherit);
+  font-size: 13px;
+  text-align: left;
+}
+
+.palette-vendor-header:disabled {
+  color: var(--text-primary, inherit);
+}
+
+.palette-vendor-title {
+  font-weight: 700;
+}
+
+.palette-vendor .palette-group {
+  padding-left: 8px;
+}
+
 .palette-group-header {
   display: flex;
   align-items: center;
