@@ -1,7 +1,13 @@
 # NetSketch
 
 **Cvičný editor počítačových sítí ve stylu Cisco Packet Tracer, který běží všude: v prohlížeči na
-Windows, Linuxu i macOS, a na Macu navíc jako nativní aplikace.**
+Windows, Linuxu i macOS. (Nativní macOS aplikace existuje, ale už se nevyvíjí, viz níže.)**
+
+> **Stav vývoje:** vyvíjí se už jen **webová verze** ([`web/`](web/)). Nativní macOS aplikace
+> (Swift, `Sources/`) **není dál vyvíjena**: zůstává v repu v podobě z října 2026, nové funkce
+> (DHCP, ACL, NAT, STP/RSTP/MST, časování a animace, nové dialekty konzolí) do ní nepřibývají a
+> chyby se v ní neopravují. Soubor `.netsketch` uložený v macOS aplikaci ztratí konfiguraci
+> protokolů z webu.
 
 Síť se nakreslí ze zařízení z laboratoře (Cisco, Dell, MikroTik, Ubiquiti, PC), nastaví se v konzolích
 jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazový řádek PC) a `ping` a
@@ -14,7 +20,7 @@ a konzole EdgeOS se zatím nesimulují.
 | Verze | Kde běží | Technologie |
 |---|---|---|
 | **Webová** ([`web/`](web/)) | v prohlížeči na Windows, Linuxu i macOS | TypeScript, React, SVG |
-| **Nativní macOS** | macOS 14 a novější | Swift, SwiftUI, AppKit |
+| **Nativní macOS** (nevyvíjí se) | macOS 14 a novější | Swift, SwiftUI, AppKit |
 
 Obě verze otevírají stejné soubory `.netsketch` a chovají se stejně (výstupy konzolí se shodují do
 znaku, ověřují to testy).
@@ -67,7 +73,7 @@ nepotřebuje administrátorská práva ani účet a neposílá žádná data (v�
 Nepracuje se skutečnou sítí: `ping` a ostatní příkazy jsou jen simulace nad diagramem. Jde o vlastnosti
 podle návrhu, ne o výsledek bezpečnostního testu (viz poznámka o testování výše).
 
-**macOS aplikace:** potřebuje Command Line Tools (`xcode-select --install`).
+**macOS aplikace (už se nevyvíjí):** potřebuje Command Line Tools (`xcode-select --install`).
 
 ```sh
 swift run NetSketch
@@ -91,7 +97,7 @@ CI (GitHub Actions, `.github/workflows/ci.yml`):
   diagramy z `examples/` do `docs/screenshots/` (minuty macOS jsou u soukromého repa drahé, proto
   jen na vyžádání).
 
-## Sestavení a spuštění (macOS 14+)
+## Sestavení a spuštění (macOS 14+, nevyvíjená aplikace)
 
 Stačí Command Line Tools (`xcode-select --install`), Xcode není nutný.
 
