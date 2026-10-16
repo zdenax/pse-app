@@ -6,11 +6,13 @@ import type { SimFeature } from "../sim/packet";
 import { aclSimFeature } from "./acl/sim";
 import { dhcpSimFeature } from "./dhcp/sim";
 import { layer2SimFeature } from "./layer2/sim";
+import { macArpSimFeature } from "./macarp/sim";
 import { natSimFeature } from "./nat/sim";
 import { routingSimFeature } from "./routing/sim";
 
 export const simFeatures: readonly SimFeature[] = [
   layer2SimFeature,
+  macArpSimFeature,
   routingSimFeature,
   dhcpSimFeature,
   aclSimFeature,

@@ -363,6 +363,29 @@ export class NetworkSimulator {
     return vlans;
   }
 
+  /** The cables a frame crosses between two layer-2 nodes (interfaces); empty when none or the same. */
+  framePath(from: { node: string }, to: { node: string }): PacketLinkStep[] {
+    return this.layer2Path(from.node, to.node);
+  }
+
+  /**
+   * The switches (and their VLAN numbers) that bridge layer-2 domain `domain`: the places a
+   * broadcast of that domain reaches. Empty when no switch is in it.
+   */
+  bridgesInDomain(domain: number): { deviceID: string; vlan: number; node: string }[] {
+    const result: { deviceID: string; vlan: number; node: string }[] = [];
+    const vlans = this.knownVLANs();
+    for (const device of this.project.devices) {
+      if (!NetworkSimulator.isSwitching(device.category)) continue;
+      for (const vlan of vlans) {
+        if (this.domainOfBridge(device.id, vlan) === domain) {
+          result.push({ deviceID: device.id, vlan, node: bridgeNode(device.id, vlan) });
+        }
+      }
+    }
+    return result;
+  }
+
   /** The device and port at the other end of the cable plugged into the port. */
   peer(deviceID: string, portID: string): { device: Device; port: Port; link: Link } | null {
     const link = this.linkAtPort.get(refKey(deviceID, portID));
@@ -721,6 +744,12 @@ export class NetworkSimulator {
 
   /** Follows a packet from `from` through the features and the routing tables. */
   deliverPacket(from: string, sent: Packet): Delivery {
+    const delivery = this.followPacket(from, sent);
+    for (const feature of this.features) feature.delivered?.(this, from, delivery);
+    return delivery;
+  }
+
+  private followPacket(from: string, sent: Packet): Delivery {
     const delivery = new Delivery();
     let packet = sent;
     let current = from;
