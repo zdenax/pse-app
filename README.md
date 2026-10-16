@@ -8,7 +8,7 @@ jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazov�
 `traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
 
 **Co a do jaké míry se simuluje**, viz [Rozsah simulace](#rozsah-simulace). Ve stručnosti: VLAN, IP
-a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů a STP/RSTP/MST; LACP, OSPF, RIP
+a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů, STP/RSTP/MST a (v konzoli Cisco IOS) OSPF a RIP; LACP
 a konzole EdgeOS se zatím nesimulují.
 
 | Verze | Kde běží | Technologie |
@@ -225,7 +225,7 @@ se neukládá a konzole to řekne.
 | Animace paketů | ano | ne | cesta žádosti a odpovědi po kabelech, zahozený paket skončí červeným křížkem; animuje se jen první echo příkazu |
 | STP / RSTP / MST | zjednodušeně | ne | jeden strom pro celou L2 doménu (MST instance 0 a rapid-pvst se chovají stejně), volba rootu, role a stavy portů, zablokovaný port zahodí provoz, failover po odpojení kabelu; Cisco, Dell OS9 a OS6, MikroTik a UniFi. Chybí strom na VLAN (priorita a cena na VLAN se jen ukládají), více MST instancí, časovače a BPDU guard v chování; ceny vždy podle dlouhé škály; viz [docs/protokoly/stp.md](docs/protokoly/stp.md) |
 | Port-channel, LACP, PAgP | jen data | jen data | svazek je jen kresba v diagramu (`channel-group` se přijme s oznámením); neovlivňuje provoz |
-| OSPF, RIP | jen data | ne | datový model je hotový, ale příkazy `router ospf` / `/routing ospf` nic nenastaví a dynamické trasy nevznikají |
+| OSPF, RIP | zjednodušeně (jen webová verze, jen Cisco IOS) | ne | `router ospf` / `router rip`, `network`, `router-id`, `passive-interface`, `ip ospf cost`; sousedé na propojených rozhraních, trasy `O` / `O IA` / `R` v `show ip route`, `show ip ospf neighbor`, `show ip protocols`, ping přes naučené trasy, po odpojení kabelu nebo `shutdown` trasy zmizí. OSPF: jeden proces, cena podle šířky pásma, Dijkstra bez LSA databáze, bez ECMP; RIP: počet skoků, split horizon, auto-summary. Chybí redistribuce, `default-information originate`, autentizace, časovače; MikroTik, Dell a EdgeOS zatím jen data; viz [docs/protokoly/ospf-rip.md](docs/protokoly/ospf-rip.md) |
 | VTP, DTP, port-security, HSRP, EIGRP, QoS, VRF, DNS, SNMP | ne | ne | |
 
 ### Co si z toho odnést
@@ -267,7 +267,7 @@ VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 ## Mimo rozsah
 
 Emulace firmware (NetSketch nespouští skutečný software zařízení) a vše, co je v tabulkách výše
-označené „ne“. LACP, OSPF a RIP mají zatím jen datový model, bez simulace chování.
+označené „ne“. LACP má zatím jen datový model, bez simulace chování; OSPF a RIP se simulují jen v konzoli Cisco IOS webové verze.
 
 ## Licence
 
