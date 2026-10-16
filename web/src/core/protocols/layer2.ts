@@ -23,9 +23,21 @@ export interface STPConfig {
 
 export type ChannelMode = "active" | "passive" | "on" | "desirable" | "auto";
 
+/** The logical interface `interface port-channel N` (Cisco; see cli/features/layer2/etherchannel*.ts). */
+export interface PortChannelConfig {
+  group: number;
+  /** Canonical switchport text of the channel (like Port.vlan, see cli/switchport.ts); "" = none. */
+  vlan: string;
+  description: string;
+  /** `shutdown` on the port-channel: the members are shut down with it. */
+  adminDown: boolean;
+}
+
 export interface LACPConfig {
   /** Port-channel membership: `channel-group N mode M`, MikroTik bonding slaves. */
   members: { port: string; group: number; mode: ChannelMode }[];
+  /** The port-channel interfaces that exist on the device (created by `interface port-channel N`). */
+  channels?: PortChannelConfig[];
 }
 
 function isObject(raw: unknown): raw is Record<string, unknown> {
@@ -49,5 +61,7 @@ export function readSTPConfig(raw: unknown): STPConfig | undefined {
 export function readLACPConfig(raw: unknown): LACPConfig | undefined {
   if (!isObject(raw)) return undefined;
   const value = raw as Partial<LACPConfig>;
-  return { members: Array.isArray(value.members) ? value.members : [] };
+  const config: LACPConfig = { members: Array.isArray(value.members) ? value.members : [] };
+  if (Array.isArray(value.channels)) config.channels = value.channels;
+  return config;
 }
