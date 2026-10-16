@@ -8,7 +8,7 @@ jejich vlastními příkazy (Cisco IOS, Dell OS9, MikroTik RouterOS, příkazov�
 `traceroute` ukážou, jestli zapojení, VLAN, IP adresy a statické trasy fungují.
 
 **Co a do jaké míry se simuluje**, viz [Rozsah simulace](#rozsah-simulace). Ve stručnosti: VLAN, IP
-a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů; STP, LACP, OSPF, RIP
+a statické směrování, DHCP, ACL, NAT, časy odezvy a ztrátovost s animací paketů a STP/RSTP/MST; LACP, OSPF, RIP
 a konzole EdgeOS se zatím nesimulují.
 
 | Verze | Kde běží | Technologie |
@@ -161,7 +161,7 @@ pro commity se značkou `[screenshots]`.
 Konzole ukládají IP konfiguraci do projektu, `ping` a `traceroute` ji vyhodnocují nad diagramem:
 
 - L2: switch přepíná podle VLAN na portech (access, trunk, allowed VLAN, native VLAN), kabel spojí
-  to, co nesou oba konce, `shutdown` port vypne. Smyčky nevadí (STP se nesimuluje).
+  to, co nesou oba konce, `shutdown` port vypne. Smyčky řeší STP (viz níže): zablokovaný port provoz nepustí.
 - L3: adresy na portech routerů, na VLAN rozhraních switchů (SVI, MikroTik `bridge`) a na PC,
   připojené sítě, statické trasy, výchozí brána. Routery a L3 switche směrují, PC a L2 switche ne.
 - Když ping neprojde, konzole česky napíše, kde a proč se paket zastavil.
@@ -194,6 +194,7 @@ Sloupec „Web“ platí pro webovou verzi, sloupec „macOS“ pro nativní apl
 |---|---|---|---|
 | Cisco IOS | ano | ano | režimy user / privileged / config / interface (i `range`) / vlan / SVI; `show` (running-config, interfaces, vlan, ip route, ip interface brief, ...), `ping`, `traceroute`, konfigurace VLAN, switchportů, IP, tras |
 | Dell OS9 | ano | ano | vlastní syntaxe a hlášky (`interface vlan`, `untagged` / `tagged`, `ip address A/NN`), `show` výpisy ve stylu OS9 |
+| Dell OS6 (N-série: N3024, N1124T-ON) | jen web | ne | DNOS 6.x: `enable` / `configure`, `interface gi1/0/1` a `interface range gi1/0/3-24`, `vlan 10` + `name`, `switchport mode access/trunk/general`, `switchport trunk allowed vlan add/remove/all`, `interface vlan 10` + `ip address A.B.C.D MASKA`, `ip default-gateway`, `ip route`, `spanning-tree` (mode, priority, portfast, cost), `show vlan` / `interfaces status` / `interfaces switchport` / `ip interface vlan N` / `ip route` / `running-config` / `spanning-tree`, `ping`, `traceroute`, `write memory`, `clear config`. Chybí port-channel, routované porty, `show mac-address-table` a `show arp` (jen hláška), režim `general` se ukládá jako trunk; přesný text některých hlášek je odhad |
 | MikroTik RouterOS | zjednodušeně | zjednodušeně | `/interface ethernet`, `/ip address`, `/ip route`, `/system identity`, `/ping`, `/export`; ve webu navíc DHCP, firewall a NAT. Chybí `/interface vlan`, `bridge`, `bonding` a `/routing` |
 | PC, server (Windows styl) | ano | ano | `ipconfig` (`/all`, `/renew`, `/release`), `netsh interface ip set address`, `ping`, `tracert`; web navíc `Test-NetConnection` a `telnet IP port` |
 | Ubiquiti UniFi, Netgear, ostatní | zjednodušeně | zjednodušeně | obecná syntaxe ve stylu IOS (skutečné zařízení se nastavuje ve webovém rozhraní) |
@@ -205,7 +206,7 @@ historie šipkami a `show history`, typické chyby (`% Invalid input detected at
 `Ctrl-Z`. Každý příkaz je jeden krok Undo. Konfigurace se ukládá do projektu (souboru `.netsketch`),
 ne do relace.
 
-Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`show mac address-table`, `show spanning-tree`,
+Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`show mac address-table`,
 `show arp`, `telnet`, `ssh`, `reload`, `debug`, `nslookup`, `netstat`, ...), se rozpoznají a odpoví
 vysvětlením, ale nic neprovedou. Nastavení, které se jen přijme (`banner`, `line`, `mtu`, port-security),
 se neukládá a konzole to řekne.
@@ -223,7 +224,7 @@ se neukládá a konzole to řekne.
 | NAT / PAT | zjednodušeně | ne | Cisco statický, dynamický a `overload`, MikroTik `masquerade` / `src-nat` / `dst-nat`; překladová tabulka je jen běhový stav a nevyprší; chybí `outside source`, statický překlad portů a NAT na Dell OS9 |
 | Čas odezvy a ztrátovost | zjednodušeně | ne | zpoždění (ms) a ztrátovost (%) se nastavují na kabelu; jitter a ztráty jsou **deterministické**, ne náhodné; bez šířky pásma a front |
 | Animace paketů | ano | ne | cesta žádosti a odpovědi po kabelech, zahozený paket skončí červeným křížkem; animuje se jen první echo příkazu |
-| STP | jen data | ne | nastavení se ukládá v datovém modelu, žádné chování; `show spanning-tree` je placeholder |
+| STP / RSTP / MST | zjednodušeně | ne | jeden strom pro celou L2 doménu (MST instance 0 a rapid-pvst se chovají stejně), volba rootu, role a stavy portů, zablokovaný port zahodí provoz, failover po odpojení kabelu; Cisco, Dell OS9 a OS6, MikroTik a UniFi. Chybí strom na VLAN (priorita a cena na VLAN se jen ukládají), více MST instancí, časovače a BPDU guard v chování; ceny vždy podle dlouhé škály; viz [docs/protokoly/stp.md](docs/protokoly/stp.md) |
 | Port-channel, LACP, PAgP | jen data | jen data | svazek je jen kresba v diagramu (`channel-group` se přijme s oznámením); neovlivňuje provoz |
 | OSPF, RIP | jen data | ne | datový model je hotový, ale příkazy `router ospf` / `/routing ospf` nic nenastaví a dynamické trasy nevznikají |
 | VTP, DTP, port-security, HSRP, EIGRP, QoS, VRF, DNS, SNMP | ne | ne | |
@@ -232,7 +233,7 @@ se neukládá a konzole to řekne.
 
 - Spolehlivě lze procvičit: zapojení a kabeláž, VLAN a trunky, adresaci, statické směrování,
   inter-VLAN routing, DHCP, filtrování pomocí ACL a NAT, a hlavně **psaní příkazů** několika výrobců.
-- Nelze procvičit: chování protokolů v čase (STP, dynamické směrování, LACP), diagnostiku přes tabulky
+- Nelze procvičit: chování protokolů v čase (dynamické směrování, LACP), diagnostiku přes tabulky
   MAC a ARP, výkon (šířka pásma, přetížení) a vše, co spoléhá na skutečný firmware.
 - Výstupy výpisů jsou psané tak, aby se podobaly skutečným zařízením, ale **nejsou s nimi porovnané**
   na hardwaru (porty v katalogu jsou označené jako neověřené). Neberte je jako referenci pro
@@ -267,7 +268,7 @@ VLAN, který zapisuje konzole, popisuje [docs/katalog.md](docs/katalog.md).
 ## Mimo rozsah
 
 Emulace firmware (NetSketch nespouští skutečný software zařízení) a vše, co je v tabulkách výše
-označené „ne“. STP, LACP, OSPF a RIP mají zatím jen datový model, bez simulace chování.
+označené „ne“. LACP, OSPF a RIP mají zatím jen datový model, bez simulace chování.
 
 ## Licence
 

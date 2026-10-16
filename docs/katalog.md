@@ -100,7 +100,7 @@ Kategorie řídí skupinu v paletě, ikonu, výchozí hostname a to, zda má za�
 konfigurační CLI mají jen `switch`, `L3 switch` a `router`.
 
 Dialekt konzole se volí podle `vendor` (hledá se podřetězec bez ohledu na velikost písmen):
-`cisco` = Cisco IOS, `dell` = Dell OS9, `mikrotik` = MikroTik RouterOS, cokoli jiného =
+`cisco` = Cisco IOS, `dell` = Dell OS9 (modely řady N, např. `N3024`, `N1124T-ON`, mají Dell OS6), `mikrotik` = MikroTik RouterOS, cokoli jiného =
 obecný dialekt se syntaxí IOS.
 
 Odvození `id` (`DeviceTemplate.slug`): text `"<vendor> <model>"` se zbaví diakritiky,

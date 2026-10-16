@@ -1,8 +1,8 @@
 // The contract between the consoles (src/cli) and the user interface (src/ui).
 // It mirrors the public API of the Swift module NetSketchCLI (CLISession, CLI).
 
-/** "edgeOS": Ubiquiti EdgeRouter and USG (web version only). */
-export type CLIDialect = "ios" | "dellOS9" | "routerOS" | "generic" | "host" | "edgeOS";
+/** "edgeOS": Ubiquiti EdgeRouter and USG; "unifiSwitch": UniFi Switch 48 US-48-G1 (web version only). */
+export type CLIDialect = "ios" | "dellOS9" | "dellOS6" | "routerOS" | "generic" | "host" | "edgeOS" | "unifiSwitch";
 
 /** One console of one device. The UI talks to consoles only through this interface. */
 export interface ConsoleSession {
