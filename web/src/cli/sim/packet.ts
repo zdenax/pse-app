@@ -9,7 +9,7 @@
 
 import type { Device, Port, Project } from "../../core/model";
 import type { IPv4 } from "./ipv4";
-import type { NetworkSimulator, SimInterface, SimRoute } from "./network-simulator";
+import type { Delivery, NetworkSimulator, SimInterface, SimRoute } from "./network-simulator";
 
 export type PacketProtocol = "icmp" | "tcp" | "udp";
 
@@ -84,6 +84,12 @@ export interface SimFeature {
 
   /** ARP: the device that answers for `address` in `domain` although no interface has it (NAT). */
   answers?(sim: NetworkSimulator, address: IPv4, domain: number): string | null;
+
+  /**
+   * A packet sent by `from` has been followed to its end (delivered or not). For state that
+   * traffic leaves behind: MAC and ARP tables. Do not send packets from here.
+   */
+  delivered?(sim: NetworkSimulator, from: string, delivery: Delivery): void;
 
   inbound?(context: HopContext, packet: Packet): Verdict;
   outbound?(context: HopContext, packet: Packet): Verdict;

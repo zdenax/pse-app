@@ -206,8 +206,7 @@ historie šipkami a `show history`, typické chyby (`% Invalid input detected at
 `Ctrl-Z`. Každý příkaz je jeden krok Undo. Konfigurace se ukládá do projektu (souboru `.netsketch`),
 ne do relace.
 
-Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`show mac address-table`,
-`show arp`, `telnet`, `ssh`, `reload`, `debug`, `nslookup`, `netstat`, ...), se rozpoznají a odpoví
+Příkazy, které vyžadují simulaci, jakou NetSketch nemá (`telnet`, `ssh`, `reload`, `debug`, `nslookup`, `netstat`, ...), se rozpoznají a odpoví
 vysvětlením, ale nic neprovedou. Nastavení, které se jen přijme (`banner`, `line`, `mtu`, port-security),
 se neukládá a konzole to řekne.
 
@@ -216,7 +215,7 @@ se neukládá a konzole to řekne.
 | Oblast | Web | macOS | Rozsah |
 |---|---|---|---|
 | VLAN, access / trunk, allowed a native VLAN | ano | ano | kabel spojí to, co nesou oba konce; `shutdown` a chybějící kabel port vypnou; chybějící VLAN v tabulce se hlásí |
-| Přepínání (switch, AP) | zjednodušeně | zjednodušeně | počítá se dosažitelnost v L2 doméně; **neexistují tabulky MAC ani ARP**, nic se nelearninguje ani neflooduje |
+| Přepínání (switch, AP) | zjednodušeně | zjednodušeně | počítá se dosažitelnost v L2 doméně; neflooduje se. Jen web: Cisco IOS má `show mac address-table` a `show arp` / `show ip arp` s tabulkami plněnými provozem (ping), bez stárnutí, `clear mac address-table dynamic`, `clear arp-cache`; ostatní výrobci a macOS tabulky MAC ani ARP nemají; viz [docs/protokoly/mac-arp.md](docs/protokoly/mac-arp.md) |
 | IP adresy, připojené a statické trasy, výchozí brána | ano | ano | routery a L3 switche směrují, PC a L2 switche ne; inter-VLAN přes SVI nebo router; hlídá duplicitní adresy a neaktivní trasy; jedna adresa na rozhraní, **bez IPv6** |
 | Proč ping neprošel | ano | ano | česká věta, kde a proč se paket zastavil |
 | DHCP (server, relay, klient) | zjednodušeně | ne | Cisco, Dell, MikroTik; přidělí se nejnižší volná adresa a zapíše se jako jeden krok Undo; **neplyne čas**, zápůjčka nevyprší; chybí options, rezervace podle MAC a více podsítí v jednom poolu |
@@ -234,7 +233,7 @@ se neukládá a konzole to řekne.
 - Spolehlivě lze procvičit: zapojení a kabeláž, VLAN a trunky, adresaci, statické směrování,
   inter-VLAN routing, DHCP, filtrování pomocí ACL a NAT, a hlavně **psaní příkazů** několika výrobců.
 - Nelze procvičit: chování protokolů v čase (dynamické směrování, LACP), diagnostiku přes tabulky
-  MAC a ARP, výkon (šířka pásma, přetížení) a vše, co spoléhá na skutečný firmware.
+  MAC a ARP u jiných než Cisco IOS (a vše v čase: stárnutí záznamů), výkon (šířka pásma, přetížení) a vše, co spoléhá na skutečný firmware.
 - Výstupy výpisů jsou psané tak, aby se podobaly skutečným zařízením, ale **nejsou s nimi porovnané**
   na hardwaru (porty v katalogu jsou označené jako neověřené). Neberte je jako referenci pro
   zkoušku nebo ostrý provoz.

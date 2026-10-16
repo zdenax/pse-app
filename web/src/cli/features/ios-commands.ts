@@ -14,6 +14,7 @@ import type { CLIDialect } from "../session-api";
 import { aclIOS } from "./acl/ios";
 import { dhcpIOS } from "./dhcp/ios";
 import { layer2IOS } from "./layer2/ios";
+import { macarpIOS } from "./macarp/ios";
 import { natIOS } from "./nat/ios";
 import { realismIOS } from "./realism/ios";
 import { routingIOS } from "./routing/ios";
@@ -59,7 +60,7 @@ export interface IOSConfigLines {
 
 export type IOSFeature = (dialect: CLIDialect) => IOSFeatureCommands;
 
-export const iosFeatures: readonly IOSFeature[] = [layer2IOS, routingIOS, dhcpIOS, aclIOS, natIOS, realismIOS];
+export const iosFeatures: readonly IOSFeature[] = [layer2IOS, macarpIOS, routingIOS, dhcpIOS, aclIOS, natIOS, realismIOS];
 
 /** All features' commands of a dialect, concatenated. */
 export function collectIOSFeatures(dialect: CLIDialect): Required<Omit<IOSFeatureCommands, "config">> {
