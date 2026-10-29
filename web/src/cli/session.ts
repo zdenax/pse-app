@@ -77,6 +77,7 @@ export const CLI = {
       case "server":
         return true;
       case "AP":
+      case "patch panel":
         return false;
     }
     return false;

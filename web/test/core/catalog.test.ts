@@ -256,7 +256,7 @@ describe("Catalog (web additions)", () => {
     expect(calls).toBe(1);
     expect(catalog.version).toBe(version + 1);
     expect(catalog.templates).not.toBe(templates);
-    expect(catalog.groups.at(-1)?.templates.at(-1)?.id).toBe("lab-box");
+    expect(catalog.groups.find((g) => g.category === "server")?.templates.at(-1)?.id).toBe("lab-box");
     unsubscribe();
     catalog.removeCustom("lab-box");
     expect(calls).toBe(1);

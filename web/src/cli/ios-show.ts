@@ -505,7 +505,8 @@ export interface CabledNeighbor {
 function cabledNeighbors(engine: IOSEngine): CabledNeighbor[] {
   const result: CabledNeighbor[] = [];
   for (const port of engine.access.interfaces) {
-    if (port.linkState !== "up" || port.peer === null) continue;
+    // A patch panel is passive: it sends no CDP/LLDP.
+    if (port.linkState !== "up" || port.peer === null || port.peer.category === "patch panel") continue;
     result.push({ port, peer: port.peer });
   }
   return result;
@@ -530,6 +531,8 @@ function cdpCapability(category: DeviceCategory): string {
     case "PC":
     case "server":
       return "H";
+    case "patch panel":
+      return "";
   }
 }
 
@@ -557,6 +560,9 @@ export function showCDPNeighbors(engine: IOSEngine, command: ParsedCommand): str
         case "PC":
         case "server":
           capability = "Host";
+          break;
+        case "patch panel":
+          capability = "";
           break;
       }
       const remote = peerUsesIOSNames(peer) ? iosNamer.longName(peer.portName) : peer.portName;
@@ -640,6 +646,9 @@ export function showLLDPNeighbors(engine: IOSEngine, _command: ParsedCommand): s
       case "PC":
       case "server":
         capability = "S";
+        break;
+      case "patch panel":
+        capability = "";
         break;
     }
     const remote = peerUsesIOSNames(peer) ? iosNamer.shortName(peer.portName) : peer.portName;

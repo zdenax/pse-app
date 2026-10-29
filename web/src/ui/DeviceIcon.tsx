@@ -125,6 +125,16 @@ const pcGlyph: IconLayer[] = [
   { d: line([0.5, 0.63], [0.5, 0.77]) + line([0.34, 0.78], [0.66, 0.78]), paint: "stroke", width: strokeWidth },
 ];
 
+/** Patch panel: a strip of jacks. */
+const patchPanelGlyph: IconLayer[] = (() => {
+  let jacks = "";
+  for (let i = 0; i < 4; i++) jacks += roundedRect(0.19 + i * 0.14, 0.44, 0.1, 0.14, 0.02);
+  return [
+    { d: roundedRect(0.14, 0.34, 0.72, 0.34, 0.04), paint: "stroke", width: strokeWidth * 0.9 },
+    { d: jacks, paint: "fill" },
+  ];
+})();
+
 /** Server: three stacked units with status lights. */
 const serverGlyph: IconLayer[] = (() => {
   let units = "";
@@ -156,6 +166,8 @@ export function deviceIconArt(category: DeviceCategory): DeviceIconArt {
         return pcGlyph;
       case "server":
         return serverGlyph;
+      case "patch panel":
+        return patchPanelGlyph;
       default:
         return pcGlyph;
     }
@@ -178,6 +190,8 @@ export function tileClass(category: DeviceCategory): string {
       return "tile-pc";
     case "server":
       return "tile-server";
+    case "patch panel":
+      return "tile-patchpanel";
     default:
       return "tile-pc";
   }

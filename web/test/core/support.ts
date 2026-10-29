@@ -47,6 +47,7 @@ export const TemplateID = {
   macbook: "apple-macbook",
   hypervHost: "hyperv-host",
   hypervVswitch: "hyperv-vswitch",
+  patchPanel24: "patch-panel-24-cat6a",
 } as const;
 
 export const allTemplateIDs: string[] = Object.values(TemplateID);

@@ -606,6 +606,23 @@
           { "groups": [0], "arrangement": "singleRow" }
         ]
       }
+    },
+    {
+      "id": "patch-panel-24-cat6a",
+      "vendor": "",
+      "model": "Patch panel 24x Cat6A (1U)",
+      "category": "patch panel",
+      "verified": false,
+      "note": "Podle fotky laboratoře (IDF70.1): 24 stíněných zásuvek RJ45 Cat6A, 1U. Pasivní prvek, bez konzole.",
+      "portGroups": [
+        { "prefix": "Port ", "rangeStart": 1, "rangeEnd": 24, "speed": "", "connector": "RJ45", "verified": false }
+      ],
+      "layout": {
+        "rows": 1,
+        "sections": [
+          { "groups": [0], "arrangement": "singleRow" }
+        ]
+      }
     }
   ]
 }
