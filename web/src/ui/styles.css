@@ -67,6 +67,7 @@
   --tile-ap: #ee6c4d;
   --tile-pc: #5c6b7a;
   --tile-server: #3d4c5c;
+  --tile-patchpanel: #6b705c;
   --tile-stroke: rgba(11, 37, 69, 0.18);
 
   /* Console (ConsoleStyle, the same in both appearances). */
@@ -132,6 +133,7 @@
     --tile-ap: #e8694a;
     --tile-pc: #6f8196;
     --tile-server: #4f6379;
+    --tile-patchpanel: #84896f;
     --tile-stroke: rgba(255, 255, 255, 0.16);
   }
 }
@@ -881,6 +883,10 @@ textarea.text-field {
 
 .tile-server {
   fill: var(--tile-server);
+}
+
+.tile-patchpanel {
+  fill: var(--tile-patchpanel);
 }
 
 .device-glyph-stroke {

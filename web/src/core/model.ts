@@ -9,7 +9,7 @@ import type { DeviceProtocols } from "./protocols";
 
 export type ConnectorType = "RJ45" | "SFP" | "SFP+" | "QSFP+" | "console" | "mgmt" | "wireless";
 
-export type DeviceCategory = "switch" | "router" | "L3 switch" | "AP" | "PC" | "server";
+export type DeviceCategory = "switch" | "router" | "L3 switch" | "AP" | "PC" | "server" | "patch panel";
 
 export type CableType = "straight" | "crossover" | "console" | "fiber";
 
