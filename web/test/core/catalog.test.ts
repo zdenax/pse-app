@@ -57,7 +57,10 @@ describe("CatalogTests", () => {
   });
 
   test("everything is unverified", () => {
+    // Checked on real hardware (RouterOS /interface print, 2026-10-29).
+    const verifiedOnHardware = ["mikrotik-ccr1009-7g-1c-1s"];
     for (const template of catalog.templates) {
+      if (verifiedOnHardware.includes(template.id)) continue;
       expect(template.verified, `${template.id} must be unverified`).toBe(false);
       expect(template.isCustom).toBe(false);
       expect(templateNeedsVerification(template)).toBe(true);

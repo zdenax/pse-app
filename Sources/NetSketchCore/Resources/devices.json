@@ -421,13 +421,13 @@
       "vendor": "MikroTik",
       "model": "CCR1009-7G-1C-1S+",
       "category": "router",
-      "verified": false,
-      "note": "Podle fotky laboratoře (IDF70.1, Cloud Core Router): 7x gigabit ether1-7, 1x combo (RJ45/SFP) a 1x SFP+.",
+      "verified": true,
+      "note": "Ověřeno na zařízení v labu 2026-10-29 (RouterOS 7.6, /interface print): 7x gigabit ether1-7, 1x combo1 (RJ45/SFP) a 1x sfp-sfpplus1 (SFP+), sériová konzole RJ45. Použito pro IPsec tunel s Cisco ISR 4321.",
       "portGroups": [
-        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 7, "speed": "1G", "connector": "RJ45", "verified": false },
-        { "names": ["combo1"], "speed": "1G", "connector": "RJ45", "verified": false, "label": "Combo" },
-        { "names": ["sfp-sfpplus1"], "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" },
-        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 7, "speed": "1G", "connector": "RJ45", "verified": true },
+        { "names": ["combo1"], "speed": "1G", "connector": "RJ45", "verified": true, "label": "Combo" },
+        { "names": ["sfp-sfpplus1"], "speed": "10G", "connector": "SFP+", "verified": true, "label": "SFP+" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": true }
       ],
       "layout": {
         "rows": 1,
