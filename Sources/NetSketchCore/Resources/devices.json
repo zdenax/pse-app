@@ -613,7 +613,7 @@
       "model": "Patch panel 24x Cat6A (1U)",
       "category": "patch panel",
       "verified": false,
-      "note": "Podle fotky laboratoře (IDF70.1): 24 stíněných zásuvek RJ45 Cat6A, 1U. Názvy portů = číslo + štítek z fotky (port 20 je přeškrtnutý, 21 bez štítku, SW2 na portu 23 je odhad, štítek je oříznutý). Pasivní prvek, bez konzole.",
+      "note": "Podle fotky laboratoře (IDF70.1): 24 stíněných zásuvek RJ45 Cat6A, 1U. Názvy portů = číslo + štítek z fotky (port 20 je přeškrtnutý, 21 bez štítku, SW1 na portu 24 je oříznutý, odvozeno z řady SW3, SW2). Pasivní prvek, bez konzole.",
       "portGroups": [
         { "names": ["1 IDF7.2", "2 IDF7.2", "3 IDF7.2", "4 IDF7.2", "5 70.089", "6 70.090", "7 70.091", "8 70.092", "9 70.093", "10 70.094", "11 70.095", "12 70.096", "13 70.097", "14 70.098", "15 70.099", "16 70.100", "17 70.101", "18 70.102", "19 70.103", "20", "21", "22 SW3", "23 SW2", "24 SW1"], "speed": "", "connector": "RJ45", "verified": false }
       ],
