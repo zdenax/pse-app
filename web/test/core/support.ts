@@ -48,6 +48,7 @@ export const TemplateID = {
   hypervHost: "hyperv-host",
   hypervVswitch: "hyperv-vswitch",
   patchPanel24: "patch-panel-24-cat6a",
+  crs326Router: "mikrotik-crs326-24g-2s-router",
 } as const;
 
 export const allTemplateIDs: string[] = Object.values(TemplateID);

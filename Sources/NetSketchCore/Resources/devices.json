@@ -272,6 +272,27 @@
       }
     },
     {
+      "id": "mikrotik-crs326-24g-2s-router",
+      "vendor": "MikroTik",
+      "model": "CRS326-24G-2S+RM (router)",
+      "category": "router",
+      "verified": false,
+      "note": "Totéž zařízení jako CRS326-24G-2S+RM (switch), vedené jako router: RouterOS umí směrovat a IPsec. Podle štítku v labu; neověřeno na zařízení.",
+      "portGroups": [
+        { "prefix": "ether", "rangeStart": 1, "rangeEnd": 24, "speed": "1G", "connector": "RJ45", "verified": false },
+        { "prefix": "sfp-sfpplus", "rangeStart": 1, "rangeEnd": 2, "speed": "10G", "connector": "SFP+", "verified": false, "label": "SFP+" },
+        { "names": ["Console"], "speed": "", "connector": "console", "verified": false }
+      ],
+      "layout": {
+        "rows": 2,
+        "sections": [
+          { "groups": [0], "arrangement": "oddTopEvenBottom", "blockColumns": 4 },
+          { "groups": [1], "arrangement": "oddTopEvenBottom" },
+          { "groups": [2], "arrangement": "singleRow", "row": 0 }
+        ]
+      }
+    },
+    {
       "id": "ubiquiti-usg-pro-4",
       "vendor": "Ubiquiti",
       "model": "UniFi Security Gateway Pro (USG-PRO-4)",
