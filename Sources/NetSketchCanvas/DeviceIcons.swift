@@ -40,6 +40,7 @@ enum DeviceIconArt {
         case .accessPoint: return palette.tileAccessPoint
         case .pc: return palette.tilePC
         case .server: return palette.tileServer
+        case .patchPanel: return palette.tilePatchPanel
         @unknown default: return palette.tilePC
         }
     }
@@ -53,6 +54,7 @@ enum DeviceIconArt {
         case .accessPoint: return accessPointGlyph
         case .pc: return pcGlyph
         case .server: return serverGlyph
+        case .patchPanel: return patchPanelGlyph
         @unknown default: return pcGlyph
         }
     }
@@ -144,6 +146,20 @@ enum DeviceIconArt {
         return [
             Layer(path: screen, paint: .stroke(strokeWidth)),
             Layer(path: stand, paint: .stroke(strokeWidth)),
+        ]
+    }()
+
+    /// Patch panel: a strip of jacks.
+    private static let patchPanelGlyph: [Layer] = {
+        let panel = Path(roundedRect: CGRect(x: 0.14, y: 0.34, width: 0.72, height: 0.34), cornerRadius: 0.04)
+        var jacks = Path()
+        for index in 0..<4 {
+            let x = 0.19 + CGFloat(index) * 0.14
+            jacks.addPath(Path(roundedRect: CGRect(x: x, y: 0.44, width: 0.10, height: 0.14), cornerRadius: 0.02))
+        }
+        return [
+            Layer(path: panel, paint: .stroke(strokeWidth * 0.9)),
+            Layer(path: jacks, paint: .fill),
         ]
     }()
 

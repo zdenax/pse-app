@@ -378,6 +378,7 @@ extension IOSEngine {
     private func cabledNeighbors() -> [(port: PortSnapshot, peer: PeerSnapshot)] {
         access.interfaces.compactMap { port in
             guard port.linkState == .up, let peer = port.peer else { return nil }
+            if peer.category == .patchPanel { return nil }
             return (port, peer)
         }
     }
@@ -393,6 +394,7 @@ extension IOSEngine {
         case .l3switch: return "R S"
         case .accessPoint: return "T"
         case .pc, .server: return "H"
+        case .patchPanel: return ""
         }
     }
 
@@ -409,6 +411,7 @@ extension IOSEngine {
                 case .l3switch: capability = "Router Switch"
                 case .accessPoint: capability = "Trans-Bridge"
                 case .pc, .server: capability = "Host"
+                case .patchPanel: capability = ""
                 }
                 let remote = peerUsesIOSNames(peer) ? iosNamer.longName(peer.portName) : peer.portName
                 lines.append("-------------------------")
@@ -471,6 +474,7 @@ extension IOSEngine {
             case .l3switch: capability = "B,R"
             case .accessPoint: capability = "W"
             case .pc, .server: capability = "S"
+            case .patchPanel: capability = ""
             }
             let remote = peerUsesIOSNames(peer) ? iosNamer.shortName(peer.portName) : peer.portName
             lines.append(

@@ -91,6 +91,7 @@ struct Palette {
     var tileAccessPoint: RGBA
     var tilePC: RGBA
     var tileServer: RGBA
+    var tilePatchPanel: RGBA
     var tileStroke: RGBA
 
     static let navyHex: UInt32 = 0x0B2545
@@ -140,6 +141,7 @@ struct Palette {
         tileAccessPoint: RGBA(accentHex),
         tilePC: RGBA(slateHex),
         tileServer: RGBA(0x3D4C5C),
+        tilePatchPanel: RGBA(0x6B705C),
         tileStroke: RGBA(navyHex, alpha: 0.18)
     )
 
@@ -184,6 +186,7 @@ struct Palette {
         tileAccessPoint: RGBA(0xE8694A),
         tilePC: RGBA(0x6F8196),
         tileServer: RGBA(0x4F6379),
+        tilePatchPanel: RGBA(0x84896F),
         tileStroke: RGBA(0xFFFFFF, alpha: 0.16)
     )
 

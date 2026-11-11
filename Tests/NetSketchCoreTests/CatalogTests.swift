@@ -18,7 +18,10 @@ import Testing
     }
 
     @Test func everythingIsUnverified() {
+        // Checked on real hardware (RouterOS /interface print, 2026-10-29).
+        let verifiedOnHardware = [TemplateID.ccr1009]
         for template in catalog.templates {
+            if verifiedOnHardware.contains(template.id) { continue }
             #expect(template.verified == false, "\(template.id) must be unverified")
             #expect(template.isCustom == false)
             #expect(template.needsVerification)
