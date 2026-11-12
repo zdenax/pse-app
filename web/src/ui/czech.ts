@@ -11,7 +11,7 @@ import type {
   ViewMode,
 } from "../core/model";
 
-export const categoryOrder: DeviceCategory[] = ["switch", "router", "L3 switch", "AP", "PC", "server"];
+export const categoryOrder: DeviceCategory[] = ["switch", "router", "L3 switch", "AP", "PC", "server", "patch panel"];
 
 /** Singular, e.g. for the inspector. */
 export function categoryName(category: DeviceCategory): string {
@@ -28,6 +28,8 @@ export function categoryName(category: DeviceCategory): string {
       return "Počítač";
     case "server":
       return "Server";
+    case "patch panel":
+      return "Patch panel";
   }
 }
 
@@ -46,6 +48,8 @@ export function categoryPlural(category: DeviceCategory): string {
       return "Počítače";
     case "server":
       return "Servery";
+    case "patch panel":
+      return "Patch panely";
   }
 }
 

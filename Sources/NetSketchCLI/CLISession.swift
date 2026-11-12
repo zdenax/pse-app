@@ -37,7 +37,7 @@ public enum CLI {
     public static func supportsConsole(_ device: Device) -> Bool {
         switch device.category {
         case .switch, .l3switch, .router, .pc, .server: return true
-        case .accessPoint: return false
+        case .accessPoint, .patchPanel: return false
         }
     }
 }

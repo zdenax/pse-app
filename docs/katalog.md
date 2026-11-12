@@ -95,9 +95,10 @@ Hodnoty `category` (výčet `DeviceCategory`):
 | `"AP"` | přístupový bod | `AP` |
 | `"PC"` | počítač | `PC` |
 | `"server"` | server | `SRV` |
+| `"patch panel"` | patch panel (pasivní) | `PP` |
 
 Kategorie řídí skupinu v paletě, ikonu, výchozí hostname a to, zda má zařízení konzoli:
-konfigurační CLI mají jen `switch`, `L3 switch` a `router`.
+konfigurační CLI mají jen `switch`, `L3 switch` a `router` (patch panel je pasivní: bez konzole, CDP ho nevidí).
 
 Dialekt konzole se volí podle `vendor` (hledá se podřetězec bez ohledu na velikost písmen):
 `cisco` = Cisco IOS, `dell` = Dell OS9 (modely řady N, např. `N3024`, `N1124T-ON`, mají Dell OS6), `mikrotik` = MikroTik RouterOS, cokoli jiného =

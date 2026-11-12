@@ -57,7 +57,10 @@ describe("CatalogTests", () => {
   });
 
   test("everything is unverified", () => {
+    // Checked on real hardware (RouterOS /interface print, 2026-10-29).
+    const verifiedOnHardware = ["mikrotik-ccr1009-7g-1c-1s"];
     for (const template of catalog.templates) {
+      if (verifiedOnHardware.includes(template.id)) continue;
       expect(template.verified, `${template.id} must be unverified`).toBe(false);
       expect(template.isCustom).toBe(false);
       expect(templateNeedsVerification(template)).toBe(true);
@@ -256,7 +259,7 @@ describe("Catalog (web additions)", () => {
     expect(calls).toBe(1);
     expect(catalog.version).toBe(version + 1);
     expect(catalog.templates).not.toBe(templates);
-    expect(catalog.groups.at(-1)?.templates.at(-1)?.id).toBe("lab-box");
+    expect(catalog.groups.find((g) => g.category === "server")?.templates.at(-1)?.id).toBe("lab-box");
     unsubscribe();
     catalog.removeCustom("lab-box");
     expect(calls).toBe(1);

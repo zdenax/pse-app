@@ -27,8 +27,9 @@ public enum DeviceCategory: String, Codable, CaseIterable, Hashable, Sendable {
     case accessPoint = "AP"
     case pc = "PC"
     case server = "server"
+    case patchPanel = "patch panel"
 
-    /// Prefix of automatically generated hostnames ("SW1", "R1", "AP1", "PC1", "SRV1").
+    /// Prefix of automatically generated hostnames ("SW1", "R1", "AP1", "PC1", "SRV1", "PP1").
     /// L2 and L3 switches share the "SW" numbering.
     public var hostnamePrefix: String {
         switch self {
@@ -37,6 +38,7 @@ public enum DeviceCategory: String, Codable, CaseIterable, Hashable, Sendable {
         case .accessPoint: return "AP"
         case .pc: return "PC"
         case .server: return "SRV"
+        case .patchPanel: return "PP"
         }
     }
 }

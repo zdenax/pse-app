@@ -329,7 +329,7 @@ export class FakeStore implements ProjectStoreAPI {
   // MARK: Devices
 
   nextHostname(category: Device["category"]): string {
-    const prefix = { switch: "SW", router: "R", "L3 switch": "L3SW", AP: "AP", PC: "PC", server: "SRV" }[category];
+    const prefix = { switch: "SW", router: "R", "L3 switch": "L3SW", AP: "AP", PC: "PC", server: "SRV", "patch panel": "PP" }[category];
     let n = 1;
     while (this._project.devices.some((d) => d.hostname === `${prefix}${n}`)) n += 1;
     return `${prefix}${n}`;

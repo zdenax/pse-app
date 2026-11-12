@@ -13,7 +13,7 @@ import type {
 export const connectorTypes: readonly ConnectorType[] = ["RJ45", "SFP", "SFP+", "QSFP+", "console", "mgmt", "wireless"];
 
 /** In palette order (Swift `DeviceCategory.allCases`). */
-export const deviceCategories: readonly DeviceCategory[] = ["switch", "router", "L3 switch", "AP", "PC", "server"];
+export const deviceCategories: readonly DeviceCategory[] = ["switch", "router", "L3 switch", "AP", "PC", "server", "patch panel"];
 
 export const cableTypes: readonly CableType[] = ["straight", "crossover", "console", "fiber"];
 
@@ -41,7 +41,7 @@ export function isPhysicalConnector(connector: ConnectorType): boolean {
 }
 
 /**
- * Prefix of automatically generated hostnames ("SW1", "R1", "AP1", "PC1", "SRV1").
+ * Prefix of automatically generated hostnames ("SW1", "R1", "AP1", "PC1", "SRV1", "PP1").
  * L2 and L3 switches share the "SW" numbering.
  */
 export function hostnamePrefix(category: DeviceCategory): string {
@@ -57,6 +57,8 @@ export function hostnamePrefix(category: DeviceCategory): string {
       return "PC";
     case "server":
       return "SRV";
+    case "patch panel":
+      return "PP";
   }
 }
 

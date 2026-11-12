@@ -13,6 +13,7 @@ extension DeviceCategory {
         case .accessPoint: return "Access point"
         case .pc: return "Počítač"
         case .server: return "Server"
+        case .patchPanel: return "Patch panel"
         }
     }
 
@@ -25,6 +26,7 @@ extension DeviceCategory {
         case .accessPoint: return "Access pointy"
         case .pc: return "Počítače"
         case .server: return "Servery"
+        case .patchPanel: return "Patch panely"
         }
     }
 }
