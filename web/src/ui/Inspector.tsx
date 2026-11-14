@@ -43,6 +43,7 @@ import {
   selectedIDs,
   type PortConnection,
 } from "./project-helpers";
+import { RightHandle } from "./RightHandle";
 import { useApp, useStore, useStoreVersion } from "./store-context";
 
 /** "Jak začít" hints of the project inspector (InspectorView.swift `hints`). */
@@ -60,6 +61,7 @@ export function projectHints(consoleShortcut = consoleShortcutLabel()): string[]
 
 export const Inspector = memo(function Inspector() {
   useStoreVersion();
+  const app = useApp();
   const store = useStore();
   const selection = store.selection;
   const project = store.project;
@@ -85,6 +87,7 @@ export const Inspector = memo(function Inspector() {
 
   return (
     <aside className="inspector" aria-label="Inspektor">
+      <RightHandle onHide={() => (app.inspectorVisible = false)} />
       {content}
     </aside>
   );
@@ -223,7 +226,7 @@ function DeviceInspector({ device }: { device: Device }) {
 
       <section className="ports-section" aria-label="Porty">
         <div className="ports-header">
-          <span className="section-title">PORTY</span>
+          <span className="section-title">Porty</span>
           <span className="ports-count">{`zapojeno ${connectedCount} z ${connections.length}`}</span>
           <label className="checkbox">
             <input type="checkbox" checked={connectedOnly} onChange={(event) => setConnectedOnly(event.target.checked)} />
