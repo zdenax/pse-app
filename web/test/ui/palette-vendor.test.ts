@@ -41,4 +41,11 @@ describe("filterVendorGroups", () => {
     expect(result).toHaveLength(1);
     expect(result[0]!.categories.flatMap((entry) => entry.templates.map((template) => template.id))).toEqual(["cisco-isr-4321"]);
   });
+
+  test("a query finds matches in every vendor and category at once", () => {
+    const result = filterVendorGroups(groups, "c");
+    expect(result.map((group) => group.vendor)).toEqual(["Cisco", "Generic"]);
+    const ids = result.flatMap((group) => group.categories.flatMap((entry) => entry.templates.map((template) => template.id)));
+    expect([...ids].sort()).toEqual(["cisco-catalyst-2960-24", "cisco-isr-4321", "generic-ap", "generic-pc"]);
+  });
 });
