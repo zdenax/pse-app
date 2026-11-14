@@ -164,7 +164,7 @@ export function InspectorSection({
     <section className="inspector-section" aria-labelledby={id}>
       <div className="section-title-row">
         <h3 className="section-title" id={id}>
-          {title.toLocaleUpperCase("cs")}
+          {title}
         </h3>
         {accessory}
       </div>

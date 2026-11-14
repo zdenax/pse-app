@@ -212,7 +212,7 @@ export const Palette = memo(function Palette() {
                           onClick={() => toggle(categoryKey)}
                         >
                           <Icon name="chevronRight" size={10} className={isCollapsed ? "chevron" : "chevron open"} />
-                          <span className="palette-group-title">{categoryPlural(group.category).toLocaleUpperCase("cs")}</span>
+                          <span className="palette-group-title">{categoryPlural(group.category)}</span>
                           <span className="palette-group-count">{group.templates.length}</span>
                         </button>
                         {!isCollapsed && (
