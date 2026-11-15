@@ -94,112 +94,91 @@ struct Palette {
     var tilePatchPanel: RGBA
     var tileStroke: RGBA
 
-    // Brand constants (`Theme.navy` etc. below): unchanged, still used across the native app's own
-    // chrome (palette, inspector, console). The canvas/export palette below has its own dedicated
-    // hex values, aligned with the "kabelážní plán" redesign (web/DESIGN.md), so the diagram and its
-    // exports match the new look without re-skinning the rest of the native app.
     static let navyHex: UInt32 = 0x0B2545
     static let tealHex: UInt32 = 0x13A89E
     static let sandHex: UInt32 = 0xF4F1EA
     static let slateHex: UInt32 = 0x5C6B7A
     static let accentHex: UInt32 = 0xEE6C4D
 
-    // Canvas-only palette: "kabelážní plán" neutrals and cable-blue, matching web/DESIGN.md.
-    static let canvasInkHex: UInt32 = 0x15191E
-    static let canvasMutedInkHex: UInt32 = 0x4F5964
-    static let canvasNeutralHex: UInt32 = 0xF2F4F6
-    static let cableBlueHex: UInt32 = 0x1F5CC8
-    static let cableAccentHex: UInt32 = 0xC96A35
-    static let destructiveHex: UInt32 = 0xB8312A
-    static let graphiteHex: UInt32 = 0x1B1F24
-    static let graphiteRaisedHex: UInt32 = 0x2A3038
-
-    static let darkBackgroundHex: UInt32 = 0x121518
-    static let darkForegroundHex: UInt32 = 0xE8EBEF
-    static let darkMutedForegroundHex: UInt32 = 0xA7B0BA
-    static let darkRackLineHex: UInt32 = 0x3A414A
-    static let darkCableBlueHex: UInt32 = 0x7AA7FF
-    static let darkDestructiveHex: UInt32 = 0xFF8A7F
-
     static let light = Palette(
         isDark: false,
-        canvas: RGBA(canvasNeutralHex),
-        gridDot: RGBA(canvasMutedInkHex, alpha: 0.30),
-        ink: RGBA(canvasInkHex),
-        secondaryInk: RGBA(canvasMutedInkHex),
+        canvas: RGBA(sandHex),
+        gridDot: RGBA(slateHex, alpha: 0.30),
+        ink: RGBA(navyHex),
+        secondaryInk: RGBA(slateHex),
         panelFill: RGBA(0xFFFFFF),
-        panelStroke: RGBA(0xBCC4CD),
-        panelShadow: RGBA(canvasInkHex, alpha: 0.10),
-        portLabel: RGBA(canvasMutedInkHex),
-        portRJ45: RGBA(cableBlueHex),
+        panelStroke: RGBA(0xB9B2A3),
+        panelShadow: RGBA(navyHex, alpha: 0.10),
+        portLabel: RGBA(0x4A5866),
+        portRJ45: RGBA(navyHex),
         portOptic: RGBA(0x0E8F86),
         portConsole: RGBA(0x2F8FC9),
         portMgmt: RGBA(0x8A6FB8),
-        portWireless: RGBA(cableAccentHex),
-        cableCopper: RGBA(cableBlueHex),
-        cableConsole: RGBA(0x2F8FC9),
-        cableFiber: RGBA(cableAccentHex),
-        labelPlate: RGBA(canvasNeutralHex, alpha: 0.92),
-        bundlePlate: RGBA(graphiteHex),
+        portWireless: RGBA(accentHex),
+        cableCopper: RGBA(navyHex),
+        cableConsole: RGBA(0x4FA8D8),
+        cableFiber: RGBA(accentHex),
+        labelPlate: RGBA(sandHex, alpha: 0.92),
+        bundlePlate: RGBA(navyHex),
         bundleInk: RGBA(0xFFFFFF),
-        selection: RGBA(cableAccentHex),
-        pending: RGBA(cableAccentHex),
+        selection: RGBA(accentHex),
+        pending: RGBA(accentHex),
         hover: RGBA(tealHex),
-        reject: RGBA(destructiveHex),
+        reject: RGBA(0xD64545),
         warning: RGBA(0xC98A00),
         statusGreen: RGBA(0x2EAD5B),
         statusOrange: RGBA(0xF29D38),
-        statusRed: RGBA(destructiveHex),
-        statusNone: RGBA(canvasMutedInkHex, alpha: 0.55),
+        statusRed: RGBA(0xD64545),
+        statusNone: RGBA(slateHex, alpha: 0.55),
         annotationFill: RGBA(0xFFF6D6),
         annotationStroke: RGBA(0xD9C98F),
-        tooltipFill: RGBA(canvasInkHex, alpha: 0.95),
+        tooltipFill: RGBA(navyHex, alpha: 0.95),
         tooltipInk: RGBA(0xFFFFFF),
         iconGlyph: RGBA(0xFFFFFF),
         tileSwitch: RGBA(tealHex),
         tileL3Switch: RGBA(0x0E7C8C),
-        tileRouter: RGBA(graphiteHex),
-        tileAccessPoint: RGBA(cableAccentHex),
-        tilePC: RGBA(canvasMutedInkHex),
-        tileServer: RGBA(graphiteRaisedHex),
+        tileRouter: RGBA(navyHex),
+        tileAccessPoint: RGBA(accentHex),
+        tilePC: RGBA(slateHex),
+        tileServer: RGBA(0x3D4C5C),
         tilePatchPanel: RGBA(0x6B705C),
-        tileStroke: RGBA(canvasInkHex, alpha: 0.18)
+        tileStroke: RGBA(navyHex, alpha: 0.18)
     )
 
     static let dark = Palette(
         isDark: true,
-        canvas: RGBA(darkBackgroundHex),
+        canvas: RGBA(0x081B33),
         gridDot: RGBA(0xFFFFFF, alpha: 0.13),
-        ink: RGBA(darkForegroundHex),
-        secondaryInk: RGBA(darkMutedForegroundHex),
-        panelFill: RGBA(0x1C2025),
-        panelStroke: RGBA(darkRackLineHex),
+        ink: RGBA(sandHex),
+        secondaryInk: RGBA(0x9FB0C3),
+        panelFill: RGBA(0x122C4F),
+        panelStroke: RGBA(0x355680),
         panelShadow: RGBA(0x000000, alpha: 0.30),
-        portLabel: RGBA(darkMutedForegroundHex),
-        portRJ45: RGBA(darkCableBlueHex),
+        portLabel: RGBA(0xB4C2D2),
+        portRJ45: RGBA(0xE8E3D8),
         portOptic: RGBA(0x2FD0C4),
         portConsole: RGBA(0x6BC1F0),
         portMgmt: RGBA(0xB59CE0),
         portWireless: RGBA(0xF58A6E),
-        cableCopper: RGBA(darkCableBlueHex),
+        cableCopper: RGBA(0xE8E3D8),
         cableConsole: RGBA(0x6BC1F0),
         cableFiber: RGBA(0xF58A6E),
-        labelPlate: RGBA(darkBackgroundHex, alpha: 0.90),
-        bundlePlate: RGBA(darkForegroundHex),
-        bundleInk: RGBA(canvasInkHex),
+        labelPlate: RGBA(0x081B33, alpha: 0.90),
+        bundlePlate: RGBA(sandHex),
+        bundleInk: RGBA(navyHex),
         selection: RGBA(0xF58A6E),
         pending: RGBA(0xF58A6E),
         hover: RGBA(0x2FD0C4),
-        reject: RGBA(darkDestructiveHex),
+        reject: RGBA(0xEF6B6B),
         warning: RGBA(0xF2B33D),
         statusGreen: RGBA(0x3DCB73),
         statusOrange: RGBA(0xF6AE4A),
-        statusRed: RGBA(darkDestructiveHex),
-        statusNone: RGBA(darkMutedForegroundHex, alpha: 0.55),
+        statusRed: RGBA(0xEF6B6B),
+        statusNone: RGBA(0x9FB0C3, alpha: 0.55),
         annotationFill: RGBA(0x3A3520),
         annotationStroke: RGBA(0x6B6238),
-        tooltipFill: RGBA(darkForegroundHex, alpha: 0.96),
-        tooltipInk: RGBA(canvasInkHex),
+        tooltipFill: RGBA(sandHex, alpha: 0.96),
+        tooltipInk: RGBA(navyHex),
         iconGlyph: RGBA(0xFFFFFF),
         tileSwitch: RGBA(0x15A99F),
         tileL3Switch: RGBA(0x1489A0),
