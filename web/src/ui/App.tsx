@@ -17,6 +17,7 @@ import { AlertHost, DeviceEditorHost } from "./Dialogs";
 import { browserFiles, type ProjectFiles } from "./files";
 import { Inspector } from "./Inspector";
 import { Palette } from "./Palette";
+import { paletteLayout, usePaletteLayout } from "./palette-layout";
 import { useInspectorWidth } from "./right-layout";
 import { isMac } from "./platform";
 import { isEditingText, shortcutFor, type ShortcutCommand } from "./shortcuts";
@@ -87,6 +88,7 @@ function AppShell({
 }) {
   useObservable(app);
   const inspectorWidth = useInspectorWidth();
+  const paletteLayoutState = usePaletteLayout();
   const store = app.store;
   const storeVersion = useObservable(store);
 
@@ -129,10 +131,18 @@ function AppShell({
     .join(" ");
 
   return (
-    <div className={className} style={{ "--inspector-width": `${inspectorWidth}px` } as CSSProperties}>
+    <div
+      className={className}
+      style={{ "--palette-width": `${paletteLayout.totalWidth(paletteLayoutState)}px`, "--inspector-width": `${inspectorWidth}px` } as CSSProperties}
+    >
       <Toolbar />
       {app.paletteVisible && <Palette />}
       <main className="canvas-area" aria-label="Plátno">
+        {!app.paletteVisible && (
+          <button type="button" className="p2-restore" onClick={() => (app.paletteVisible = true)}>
+            Zobrazit paletu
+          </button>
+        )}
         {!app.inspectorVisible && (
           <button type="button" className="panel-restore" onClick={() => (app.inspectorVisible = true)}>
             Zobrazit inspektor

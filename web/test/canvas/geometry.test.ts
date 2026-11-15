@@ -98,6 +98,9 @@ describe("PanelGeometry", () => {
     expect(PanelGeometry.printedLabel("Gi1/0/24", 12, style)).toBe("24");
     expect(PanelGeometry.printedLabel("Console", 17, style)).toBe("Con");
     expect(PanelGeometry.printedLabel("eth0", 100, style)).toBe("eth0");
+    expect(PanelGeometry.printedLabel("11 70.095", 17, style)).toBe("11");
+    expect(PanelGeometry.printedLabel("22 SW3", 17, style)).toBe("22");
+    expect(PanelGeometry.printedLabel("1 IDF7.2", 17, style)).toBe("1");
     expect(PanelGeometry.printedLabel("Gi1/0/12345", 4, style)).toBe("");
   });
 

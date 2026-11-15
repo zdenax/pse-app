@@ -1,8 +1,9 @@
-// The left-hand column: the device catalog grouped by category, with search.
-// Rows are dragged onto the canvas; a double click (or Enter) adds the device at a free spot.
-// Port of Sources/NetSketch/Views/PaletteView.swift.
+// The left-hand column: a fixed category rail (icons) plus a resizable part with a vendor
+// filter and a flat device list. Collapses to just the icon rail past the width limit (an orange
+// handle on the right edge drags it, or a double click toggles it). Search ignores the selected
+// category. Port of Sources/NetSketch/Views/PaletteView.swift, layout matching the NetLab redesign.
 
-import { memo, useMemo, useState, type DragEvent } from "react";
+import { memo, useMemo, useState, type DragEvent, type PointerEvent } from "react";
 import type { DeviceCategory, DeviceTemplate } from "../core/model";
 import {
   categoryName,
@@ -18,6 +19,7 @@ import {
 import { Chip, VerifyBadge } from "./components";
 import { DeviceIcon } from "./DeviceIcon";
 import { Icon } from "./icons";
+import { maxContent, minContent, paletteLayout, usePaletteLayout, type RailCategory } from "./palette-layout";
 import { useApp, useMaybeObservable, useStore, useStoreVersion } from "./store-context";
 
 /** dataTransfer type of a palette drag; the value is the template id. */
@@ -104,21 +106,35 @@ export function filterVendorGroups(groups: VendorGroup[], searchText: string): V
 
 const noVendorTitle = "Bez výrobce";
 
+const railGroups: { id: RailCategory; categories: DeviceCategory[]; icon: DeviceCategory; label: string }[] = [
+  { id: "switch", categories: ["switch", "L3 switch"], icon: "switch", label: "Switche" },
+  { id: "router", categories: ["router"], icon: "router", label: "Routery" },
+  { id: "AP", categories: ["AP"], icon: "AP", label: "AP" },
+  { id: "PC", categories: ["PC"], icon: "PC", label: "Počítače" },
+  { id: "server", categories: ["server"], icon: "server", label: "Servery" },
+  { id: "patch panel", categories: ["patch panel"], icon: "patch panel", label: "Patch panely" },
+];
+
+/**
+ * Paleta: vlevo pevná lišta kategorií, vpravo roztahovací část s výrobci, přepínačem L2/L3 (jen
+ * u switchů) a plochým seznamem zařízení. Úchyt na pravém okraji mění šířku; pod limitem se
+ * sbalí na lištu ikonek.
+ */
 export const Palette = memo(function Palette() {
   useStoreVersion();
   const store = useStore();
   const app = useApp();
+  const layout = usePaletteLayout();
   const [searchText, setSearchText] = useState("");
-  // Keys: the vendor for a vendor section, "vendor/category" for a category inside it.
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
+  const [vendor, setVendor] = useState<string | null>(null);
+  const [vendorOpen, setVendorOpen] = useState(true);
+  const [layer, setLayer] = useState<"all" | "switch" | "L3 switch">("all");
 
   const catalog = store.catalog;
   // Custom templates can change the catalog without a project change.
   useMaybeObservable(catalog);
-  const allGroups = catalog.groups;
-  const vendorGroups = useMemo(() => groupByVendor(allGroups), [allGroups]);
-  const groups = useMemo(() => filterVendorGroups(vendorGroups, searchText), [vendorGroups, searchText]);
-  const isSearching = searchText.trim() !== "";
+
+  const rail = railGroups.find((g) => g.id === layout.category) ?? railGroups[0];
 
   const removeCustom = (template: DeviceTemplate) => {
     if (!window.confirm(`Smazat vlastní zařízení „${displayName(template.vendor, template.model)}“ z katalogu?\nZařízení už umístěná v projektu zůstanou.`)) return;
@@ -129,126 +145,192 @@ export const Palette = memo(function Palette() {
     }
   };
 
-  const toggle = (key: string) => {
-    setCollapsed((current) => {
-      const next = new Set(current);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  const categoryTemplates = useMemo(
+    () => catalog.templates.filter((tpl) => rail.categories.includes(tpl.category)),
+    [catalog.templates, rail],
+  );
+  const vendors = useMemo(
+    () => [...new Set(categoryTemplates.map((tpl) => tpl.vendor))].sort((x, y) => x.localeCompare(y, "cs")),
+    [categoryTemplates],
+  );
+  const activeVendor = vendor !== null && vendors.includes(vendor) ? vendor : null;
+
+  // Hledání hledá ve všech kategoriích a výrobcích najednou. Bez hledání se zobrazí vybraná
+  // kategorie, výrobce a vrstva.
+  const shown = useMemo(() => {
+    const query = searchText.trim();
+    if (query !== "") {
+      return catalog.templates.filter(
+        (tpl) => containsText(tpl.model, query) || containsText(tpl.vendor, query) || containsText(tpl.id, query),
+      );
+    }
+    return categoryTemplates.filter(
+      (tpl) => (activeVendor === null || tpl.vendor === activeVendor) && (layer === "all" || rail.id !== "switch" || tpl.category === layer),
+    );
+  }, [catalog.templates, categoryTemplates, activeVendor, layer, rail, searchText]);
+
+  const startDrag = (event: PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const handle = event.currentTarget;
+    handle.setPointerCapture(event.pointerId);
+    const startX = event.clientX;
+    const startContent = layout.iconsOnly ? 0 : layout.content;
+    const move = (e: globalThis.PointerEvent) => paletteLayout.drag(startContent + e.clientX - startX);
+    const stop = () => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", stop);
+      handle.removeEventListener("pointercancel", stop);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", stop);
+    handle.addEventListener("pointercancel", stop);
   };
 
   return (
-    <nav className="palette" aria-label="Paleta zařízení">
-      <div className="search-field">
-        <Icon name="search" size={15} />
-        <input
-          type="search"
-          value={searchText}
-          placeholder="Hledat zařízení"
-          aria-label="Hledat zařízení"
-          spellCheck={false}
-          onChange={(event) => setSearchText(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Escape" && searchText !== "") {
-              event.preventDefault();
-              setSearchText("");
-            }
-          }}
-        />
-        {searchText !== "" && (
-          <button
-            type="button"
-            className="search-clear"
-            title="Zrušit hledání"
-            aria-label="Zrušit hledání"
-            onClick={() => setSearchText("")}
-          >
-            <Icon name="clear" size={15} />
+    <nav className={layout.iconsOnly ? "palette palette2 icons-only" : "palette palette2"} aria-label="Paleta zařízení">
+      <div className="p2-search">
+        {layout.iconsOnly ? (
+          <button type="button" className="p2-search-icon" title="Hledat zařízení" aria-label="Hledat zařízení" onClick={() => paletteLayout.toggleIcons()}>
+            <Icon name="search" size={16} />
           </button>
-        )}
-      </div>
-
-      <div className="palette-list">
-        {groups.length === 0 && (
-          <div className="palette-empty">
-            <Icon name={catalog.templates.length === 0 ? "file" : "search"} size={26} />
-            <span>{catalog.templates.length === 0 ? "Katalog je prázdný" : "Nic nenalezeno"}</span>
+        ) : (
+          <div className="search-field">
+            <Icon name="search" size={15} />
+            <input
+              type="search"
+              value={searchText}
+              placeholder="Hledat zařízení"
+              aria-label="Hledat zařízení"
+              spellCheck={false}
+              onChange={(event) => setSearchText(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape" && searchText !== "") {
+                  event.preventDefault();
+                  setSearchText("");
+                }
+              }}
+            />
+            {searchText !== "" && (
+              <button type="button" className="search-clear" title="Zrušit hledání" aria-label="Zrušit hledání" onClick={() => setSearchText("")}>
+                <Icon name="clear" size={15} />
+              </button>
+            )}
           </div>
         )}
-        {groups.map((vendorGroup) => {
-          const vendorKey = vendorGroup.vendor;
-          const vendorCollapsed = collapsed.has(vendorKey) && !isSearching;
-          const vendorListID = `palette-vendor-${vendorKey.replace(/\s+/g, "-") || "none"}`;
-          const vendorCount = vendorGroup.categories.reduce((sum, entry) => sum + entry.templates.length, 0);
-          return (
-            <section key={vendorKey} className="palette-vendor">
-              <button
-                type="button"
-                className="palette-vendor-header"
-                aria-expanded={!vendorCollapsed}
-                aria-controls={vendorListID}
-                disabled={isSearching}
-                onClick={() => toggle(vendorKey)}
-              >
-                <Icon name="chevronRight" size={10} className={vendorCollapsed ? "chevron" : "chevron open"} />
-                <span className="palette-vendor-title">{vendorKey === "" ? noVendorTitle : vendorKey}</span>
-                <span className="palette-group-count">{vendorCount}</span>
-              </button>
-              {!vendorCollapsed && (
-                <div id={vendorListID}>
-                  {vendorGroup.categories.map((group) => {
-                    const categoryKey = `${vendorKey}/${group.category}`;
-                    const isCollapsed = collapsed.has(categoryKey) && !isSearching;
-                    const listID = `palette-group-${vendorListID}-${group.category.replace(/\s+/g, "-")}`;
-                    return (
-                      <section key={group.category} className="palette-group">
-                        <button
-                          type="button"
-                          className="palette-group-header"
-                          aria-expanded={!isCollapsed}
-                          aria-controls={listID}
-                          disabled={isSearching}
-                          onClick={() => toggle(categoryKey)}
-                        >
-                          <Icon name="chevronRight" size={10} className={isCollapsed ? "chevron" : "chevron open"} />
-                          <span className="palette-group-title">{categoryPlural(group.category)}</span>
-                          <span className="palette-group-count">{group.templates.length}</span>
-                        </button>
-                        {!isCollapsed && (
-                          <ul className="palette-rows" id={listID}>
-                            {group.templates.map((template) => (
-                              <PaletteRow
-                                key={template.id}
-                                template={template}
-                                onAdd={() => app.addDevice(template.id)}
-                                onEdit={() => app.openDeviceEditor({ kind: "edit", template })}
-                                onDuplicate={() => app.openDeviceEditor({ kind: "duplicate", template })}
-                                onRemove={() => removeCustom(template)}
-                              />
-                            ))}
-                          </ul>
-                        )}
-                      </section>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-          );
-        })}
       </div>
 
-      <div className="palette-footer">
-        <button
-          type="button"
-          className="push-button wide"
-          title="Přidat do katalogu vlastní zařízení s vlastními porty"
-          onClick={() => app.openDeviceEditor({ kind: "new" })}
-        >
-          <Icon name="plus" size={15} />
-          Nové zařízení…
-        </button>
+      <div className="p2-body">
+        <div className="p2-rail" role="group" aria-label="Kategorie">
+          {railGroups.map((group) => (
+            <button
+              key={group.id}
+              type="button"
+              aria-pressed={group.id === rail.id}
+              className={group.id === rail.id ? "p2-rail-item selected" : "p2-rail-item"}
+              title={group.label}
+              onClick={() => {
+                setLayer("all");
+                setVendor(null);
+                paletteLayout.setCategory(group.id);
+              }}
+            >
+              <DeviceIcon category={group.icon} size={28} />
+              <span>{group.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {!layout.iconsOnly && (
+          <div className="p2-content">
+            <div className="p2-vendors">
+              <button type="button" className="p2-vendors-head" aria-expanded={vendorOpen} onClick={() => setVendorOpen(!vendorOpen)}>
+                <Icon name="chevronRight" size={10} className={vendorOpen ? "chevron open" : "chevron"} />
+                <span>Výrobci</span>
+                {activeVendor && <strong className="p2-vendor-chosen">{activeVendor}</strong>}
+              </button>
+              {vendorOpen && (
+                <ul className="p2-vendor-list">
+                  <li>
+                    <button type="button" className={activeVendor === null ? "p2-vendor selected" : "p2-vendor"} onClick={() => setVendor(null)}>
+                      Všichni
+                    </button>
+                  </li>
+                  {vendors.map((v) => (
+                    <li key={v}>
+                      <button
+                        type="button"
+                        className={v === activeVendor ? "p2-vendor selected" : "p2-vendor"}
+                        onClick={() => {
+                          setVendor(v);
+                          setVendorOpen(false);
+                        }}
+                      >
+                        {v === "" ? noVendorTitle : v}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {rail.id === "switch" && (
+              <div className="p2-layer" role="group" aria-label="L2 / L3">
+                {(["all", "switch", "L3 switch"] as const).map((l) => (
+                  <button key={l} type="button" aria-pressed={layer === l} className={layer === l ? "p2-layer-btn selected" : "p2-layer-btn"} onClick={() => setLayer(l)}>
+                    {l === "all" ? "Vše" : l === "switch" ? "L2" : "L3"}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <ul className="palette-rows p2-list" aria-label={rail.label}>
+              {shown.length === 0 && (
+                <li className="palette-empty">
+                  <Icon name={catalog.templates.length === 0 ? "file" : "search"} size={26} />
+                  <span>{catalog.templates.length === 0 ? "Katalog je prázdný" : "Nic nenalezeno"}</span>
+                </li>
+              )}
+              {shown.map((template) => (
+                <PaletteRow
+                  key={template.id}
+                  template={template}
+                  onAdd={() => app.addDevice(template.id)}
+                  onEdit={() => app.openDeviceEditor({ kind: "edit", template })}
+                  onDuplicate={() => app.openDeviceEditor({ kind: "duplicate", template })}
+                  onRemove={() => removeCustom(template)}
+                />
+              ))}
+            </ul>
+
+            <div className="palette-footer">
+              <button type="button" className="push-button wide" title="Přidat do katalogu vlastní zařízení s vlastními porty" onClick={() => app.openDeviceEditor({ kind: "new" })}>
+                <Icon name="plus" size={15} />
+                Nové zařízení…
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div
+        className="p2-handle"
+        role="separator"
+        aria-orientation="vertical"
+        aria-valuemin={0}
+        aria-valuemax={maxContent}
+        aria-valuenow={layout.iconsOnly ? 0 : layout.content}
+        aria-label="Táhněte pro změnu šířky, dvojklik sbalí na lištu ikonek"
+        title="Táhněte pro změnu šířky, dvojklik sbalí na lištu ikonek"
+        tabIndex={0}
+        onPointerDown={startDrag}
+        onDoubleClick={() => paletteLayout.toggleIcons()}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowRight") paletteLayout.drag(layout.iconsOnly ? minContent : layout.content + 20);
+          if (event.key === "ArrowLeft") paletteLayout.drag(layout.content - 20 < minContent ? 0 : layout.content - 20);
+          if (event.key === "ArrowLeft" || event.key === "ArrowRight") event.preventDefault();
+        }}
+      >
+        <span className="p2-grip" />
       </div>
     </nav>
   );
@@ -313,6 +395,7 @@ function PaletteRow({
           <span className="palette-model-name">{template.model}</span>
           {template.isCustom && <Chip text="vlastní" tone="teal" />}
         </div>
+        <div className="palette-row-detail">{template.vendor === "" ? noVendorTitle : template.vendor}</div>
         <div className="palette-row-detail">{summary}</div>
       </div>
       {needsVerification && <VerifyBadge />}
@@ -322,13 +405,7 @@ function PaletteRow({
             <Icon name="note" size={14} />
           </button>
         )}
-        <button
-          type="button"
-          className="icon-button neutral"
-          title="Vytvořit vlastní kopii"
-          aria-label="Vytvořit vlastní kopii"
-          onClick={onDuplicate}
-        >
+        <button type="button" className="icon-button neutral" title="Vytvořit vlastní kopii" aria-label="Vytvořit vlastní kopii" onClick={onDuplicate}>
           <Icon name="noteAdd" size={14} />
         </button>
         {template.isCustom && (
