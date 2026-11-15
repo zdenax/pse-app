@@ -68,7 +68,7 @@ The editor's chrome uses the "kabelážní plán" (cabling plan) system of the N
 - **Cable blue** (`--primary`): primary button, focus ring and halo, links (peer ports), selected state ring, "vlastní" tag.
 - **Destructive** (`--destructive`): errors, "shutdown" toggle when on, delete icons.
 - **Rack graphite** (`--rack*`): the toolbar and console window frames.
-- **Inherited, unchanged** (NetSketch brand, shared with the native app and exports): canvas (`canvas/palette.ts`, `--canvas-bg`, `--grid-dot`, `--ink`, `--panel-*`), cable strokes, canvas status dots, device tiles (`--tile-*`), annotation colours and console text colours (`--console-text/command/prompt/error/dim`). Palette and inspector icons use the same tile colours as the canvas so a device looks the same everywhere. Do not use them for new chrome.
+- **Canvas and export** (`canvas/palette.ts`, `--canvas-bg`, `--grid-dot`, `--ink`, `--panel-*`, `--tile-*`): recoloured 2026-11-15 to match this redesign — label-stock neutrals, cable-blue for copper/RJ45, a warm accent for fiber/wireless/selection, rack-graphite for the router and server tiles, destructive red for reject/status-red. Shared with the native app (`Theme.swift`, same hex values under new names) and with PNG/PDF/SVG exports, so a diagram looks the same everywhere; `Theme.navy/teal/sand/slate/accent` (the native app's own chrome colours) were deliberately left untouched. Console text colours (`--console-text/command/prompt/error/dim`) and annotation colours are unchanged (sticky-note yellow, universal). Palette and inspector icons use the same tile colours as the canvas so a device looks the same everywhere. Do not use canvas tokens for new chrome.
 
 ## Components
 
@@ -86,6 +86,6 @@ Flat by default. Shadows only on things that float: menus, popovers, the drag pr
 
 ## Don'ts
 
-- Don't change `canvas/palette.ts`, `canvas/export.ts` or `exporters.ts` colours for looks: they are shared with exports and the Swift app.
+- `canvas/palette.ts` colours are shared with `canvas/export.ts`/`exporters.ts` and with `Theme.swift`'s `Palette`: change all three together, not just one.
 - Don't use round pill badges or radii above 6px.
 - Don't fetch fonts or assets at runtime.

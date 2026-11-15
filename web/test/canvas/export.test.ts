@@ -53,7 +53,7 @@ describe("SVG", () => {
     expect(svg).toContain(`viewBox="0 0 ${page.bounds.width} ${page.bounds.height}"`);
     expect(svg).toContain(`translate(${-page.bounds.x} ${-page.bounds.y})`);
     // Light canvas background.
-    expect(svg).toContain('fill="#f4f1ea"');
+    expect(svg).toContain('fill="#f2f4f6"');
   });
 
   test("carries names, port labels, cable labels and escaped note text", () => {
@@ -67,13 +67,13 @@ describe("SVG", () => {
     // The selection halo is drawn in the accent color with opacity 0.38.
     expect(svg).not.toContain('stroke-opacity="0.38"');
     // Status "none" rings are an editing affordance only.
-    expect(svg).not.toContain('stroke="#5c6b7a" stroke-opacity="0.55"');
+    expect(svg).not.toContain('stroke="#4f5964" stroke-opacity="0.55"');
   });
 
   test("can be rendered with another palette and at a pixel scale", () => {
     const dark = diagramSVG(source, "logical", { palette: darkPalette, pixelScale: 2 });
     const page = exportPage(source, "logical");
-    expect(dark).toContain('fill="#081b33"');
+    expect(dark).toContain('fill="#121518"');
     expect(dark).toContain(`width="${page.bounds.width * 2}"`);
     expect(dark).toContain(`viewBox="0 0 ${page.bounds.width} ${page.bounds.height}"`);
   });

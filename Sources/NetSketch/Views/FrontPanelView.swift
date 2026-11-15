@@ -32,13 +32,14 @@ struct FrontPanelView: View {
 
 /// Port colors of the canvas palette (light / dark), per connector.
 private enum PanelPreviewColors {
-    static let shadow = Theme.adaptive(light: Theme.navy.opacity(0.10), dark: Color.black.opacity(0.30))
-    static let label = Theme.adaptive(light: rgb(0x4A5866), dark: rgb(0xB4C2D2))
-    static let copper = Theme.adaptive(light: rgb(0x0B2545), dark: rgb(0xE8E3D8))
+    // Mirrors NetSketchCanvas.Theme.Palette.light/dark (canvas-only colors, not the app's Theme.navy etc.).
+    static let shadow = Theme.adaptive(light: rgb(0x15191E).opacity(0.10), dark: Color.black.opacity(0.30))
+    static let label = Theme.adaptive(light: rgb(0x4F5964), dark: rgb(0xA7B0BA))
+    static let copper = Theme.adaptive(light: rgb(0x1F5CC8), dark: rgb(0x7AA7FF))
     static let optic = Theme.adaptive(light: rgb(0x0E8F86), dark: rgb(0x2FD0C4))
     static let console = Theme.adaptive(light: rgb(0x2F8FC9), dark: rgb(0x6BC1F0))
     static let mgmt = Theme.adaptive(light: rgb(0x8A6FB8), dark: rgb(0xB59CE0))
-    static let wireless = Theme.adaptive(light: rgb(0xEE6C4D), dark: rgb(0xF58A6E))
+    static let wireless = Theme.adaptive(light: rgb(0xC96A35), dark: rgb(0xF58A6E))
 
     static func tint(for connector: ConnectorType) -> Color {
         switch connector {
