@@ -251,6 +251,10 @@ export class PanelGeometry {
     const fits = (candidate: string) => candidate !== "" && textWidth(candidate, style) <= maxWidth;
     if (fits(name)) return name;
 
+    // Numbered labels like "11 70.095" (patch panels): the port number leads, the rest is a note.
+    const leading = /^([0-9]+)\s+\S/.exec(name)?.[1];
+    if (leading !== undefined) return fits(leading) ? leading : "";
+
     // Trailing number: "Gi1/0/24" -> "24", "ether5" -> "5".
     const digits = /[0-9]*$/.exec(name)?.[0] ?? "";
     if (fits(digits)) return digits;

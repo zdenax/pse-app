@@ -5,7 +5,7 @@
 // Everything the shell needs from the other modules is injected through props, so this file
 // imports no implementation from src/core or src/cli (see ui/wiring.ts).
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import type { Device, Project } from "../core/model";
 import type { ProjectStoreAPI } from "../core/store-api";
 import type { ConsoleSession } from "../cli/session-api";
@@ -17,6 +17,8 @@ import { AlertHost, DeviceEditorHost } from "./Dialogs";
 import { browserFiles, type ProjectFiles } from "./files";
 import { Inspector } from "./Inspector";
 import { Palette } from "./Palette";
+import { paletteLayout, usePaletteLayout } from "./palette-layout";
+import { useInspectorWidth } from "./right-layout";
 import { isMac } from "./platform";
 import { isEditingText, shortcutFor, type ShortcutCommand } from "./shortcuts";
 import { AppModelProvider, useObservable } from "./store-context";
@@ -85,6 +87,8 @@ function AppShell({
   portStates?: (project: Project) => PortStateMap;
 }) {
   useObservable(app);
+  const inspectorWidth = useInspectorWidth();
+  const paletteLayoutState = usePaletteLayout();
   const store = app.store;
   const storeVersion = useObservable(store);
 
@@ -127,10 +131,23 @@ function AppShell({
     .join(" ");
 
   return (
-    <div className={className}>
+    <div
+      className={className}
+      style={{ "--palette-width": `${paletteLayout.totalWidth(paletteLayoutState)}px`, "--inspector-width": `${inspectorWidth}px` } as CSSProperties}
+    >
       <Toolbar />
       {app.paletteVisible && <Palette />}
       <main className="canvas-area" aria-label="Plátno">
+        {!app.paletteVisible && (
+          <button type="button" className="p2-restore" onClick={() => (app.paletteVisible = true)}>
+            Zobrazit paletu
+          </button>
+        )}
+        {!app.inspectorVisible && (
+          <button type="button" className="panel-restore" onClick={() => (app.inspectorVisible = true)}>
+            Zobrazit inspektor
+          </button>
+        )}
         <CanvasHost
           store={store}
           viewport={app.viewport}
